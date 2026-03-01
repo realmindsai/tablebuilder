@@ -1,5 +1,5 @@
 # ABOUTME: Queue tables, poll for completion, and download CSV results.
-# ABOUTME: Handles format selection, queue submission, status polling, and zip extraction.
+# ABOUTME: Handles queue submission, status polling, and zip extraction.
 
 import shutil
 import zipfile
@@ -31,31 +31,55 @@ def queue_and_download(
     output_path: str,
     timeout: int = 600,
 ) -> None:
-    """Select CSV format, queue the table, wait for completion, download."""
+    """Queue the table, wait for completion, download CSV.
+
+    The queue flow on the TableBuilder UI:
+    1. Click the "Queue table" button (pageForm:retB) on the table view
+    2. A dialog appears with a name field (downloadTableModeForm)
+    3. Fill the name, click submit in the dialog
+    4. Navigate to the saved/queued tables page
+    5. Poll for "Completed, click here to download" link
+    6. Click to download ZIP, extract CSV
+    """
     table_name = generate_table_name()
 
-    # Select CSV format from the download type dropdown
-    page.select_option('#downloadControl\\:downloadType', value='CSV')
-    page.wait_for_timeout(500)
+    # Select CSV format from the download type dropdown (default is EXCEL_2007)
+    format_select = page.query_selector('#downloadControl\\:downloadType')
+    if format_select:
+        page.select_option('#downloadControl\\:downloadType', value='CSV')
+        page.wait_for_timeout(500)
 
-    # Click the queue/download large table button
-    queue_btn = page.query_selector('#downloadControl\\:downloadLargeTableButton')
+    # Click the Queue table button on the table view page
+    queue_btn = page.query_selector('#pageForm\\:retB')
     if not queue_btn:
-        raise DownloadError("Cannot find the queue table button.")
+        raise DownloadError("Cannot find the 'Queue table' button.")
+
     queue_btn.click()
-    page.wait_for_timeout(1000)
+    page.wait_for_timeout(3000)
 
-    # Fill the table name in the queue dialog
-    page.fill('#downloadTableModeForm\\:downloadTableNameTxt', table_name)
+    # The queue dialog should appear
+    dialog = page.query_selector('#downloadTableModePanel_container')
+    if dialog and dialog.is_visible():
+        # Fill the table name
+        name_input = page.query_selector(
+            '#downloadTableModeForm\\:downloadTableNameTxt'
+        )
+        if name_input:
+            name_input.fill(table_name)
 
-    # Submit the queue dialog
-    submit_btn = page.query_selector(
-        '#downloadTableModeForm\\:queueTableButton'
-    )
-    if not submit_btn:
-        raise DownloadError("Cannot find the queue submit button.")
-    submit_btn.click()
-    page.wait_for_timeout(2000)
+        # Submit the dialog
+        submit_btn = page.query_selector(
+            '#downloadTableModeForm\\:queueTableButton'
+        )
+        if not submit_btn:
+            raise DownloadError("Cannot find the queue submit button in dialog.")
+        submit_btn.click()
+        page.wait_for_timeout(3000)
+    else:
+        raise DownloadError(
+            "Queue dialog did not appear after clicking 'Queue table'. "
+            "The table may need data before queuing."
+        )
 
     # Navigate to the saved/queued tables page
     page.goto(SAVED_TABLES_URL, wait_until="networkidle")
@@ -67,12 +91,12 @@ def queue_and_download(
     download_link = None
 
     while elapsed_ms < max_ms:
-        # Find link containing "click here to download"
-        links = page.query_selector_all('a')
-        for link in links:
-            link_text = (link.text_content() or '').lower()
-            if 'click here to download' in link_text:
-                download_link = link
+        # Find the row for our specific table, then look for its download link
+        rows = page.query_selector_all('tr')
+        for row in rows:
+            row_text = row.text_content() or ''
+            if table_name in row_text and 'click here to download' in row_text.lower():
+                download_link = row.query_selector('a')
                 break
 
         if download_link:
@@ -104,7 +128,8 @@ def queue_and_download(
                 raise DownloadError("Downloaded zip contains no CSV files.")
             zf.extract(csv_files[0], output.parent)
             extracted = output.parent / csv_files[0]
-            extracted.rename(output)
+            if extracted != output:
+                shutil.move(str(extracted), str(output))
     else:
         shutil.copy2(download_path, output)
 
@@ -112,13 +137,11 @@ def queue_and_download(
 def cleanup_saved_table(page: Page, table_name: str) -> None:
     """Delete a saved table from the queue to keep things tidy."""
     try:
-        # Find the table row with our name and click delete
         table_row = page.get_by_text(table_name).first
         if table_row:
             delete_btn = table_row.locator(".. >> button:has-text('Delete')")
             if delete_btn.count() > 0:
                 delete_btn.click()
-                # Confirm deletion
                 confirm = page.query_selector(
                     "button:has-text('OK'), button:has-text('Yes')"
                 )
