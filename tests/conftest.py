@@ -5,6 +5,7 @@ import pytest
 
 from tablebuilder.config import Config, load_config, ConfigError
 from tablebuilder.browser import TableBuilderSession
+from tablebuilder.navigator import open_dataset
 
 
 @pytest.fixture
@@ -25,3 +26,10 @@ def abs_page(abs_config):
     session = TableBuilderSession(abs_config, headless=True)
     with session as page:
         yield page
+
+
+@pytest.fixture
+def abs_page_with_dataset(abs_page):
+    """Provide a page with a Census dataset already open."""
+    open_dataset(abs_page, "Census 2021")
+    yield abs_page
