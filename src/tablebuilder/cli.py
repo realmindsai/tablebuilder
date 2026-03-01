@@ -63,9 +63,38 @@ def fetch(dataset, rows, cols, wafers, output, headed, user_id, password, timeou
         click.echo(f"Wafers: {', '.join(request.wafers)}")
     click.echo(f"Output: {output}")
 
-    # Browser automation goes here (Task 5+)
-    click.echo("Browser automation not yet implemented.")
-    sys.exit(1)
+    from tablebuilder.browser import TableBuilderSession, LoginError
+    from tablebuilder.navigator import open_dataset, NavigationError
+    from tablebuilder.table_builder import build_table, TableBuildError
+    from tablebuilder.downloader import queue_and_download, DownloadError
+
+    try:
+        with TableBuilderSession(config, headless=not headed) as page:
+            click.echo("Logged in to TableBuilder.")
+
+            click.echo(f"Opening dataset: {request.dataset}")
+            open_dataset(page, request.dataset)
+
+            click.echo("Building table...")
+            build_table(page, request)
+
+            click.echo(f"Queuing and downloading to {output}...")
+            queue_and_download(page, output, timeout=timeout)
+
+            click.echo(f"Done! CSV saved to {output}")
+
+    except LoginError as e:
+        click.echo(f"Login error: {e}", err=True)
+        sys.exit(1)
+    except NavigationError as e:
+        click.echo(f"Navigation error: {e}", err=True)
+        sys.exit(1)
+    except TableBuildError as e:
+        click.echo(f"Table build error: {e}", err=True)
+        sys.exit(1)
+    except DownloadError as e:
+        click.echo(f"Download error: {e}", err=True)
+        sys.exit(1)
 
 
 @cli.command()
@@ -73,8 +102,23 @@ def fetch(dataset, rows, cols, wafers, output, headed, user_id, password, timeou
 @click.option("--password", default=None, help="ABS password (overrides .env).")
 def datasets(user_id, password):
     """List available datasets in TableBuilder."""
-    click.echo("Not yet implemented.")
-    sys.exit(1)
+    try:
+        config = load_config(user_id=user_id, password=password)
+    except ConfigError as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
+
+    from tablebuilder.browser import TableBuilderSession, LoginError
+    from tablebuilder.navigator import list_datasets
+
+    try:
+        with TableBuilderSession(config, headless=True) as page:
+            datasets_list = list_datasets(page)
+            for name in sorted(datasets_list):
+                click.echo(name)
+    except LoginError as e:
+        click.echo(f"Login error: {e}", err=True)
+        sys.exit(1)
 
 
 @cli.command()
