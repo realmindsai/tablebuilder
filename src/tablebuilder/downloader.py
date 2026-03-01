@@ -21,6 +21,11 @@ def generate_table_name() -> str:
     return f"tb_{timestamp}_{short_id}"
 
 
+SAVED_TABLES_URL = (
+    "https://tablebuilder.abs.gov.au/webapi/jsf/tableView/openTable.xhtml"
+)
+
+
 def queue_and_download(
     page: Page,
     output_path: str,
@@ -29,66 +34,48 @@ def queue_and_download(
     """Select CSV format, queue the table, wait for completion, download."""
     table_name = generate_table_name()
 
-    # Select CSV format from the dropdown
-    format_dropdown = page.query_selector(
-        "select[class*='format'], select[id*='format']"
-    )
-    if format_dropdown:
-        format_dropdown.select_option(label="Comma Separated Value (.csv)")
-    else:
-        # Try clicking a format option directly
-        csv_option = page.query_selector("text=CSV, text=Comma Separated")
-        if csv_option:
-            csv_option.click()
-
+    # Select CSV format from the download type dropdown
+    page.select_option('#downloadControl\\:downloadType', value='CSV')
     page.wait_for_timeout(500)
 
-    # Click "Queue table" button
-    queue_button = page.get_by_text("Queue table").first
-    if not queue_button:
-        # Alternative text
-        queue_button = page.get_by_text("Retrieve data").first
-    if not queue_button:
-        raise DownloadError("Cannot find the Queue/Retrieve button.")
-
-    queue_button.click()
+    # Click the queue/download large table button
+    queue_btn = page.query_selector('#downloadControl\\:downloadLargeTableButton')
+    if not queue_btn:
+        raise DownloadError("Cannot find the queue table button.")
+    queue_btn.click()
     page.wait_for_timeout(1000)
 
-    # Enter table name in the dialog
-    name_input = page.query_selector(
-        "input[type='text']:visible, input[class*='table-name']"
-    )
-    if name_input:
-        name_input.fill(table_name)
+    # Fill the table name in the queue dialog
+    page.fill('#downloadTableModeForm\\:downloadTableNameTxt', table_name)
 
-    # Confirm/OK
-    ok_button = page.query_selector(
-        "button:has-text('OK'), button:has-text('Save'), input[value='OK']"
+    # Submit the queue dialog
+    submit_btn = page.query_selector(
+        '#downloadTableModeForm\\:queueTableButton'
     )
-    if ok_button:
-        ok_button.click()
+    if not submit_btn:
+        raise DownloadError("Cannot find the queue submit button.")
+    submit_btn.click()
     page.wait_for_timeout(2000)
 
-    # Navigate to Saved and queued tables
-    saved_link = page.query_selector(
-        "text=Saved and queued tables, a:has-text('Saved')"
-    )
-    if saved_link:
-        saved_link.click()
-        page.wait_for_load_state("networkidle", timeout=10000)
+    # Navigate to the saved/queued tables page
+    page.goto(SAVED_TABLES_URL, wait_until="networkidle")
 
-    # Poll for completion
+    # Poll for completion — look for "click here to download" link
     poll_interval_ms = 5000
     elapsed_ms = 0
     max_ms = timeout * 1000
+    download_link = None
 
     while elapsed_ms < max_ms:
-        # Look for "Completed" status next to our table name
-        completed = page.query_selector(
-            f"text=Completed >> .. >> text=download, "
-            f"a:has-text('download')"
-        )
-        if completed:
+        # Find link containing "click here to download"
+        links = page.query_selector_all('a')
+        for link in links:
+            link_text = (link.text_content() or '').lower()
+            if 'click here to download' in link_text:
+                download_link = link
+                break
+
+        if download_link:
             break
 
         page.wait_for_timeout(poll_interval_ms)
@@ -101,14 +88,14 @@ def queue_and_download(
             "Check 'Saved and queued tables' in TableBuilder manually."
         )
 
-    # Download the file
+    # Download the file (triggers a ZIP download)
     with page.expect_download(timeout=30000) as download_info:
-        completed.click()
+        download_link.click()
 
     download = download_info.value
     download_path = Path(download.path())
 
-    # Extract if zip, otherwise copy directly
+    # Extract CSV from the downloaded ZIP
     output = Path(output_path)
     if zipfile.is_zipfile(download_path):
         with zipfile.ZipFile(download_path) as zf:

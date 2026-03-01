@@ -51,10 +51,10 @@ class TableBuilderSession:
             # Maintenance banner exists but site may still be accessible
             pass
 
-        # Fill login form
-        page.fill('input[type="text"]', self.config.user_id)
-        page.fill('input[type="password"]', self.config.password)
-        page.click('input[type="submit"], button[type="submit"]')
+        # Fill login form using real JSF element IDs
+        page.fill('#loginForm\\:username2', self.config.user_id)
+        page.fill('#loginForm\\:password2', self.config.password)
+        page.click('#loginForm\\:login2')
 
         # Wait for navigation
         try:
@@ -62,26 +62,22 @@ class TableBuilderSession:
         except PlaywrightTimeout:
             raise LoginError("Login timed out — TableBuilder may be down.")
 
-        # Check for login error
-        error_element = page.query_selector(".error-message, .ui-messages-error")
-        if error_element:
-            error_text = error_element.text_content() or "Unknown login error"
-            raise LoginError(f"Login failed: {error_text.strip()}")
-
         # If we're still on the login page, credentials were wrong
         if "login.xhtml" in page.url:
             raise LoginError(
                 "Login failed — still on login page. Check your User ID and password."
             )
 
-        # Handle conditions-of-use dialog if it appears
-        try:
-            agree_button = page.wait_for_selector(
-                "text=I agree, button:has-text('Agree'), input[value='Agree']",
-                timeout=3000,
-            )
-            if agree_button:
-                agree_button.click()
+        # Handle conditions-of-use / terms page
+        if "terms.xhtml" in page.url:
+            try:
+                page.click('#termsForm\\:termsButton')
                 page.wait_for_load_state("networkidle", timeout=10000)
-        except PlaywrightTimeout:
-            pass  # No conditions dialog — that's fine
+            except PlaywrightTimeout:
+                raise LoginError("Timed out accepting conditions of use.")
+
+        # Verify we reached the data catalogue
+        if "dataCatalogueExplorer.xhtml" not in page.url:
+            raise LoginError(
+                f"Login did not reach data catalogue. Current URL: {page.url}"
+            )

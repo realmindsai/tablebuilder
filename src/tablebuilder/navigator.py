@@ -38,38 +38,55 @@ def fuzzy_match_dataset(query: str, available: list[str]) -> str:
     )
 
 
+def _expand_node(page: Page, label_text: str) -> bool:
+    """Expand a collapsed tree node by its label text.
+
+    Finds a .label element containing label_text, walks up to its
+    .treeNodeElement parent, and clicks the .treeNodeExpander if collapsed.
+    Returns True if a node was expanded, False otherwise.
+    """
+    labels = page.query_selector_all('.label')
+    for lbl in labels:
+        if label_text in (lbl.text_content() or ''):
+            node = lbl.evaluate_handle('el => el.closest(".treeNodeElement")')
+            exp = node.as_element().query_selector('.treeNodeExpander')
+            if exp and 'collapsed' in (exp.get_attribute('class') or ''):
+                exp.click()
+                page.wait_for_timeout(2000)
+                return True
+    return False
+
+
+def _expand_all_collapsed(page: Page) -> None:
+    """Keep expanding collapsed tree nodes until none remain."""
+    while True:
+        collapsed = page.query_selector_all('.treeNodeExpander.collapsed')
+        if not collapsed:
+            break
+        for expander in collapsed:
+            try:
+                expander.click()
+                page.wait_for_timeout(1000)
+            except Exception:
+                continue
+
+
 def list_datasets(page: Page) -> list[str]:
     """Read available dataset names from the TableBuilder home page."""
-    # Expand all dataset folders by clicking triangles
-    triangles = page.query_selector_all(
-        ".tree-toggle, .ui-tree-toggler, [class*='toggle']"
-    )
-    for triangle in triangles:
-        try:
-            triangle.click()
-            page.wait_for_timeout(500)
-        except Exception:
-            continue
+    # Expand all collapsed tree nodes to reveal the full hierarchy
+    _expand_all_collapsed(page)
 
-    # Collect dataset names (leaf nodes with cube icons or dataset class)
-    dataset_elements = page.query_selector_all(
-        ".dataset-name, .cube-icon + span, [class*='dataset'] span"
-    )
+    # Collect leaf dataset names — only nodes whose expander has the .leaf class
     names = []
-    for el in dataset_elements:
-        text = (el.text_content() or "").strip()
-        if text:
-            names.append(text)
-
-    if not names:
-        # Fallback: grab all tree node labels
-        tree_nodes = page.query_selector_all(
-            ".ui-treenode-label, .tree-label, [role='treeitem']"
-        )
-        for node in tree_nodes:
-            text = (node.text_content() or "").strip()
-            if text and len(text) > 3:
-                names.append(text)
+    nodes = page.query_selector_all('.treeNodeElement')
+    for node in nodes:
+        expander = node.query_selector('.treeNodeExpander')
+        if expander and 'leaf' in (expander.get_attribute('class') or ''):
+            label = node.query_selector('.label')
+            if label:
+                text = (label.text_content() or '').strip()
+                if text:
+                    names.append(text)
 
     return names
 
@@ -79,19 +96,24 @@ def open_dataset(page: Page, dataset_query: str) -> None:
     available = list_datasets(page)
     matched_name = fuzzy_match_dataset(dataset_query, available)
 
-    # Double-click the matched dataset to open it
-    dataset_el = page.get_by_text(matched_name, exact=True).first
-    if not dataset_el:
+    # Expand parent folders that may be collapsed, then double-click the leaf
+    # Walk through tree labels to find the matched dataset
+    labels = page.query_selector_all('.treeNodeElement .label')
+    target_label = None
+    for lbl in labels:
+        if (lbl.text_content() or '').strip() == matched_name:
+            target_label = lbl
+            break
+
+    if not target_label:
         raise NavigationError(f"Found '{matched_name}' but cannot locate it in the UI.")
 
-    dataset_el.dblclick()
+    # Double-click the leaf dataset label to open Table View
+    target_label.dblclick()
 
-    # Wait for Table View to load
+    # Wait for Table View to load (URL changes to tableView.xhtml)
     try:
-        page.wait_for_selector(
-            "text=Add to Row, text=Add to Column",
-            timeout=15000,
-        )
+        page.wait_for_url("**/tableView.xhtml*", timeout=15000)
     except PlaywrightTimeout:
         raise NavigationError(
             f"Opened '{matched_name}' but Table View did not load. "
@@ -101,13 +123,17 @@ def open_dataset(page: Page, dataset_query: str) -> None:
 
 def search_variable(page: Page, variable_name: str) -> None:
     """Use the dataset search box to find and highlight a variable."""
-    search_input = page.query_selector(
-        "input[placeholder*='Search'], input[class*='search']"
-    )
+    search_input = page.query_selector('#searchPattern')
     if not search_input:
         raise NavigationError("Cannot find the search box in the dataset panel.")
 
     search_input.fill("")
     search_input.fill(variable_name)
-    page.keyboard.press("Enter")
+
+    search_button = page.query_selector('#searchButton')
+    if search_button:
+        search_button.click()
+    else:
+        page.keyboard.press("Enter")
+
     page.wait_for_timeout(1000)
