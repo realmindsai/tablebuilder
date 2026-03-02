@@ -3,25 +3,22 @@
 
 from playwright.sync_api import Page, TimeoutError as PlaywrightTimeout
 
+from tablebuilder.logging_config import get_logger
 from tablebuilder.models import Axis, TableRequest
 from tablebuilder.navigator import search_variable, _expand_all_collapsed
+from tablebuilder.resilience import find_all_elements
+from tablebuilder.selectors import TREE_NODE, AXIS_BUTTONS
+
+logger = get_logger("tablebuilder.table_builder")
 
 
 class TableBuildError(Exception):
     """Raised when table construction fails."""
 
 
-# JSF element IDs for the axis assignment buttons (wafer is "addL" for Layer)
-AXIS_BUTTON_ID = {
-    Axis.ROW: "buttonForm:addR",
-    Axis.COL: "buttonForm:addC",
-    Axis.WAFER: "buttonForm:addL",
-}
-
-
 def _find_variable_node(page: Page, variable_name: str):
     """Find the tree node element for a specific variable by exact label match."""
-    nodes = page.query_selector_all('.treeNodeElement')
+    nodes = find_all_elements(page, TREE_NODE)
     for node in nodes:
         label = node.query_selector('.label')
         if label and (label.text_content() or '').strip() == variable_name:
@@ -38,7 +35,7 @@ def _check_variable_categories(page: Page, variable_name: str) -> int:
     Walks the sibling tree nodes after the variable node, checking all
     consecutive leaf nodes until hitting a non-leaf node.
     """
-    nodes = page.query_selector_all('.treeNodeElement')
+    nodes = find_all_elements(page, TREE_NODE)
     all_nodes = list(nodes)
 
     # Find the variable node index
@@ -77,8 +74,13 @@ def _submit_axis_button(page: Page, axis: Axis) -> None:
     rather than dispatch_event or regular click to trigger the server-side
     action properly.
     """
-    button_id = AXIS_BUTTON_ID[axis]
-    css_id = button_id.replace(':', '\\\\:')
+    selector_entry = AXIS_BUTTONS[axis]
+    # Extract the raw JSF ID from the CSS selector primary
+    # primary is like "#buttonForm\:addR" — strip leading # and unescape \:
+    raw_id = selector_entry.primary.lstrip('#').replace('\\:', ':')
+    css_id = raw_id.replace(':', '\\\\:')
+
+    logger.debug("Submitting axis button for %s (id: %s)", axis.value, raw_id)
 
     page.evaluate(
         f"""
@@ -98,13 +100,19 @@ def _submit_axis_button(page: Page, axis: Axis) -> None:
     page.wait_for_timeout(5000)
 
 
-def add_variable(page: Page, variable_name: str, axis: Axis) -> None:
+def add_variable(page: Page, variable_name: str, axis: Axis, knowledge=None) -> None:
     """Search for a variable, select all its categories, and add to the given axis."""
-    search_variable(page, variable_name)
+    logger.info("Adding variable '%s' to %s", variable_name, axis.value)
+    search_variable(page, variable_name, knowledge)
 
     # Expand all collapsed groups to reveal variables and their categories
     _expand_all_collapsed(page)
     page.wait_for_timeout(500)
+
+    # Validate the variable exists in the tree before checking categories
+    var_node = _find_variable_node(page, variable_name)
+    if not var_node:
+        logger.error("Variable '%s' not found in tree after search", variable_name)
 
     # Check only the target variable's category checkboxes
     checked = _check_variable_categories(page, variable_name)
@@ -113,6 +121,7 @@ def add_variable(page: Page, variable_name: str, axis: Axis) -> None:
             f"No categories found for variable '{variable_name}'."
         )
 
+    logger.debug("Checked %d categories for '%s'", checked, variable_name)
     page.wait_for_timeout(300)
 
     # Submit the axis button via form submission
@@ -126,14 +135,19 @@ def add_variable(page: Page, variable_name: str, axis: Axis) -> None:
             "Table is still empty after submission."
         )
 
+    logger.info("Variable '%s' added to %s", variable_name, axis.value)
 
-def build_table(page: Page, request: TableRequest) -> None:
+
+def build_table(page: Page, request: TableRequest, knowledge=None) -> None:
     """Add all variables from a TableRequest to their respective axes."""
+    logger.info("Building table for dataset '%s'", request.dataset)
     for var in request.rows:
-        add_variable(page, var, Axis.ROW)
+        add_variable(page, var, Axis.ROW, knowledge)
 
     for var in request.cols:
-        add_variable(page, var, Axis.COL)
+        add_variable(page, var, Axis.COL, knowledge)
 
     for var in request.wafers:
-        add_variable(page, var, Axis.WAFER)
+        add_variable(page, var, Axis.WAFER, knowledge)
+
+    logger.info("Table build complete")

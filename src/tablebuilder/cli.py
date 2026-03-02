@@ -1,5 +1,5 @@
 # ABOUTME: Click CLI entry point for the tablebuilder command.
-# ABOUTME: Provides fetch, datasets, variables subcommands.
+# ABOUTME: Provides fetch, datasets, variables, and doctor subcommands.
 
 import sys
 from datetime import datetime
@@ -7,12 +7,19 @@ from datetime import datetime
 import click
 
 from tablebuilder.config import ConfigError, load_config
+from tablebuilder.knowledge import KnowledgeBase
+from tablebuilder.logging_config import setup_logging
 from tablebuilder.models import TableRequest
 
 
 @click.group()
-def cli():
+@click.option('-v', '--verbose', is_flag=True, help='Show debug logging.')
+@click.pass_context
+def cli(ctx, verbose):
     """Download data from ABS TableBuilder."""
+    ctx.ensure_object(dict)
+    setup_logging(verbose)
+    ctx.obj['knowledge'] = KnowledgeBase()
 
 
 @cli.command()
@@ -37,8 +44,12 @@ def cli():
     type=int,
     help="Queue timeout in seconds (default: 600).",
 )
-def fetch(dataset, rows, cols, wafers, output, headed, user_id, password, timeout):
+@click.pass_context
+def fetch(ctx, dataset, rows, cols, wafers, output, headed, user_id, password, timeout):
     """Fetch a table from ABS TableBuilder and download as CSV."""
+    knowledge = ctx.obj['knowledge']
+    knowledge.record_run()
+
     try:
         config = load_config(user_id=user_id, password=password)
     except ConfigError as e:
@@ -69,17 +80,17 @@ def fetch(dataset, rows, cols, wafers, output, headed, user_id, password, timeou
     from tablebuilder.downloader import queue_and_download, DownloadError
 
     try:
-        with TableBuilderSession(config, headless=not headed) as page:
+        with TableBuilderSession(config, headless=not headed, knowledge=knowledge) as page:
             click.echo("Logged in to TableBuilder.")
 
             click.echo(f"Opening dataset: {request.dataset}")
-            open_dataset(page, request.dataset)
+            open_dataset(page, request.dataset, knowledge=knowledge)
 
             click.echo("Building table...")
-            build_table(page, request)
+            build_table(page, request, knowledge=knowledge)
 
             click.echo(f"Queuing and downloading to {output}...")
-            queue_and_download(page, output, timeout=timeout)
+            queue_and_download(page, output, timeout=timeout, knowledge=knowledge)
 
             click.echo(f"Done! CSV saved to {output}")
 
@@ -95,13 +106,18 @@ def fetch(dataset, rows, cols, wafers, output, headed, user_id, password, timeou
     except DownloadError as e:
         click.echo(f"Download error: {e}", err=True)
         sys.exit(1)
+    finally:
+        knowledge.save()
 
 
 @cli.command()
 @click.option("--user-id", default=None, help="ABS User ID (overrides .env).")
 @click.option("--password", default=None, help="ABS password (overrides .env).")
-def datasets(user_id, password):
+@click.pass_context
+def datasets(ctx, user_id, password):
     """List available datasets in TableBuilder."""
+    knowledge = ctx.obj['knowledge']
+
     try:
         config = load_config(user_id=user_id, password=password)
     except ConfigError as e:
@@ -112,8 +128,8 @@ def datasets(user_id, password):
     from tablebuilder.navigator import list_datasets
 
     try:
-        with TableBuilderSession(config, headless=True) as page:
-            datasets_list = list_datasets(page)
+        with TableBuilderSession(config, headless=True, knowledge=knowledge) as page:
+            datasets_list = list_datasets(page, knowledge=knowledge)
             for name in sorted(datasets_list):
                 click.echo(name)
     except LoginError as e:
@@ -129,3 +145,15 @@ def variables(dataset, user_id, password):
     """List variables in a TableBuilder dataset."""
     click.echo("Not yet implemented.")
     sys.exit(1)
+
+
+@cli.command()
+@click.pass_context
+def doctor(ctx):
+    """Show health status, known issues, and accumulated knowledge."""
+    from tablebuilder.doctor import check_credentials, run_doctor
+
+    knowledge = ctx.obj['knowledge']
+    credentials_ok = check_credentials()
+    report = run_doctor(knowledge, credentials_ok=credentials_ok)
+    click.echo(report)

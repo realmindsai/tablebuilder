@@ -3,6 +3,18 @@
 
 from playwright.sync_api import Page, TimeoutError as PlaywrightTimeout
 
+from tablebuilder.logging_config import get_logger
+from tablebuilder.resilience import find_element, find_all_elements, retry
+from tablebuilder.selectors import (
+    TREE_NODE,
+    TREE_LABEL,
+    TREE_EXPANDER_COLLAPSED,
+    SEARCH_INPUT,
+    SEARCH_BUTTON,
+)
+
+logger = get_logger("tablebuilder.navigator")
+
 
 class NavigationError(Exception):
     """Raised when navigation in TableBuilder fails."""
@@ -45,7 +57,7 @@ def _expand_node(page: Page, label_text: str) -> bool:
     .treeNodeElement parent, and clicks the .treeNodeExpander if collapsed.
     Returns True if a node was expanded, False otherwise.
     """
-    labels = page.query_selector_all('.label')
+    labels = find_all_elements(page, TREE_LABEL)
     for lbl in labels:
         if label_text in (lbl.text_content() or ''):
             node = lbl.evaluate_handle('el => el.closest(".treeNodeElement")')
@@ -60,7 +72,7 @@ def _expand_node(page: Page, label_text: str) -> bool:
 def _expand_all_collapsed(page: Page) -> None:
     """Keep expanding collapsed tree nodes until none remain."""
     while True:
-        collapsed = page.query_selector_all('.treeNodeExpander.collapsed')
+        collapsed = find_all_elements(page, TREE_EXPANDER_COLLAPSED)
         if not collapsed:
             break
         for expander in collapsed:
@@ -71,14 +83,15 @@ def _expand_all_collapsed(page: Page) -> None:
                 continue
 
 
-def list_datasets(page: Page) -> list[str]:
+def list_datasets(page: Page, knowledge=None) -> list[str]:
     """Read available dataset names from the TableBuilder home page."""
+    logger.info("Listing available datasets")
     # Expand all collapsed tree nodes to reveal the full hierarchy
     _expand_all_collapsed(page)
 
     # Collect leaf dataset names — only nodes whose expander has the .leaf class
     names = []
-    nodes = page.query_selector_all('.treeNodeElement')
+    nodes = find_all_elements(page, TREE_NODE, knowledge)
     for node in nodes:
         expander = node.query_selector('.treeNodeExpander')
         if expander and 'leaf' in (expander.get_attribute('class') or ''):
@@ -88,13 +101,17 @@ def list_datasets(page: Page) -> list[str]:
                 if text:
                     names.append(text)
 
+    logger.debug("Found %d datasets", len(names))
     return names
 
 
-def open_dataset(page: Page, dataset_query: str) -> None:
+@retry(max_attempts=2, retryable_exceptions=(PlaywrightTimeout,))
+def open_dataset(page: Page, dataset_query: str, knowledge=None) -> None:
     """Find and open a dataset in TableBuilder, reaching Table View."""
-    available = list_datasets(page)
+    logger.info("Opening dataset matching '%s'", dataset_query)
+    available = list_datasets(page, knowledge)
     matched_name = fuzzy_match_dataset(dataset_query, available)
+    logger.debug("Fuzzy matched to '%s'", matched_name)
 
     # Expand parent folders that may be collapsed, then double-click the leaf
     # Walk through tree labels to find the matched dataset
@@ -120,20 +137,24 @@ def open_dataset(page: Page, dataset_query: str) -> None:
             "The dataset may be unavailable."
         )
 
+    logger.info("Dataset '%s' opened in Table View", matched_name)
 
-def search_variable(page: Page, variable_name: str) -> None:
+
+def search_variable(page: Page, variable_name: str, knowledge=None) -> None:
     """Use the dataset search box to find and highlight a variable."""
-    search_input = page.query_selector('#searchPattern')
+    logger.debug("Searching for variable '%s'", variable_name)
+    search_input = find_element(page, SEARCH_INPUT, knowledge)
     if not search_input:
         raise NavigationError("Cannot find the search box in the dataset panel.")
 
     search_input.fill("")
     search_input.fill(variable_name)
 
-    search_button = page.query_selector('#searchButton')
+    search_button = find_element(page, SEARCH_BUTTON, knowledge)
     if search_button:
         search_button.click()
     else:
         page.keyboard.press("Enter")
 
     page.wait_for_timeout(1000)
+    logger.debug("Variable search for '%s' submitted", variable_name)
