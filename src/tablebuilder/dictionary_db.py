@@ -163,5 +163,54 @@ def build_db(cache_dir: Path, db_path: Path) -> None:
                     )
 
     conn.commit()
+
+    # Create FTS5 virtual tables
+    conn.execute("""
+        CREATE VIRTUAL TABLE datasets_fts USING fts5(name, summary)
+    """)
+    conn.execute("""
+        CREATE VIRTUAL TABLE variables_fts USING fts5(
+            dataset_name, group_path, code, label, categories_text, summary
+        )
+    """)
+
+    # Populate dataset FTS
+    for tree in trees:
+        summary = _generate_dataset_summary(tree)
+        conn.execute(
+            "UPDATE datasets SET summary = ? WHERE name = ?",
+            (summary, tree["dataset_name"]),
+        )
+        conn.execute(
+            "INSERT INTO datasets_fts (name, summary) VALUES (?, ?)",
+            (tree["dataset_name"], summary),
+        )
+
+    # Populate variable FTS
+    rows = conn.execute("""
+        SELECT v.id, d.name, g.path, v.code, v.label
+        FROM variables v
+        JOIN groups g ON v.group_id = g.id
+        JOIN datasets d ON g.dataset_id = d.id
+    """).fetchall()
+
+    for var_id, ds_name, grp_path, code, label in rows:
+        cats = conn.execute(
+            "SELECT label FROM categories WHERE variable_id = ?", (var_id,)
+        ).fetchall()
+        cat_labels = [c[0] for c in cats]
+        cat_text = ", ".join(cat_labels)
+        summary = _generate_variable_summary(
+            code=code, label=label, categories=cat_labels,
+            group_path=grp_path, dataset_name=ds_name,
+        )
+        conn.execute(
+            "INSERT INTO variables_fts "
+            "(dataset_name, group_path, code, label, categories_text, summary) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (ds_name, grp_path, code, label, cat_text, summary),
+        )
+
+    conn.commit()
     conn.close()
     logger.info("Database built: %s", db_path)

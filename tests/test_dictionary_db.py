@@ -284,3 +284,80 @@ class TestSummaryGeneration:
         assert "Category 0" in summary
         # Should not list all 20
         assert "Category 19" not in summary
+
+
+class TestFts5Index:
+    def test_datasets_fts_exists(self, sample_cache, tmp_path):
+        """The datasets_fts virtual table is created and populated."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        conn = sqlite3.connect(db_path)
+        rows = conn.execute(
+            "SELECT name, summary FROM datasets_fts ORDER BY name"
+        ).fetchall()
+        assert len(rows) == 2
+        assert rows[1][0] == "Test Survey, 2021"
+        assert len(rows[1][1]) > 0  # summary is populated
+        conn.close()
+
+    def test_variables_fts_exists(self, sample_cache, tmp_path):
+        """The variables_fts virtual table is created and populated."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        conn = sqlite3.connect(db_path)
+        rows = conn.execute("SELECT COUNT(*) FROM variables_fts").fetchone()
+        # 3 vars in dataset1 + 3 vars in dataset2 = 6
+        assert rows[0] == 6
+        conn.close()
+
+    def test_variables_fts_has_categories_text(self, sample_cache, tmp_path):
+        """Variable FTS rows include concatenated category labels."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        conn = sqlite3.connect(db_path)
+        rows = conn.execute(
+            "SELECT categories_text FROM variables_fts WHERE label = 'Sex'"
+        ).fetchall()
+        assert len(rows) == 1
+        assert "Male" in rows[0][0]
+        assert "Female" in rows[0][0]
+        conn.close()
+
+    def test_fts_keyword_search(self, sample_cache, tmp_path):
+        """FTS5 MATCH finds variables by keyword."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        conn = sqlite3.connect(db_path)
+        rows = conn.execute(
+            "SELECT dataset_name, label FROM variables_fts "
+            "WHERE variables_fts MATCH 'Mining' ORDER BY rank"
+        ).fetchall()
+        assert len(rows) >= 1
+        assert any("Industry" in r[1] for r in rows)
+        conn.close()
+
+    def test_fts_dataset_search(self, sample_cache, tmp_path):
+        """FTS5 MATCH on datasets_fts finds datasets by summary content."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        conn = sqlite3.connect(db_path)
+        rows = conn.execute(
+            "SELECT name FROM datasets_fts "
+            "WHERE datasets_fts MATCH 'Demographics' ORDER BY rank"
+        ).fetchall()
+        assert len(rows) >= 1
+        assert any("Test Survey" in r[0] for r in rows)
+        conn.close()
+
+    def test_fts_search_revenue(self, sample_cache, tmp_path):
+        """FTS5 finds business revenue variables."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        conn = sqlite3.connect(db_path)
+        rows = conn.execute(
+            "SELECT dataset_name, label FROM variables_fts "
+            "WHERE variables_fts MATCH 'Revenue' ORDER BY rank"
+        ).fetchall()
+        assert len(rows) >= 1
+        assert any("BLADE" in r[0] for r in rows)
+        conn.close()
