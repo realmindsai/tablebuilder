@@ -6,7 +6,10 @@ import sqlite3
 import pytest
 from pathlib import Path
 
-from tablebuilder.dictionary_db import build_db, _generate_dataset_summary, _generate_variable_summary
+from tablebuilder.dictionary_db import (
+    build_db, _generate_dataset_summary, _generate_variable_summary,
+    search, get_dataset, get_variables_by_code,
+)
 
 
 @pytest.fixture
@@ -361,3 +364,75 @@ class TestFts5Index:
         assert len(rows) >= 1
         assert any("BLADE" in r[0] for r in rows)
         conn.close()
+
+
+class TestSearch:
+    def test_search_returns_results(self, sample_cache, tmp_path):
+        """search() returns a list of dicts with expected keys."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        results = search(db_path, "Sex Male Female")
+        assert len(results) >= 1
+        r = results[0]
+        assert "dataset_name" in r
+        assert "group_path" in r
+        assert "label" in r
+
+    def test_search_limit(self, sample_cache, tmp_path):
+        """search() respects the limit parameter."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        results = search(db_path, "categories", limit=2)
+        assert len(results) <= 2
+
+    def test_search_no_results(self, sample_cache, tmp_path):
+        """search() returns empty list for unmatched query."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        results = search(db_path, "xyznonexistent")
+        assert results == []
+
+    def test_search_by_category_content(self, sample_cache, tmp_path):
+        """search() finds variables by their category labels."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        results = search(db_path, "Agriculture")
+        assert len(results) >= 1
+        assert any("Industry" in r["label"] for r in results)
+
+
+class TestGetDataset:
+    def test_get_existing_dataset(self, sample_cache, tmp_path):
+        """get_dataset returns full details for an existing dataset."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        result = get_dataset(db_path, "Test Survey, 2021")
+        assert result is not None
+        assert result["name"] == "Test Survey, 2021"
+        assert "groups" in result
+        assert len(result["groups"]) == 2
+
+    def test_get_missing_dataset(self, sample_cache, tmp_path):
+        """get_dataset returns None for a non-existent dataset."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        result = get_dataset(db_path, "Nonexistent")
+        assert result is None
+
+
+class TestGetVariablesByCode:
+    def test_find_by_code(self, sample_cache, tmp_path):
+        """get_variables_by_code finds variables by their code."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        results = get_variables_by_code(db_path, "SEXP")
+        assert len(results) == 1
+        assert results[0]["label"] == "Sex"
+        assert results[0]["dataset_name"] == "Test Survey, 2021"
+
+    def test_find_missing_code(self, sample_cache, tmp_path):
+        """get_variables_by_code returns empty list for unknown code."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        results = get_variables_by_code(db_path, "ZZZZZ")
+        assert results == []

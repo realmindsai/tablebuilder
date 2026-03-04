@@ -214,3 +214,112 @@ def build_db(cache_dir: Path, db_path: Path) -> None:
     conn.commit()
     conn.close()
     logger.info("Database built: %s", db_path)
+
+
+def search(db_path: Path, query: str, limit: int = 20) -> list[dict]:
+    """Search the dictionary database using FTS5 full-text search.
+
+    Returns a ranked list of matching variables with dataset context.
+    """
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            "SELECT dataset_name, group_path, code, label, categories_text, summary "
+            "FROM variables_fts "
+            "WHERE variables_fts MATCH ? "
+            "ORDER BY rank LIMIT ?",
+            (query, limit),
+        ).fetchall()
+        return [dict(r) for r in rows]
+    except Exception:
+        return []
+    finally:
+        conn.close()
+
+
+def get_dataset(db_path: Path, name: str) -> dict | None:
+    """Get full details for a dataset by exact name.
+
+    Returns a dict with name, geographies, summary, and nested groups
+    containing variables and categories.
+    """
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        ds = conn.execute(
+            "SELECT id, name, geographies_json, summary FROM datasets WHERE name = ?",
+            (name,),
+        ).fetchone()
+        if ds is None:
+            return None
+
+        result = {
+            "name": ds["name"],
+            "geographies": json.loads(ds["geographies_json"]),
+            "summary": ds["summary"],
+            "groups": [],
+        }
+
+        groups = conn.execute(
+            "SELECT id, path FROM groups WHERE dataset_id = ? ORDER BY path",
+            (ds["id"],),
+        ).fetchall()
+
+        for grp in groups:
+            group_data = {"path": grp["path"], "variables": []}
+            variables = conn.execute(
+                "SELECT id, code, label FROM variables WHERE group_id = ? ORDER BY label",
+                (grp["id"],),
+            ).fetchall()
+            for var in variables:
+                cats = conn.execute(
+                    "SELECT label FROM categories WHERE variable_id = ? ORDER BY label",
+                    (var["id"],),
+                ).fetchall()
+                group_data["variables"].append({
+                    "code": var["code"],
+                    "label": var["label"],
+                    "categories": [c["label"] for c in cats],
+                })
+            result["groups"].append(group_data)
+
+        return result
+    finally:
+        conn.close()
+
+
+def get_variables_by_code(db_path: Path, code: str) -> list[dict]:
+    """Look up variables by their code across all datasets.
+
+    Returns a list of dicts with code, label, dataset_name, group_path,
+    and categories.
+    """
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            "SELECT v.id, v.code, v.label, d.name as dataset_name, g.path as group_path "
+            "FROM variables v "
+            "JOIN groups g ON v.group_id = g.id "
+            "JOIN datasets d ON g.dataset_id = d.id "
+            "WHERE v.code = ? ORDER BY d.name",
+            (code,),
+        ).fetchall()
+
+        results = []
+        for row in rows:
+            cats = conn.execute(
+                "SELECT label FROM categories WHERE variable_id = ? ORDER BY label",
+                (row["id"],),
+            ).fetchall()
+            results.append({
+                "code": row["code"],
+                "label": row["label"],
+                "dataset_name": row["dataset_name"],
+                "group_path": row["group_path"],
+                "categories": [c["label"] for c in cats],
+            })
+        return results
+    finally:
+        conn.close()
