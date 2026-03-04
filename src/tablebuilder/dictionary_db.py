@@ -55,6 +55,61 @@ def _load_cache(cache_dir: Path) -> list[dict]:
     return trees
 
 
+def _generate_dataset_summary(tree: dict) -> str:
+    """Generate a natural-language summary for a dataset."""
+    name = tree["dataset_name"]
+    geos = tree.get("geographies", [])
+    groups = tree.get("groups", [])
+
+    # Collect top-level group names (before ' > ' separator)
+    top_groups = sorted(set(
+        g["label"].split(" > ")[0] for g in groups if g.get("variables")
+    ))
+    total_vars = sum(len(g.get("variables", [])) for g in groups)
+
+    parts = [f"{name}."]
+
+    if top_groups:
+        parts.append(f"Covers: {', '.join(top_groups)}.")
+
+    parts.append(f"{total_vars} variables across {len(groups)} groups.")
+
+    if geos:
+        parts.append(f"Geographies: {', '.join(geos)}.")
+
+    # Collect all variable codes for searchability
+    codes = [
+        v["code"] for g in groups for v in g.get("variables", []) if v.get("code")
+    ]
+    if codes:
+        parts.append(f"Variable codes: {', '.join(codes[:20])}.")
+
+    return " ".join(parts)
+
+
+def _generate_variable_summary(
+    code: str, label: str, categories: list[str],
+    group_path: str, dataset_name: str,
+) -> str:
+    """Generate a natural-language summary for a variable."""
+    parts = []
+    if code:
+        parts.append(f"{code} {label}")
+    else:
+        parts.append(label)
+
+    parts.append(f"in {group_path} group of {dataset_name}.")
+
+    if categories:
+        if len(categories) <= 10:
+            parts.append(f"Categories: {', '.join(categories)}.")
+        else:
+            shown = ', '.join(categories[:10])
+            parts.append(f"Categories: {shown} ({len(categories)} total).")
+
+    return " ".join(parts)
+
+
 def build_db(cache_dir: Path, db_path: Path) -> None:
     """Build the SQLite dictionary database from cached JSON files.
 

@@ -6,7 +6,7 @@ import sqlite3
 import pytest
 from pathlib import Path
 
-from tablebuilder.dictionary_db import build_db
+from tablebuilder.dictionary_db import build_db, _generate_dataset_summary, _generate_variable_summary
 
 
 @pytest.fixture
@@ -193,3 +193,94 @@ class TestBuildDb:
         rows = conn.execute("SELECT COUNT(*) FROM datasets").fetchone()
         assert rows[0] == 0
         conn.close()
+
+
+class TestSummaryGeneration:
+    def test_dataset_summary_includes_name(self):
+        """Dataset summary contains the dataset name."""
+        tree = {
+            "dataset_name": "Test Survey, 2021",
+            "geographies": ["Australia", "State"],
+            "groups": [
+                {
+                    "label": "Demographics",
+                    "variables": [
+                        {"code": "SEXP", "label": "Sex", "categories": [{"label": "Male"}, {"label": "Female"}]},
+                    ],
+                }
+            ],
+        }
+        summary = _generate_dataset_summary(tree)
+        assert "Test Survey, 2021" in summary
+
+    def test_dataset_summary_includes_geographies(self):
+        """Dataset summary mentions geography types when present."""
+        tree = {
+            "dataset_name": "Test Survey, 2021",
+            "geographies": ["Australia", "State"],
+            "groups": [],
+        }
+        summary = _generate_dataset_summary(tree)
+        assert "Australia" in summary
+        assert "State" in summary
+
+    def test_dataset_summary_includes_group_names(self):
+        """Dataset summary mentions top-level group names."""
+        tree = {
+            "dataset_name": "Test Survey, 2021",
+            "geographies": [],
+            "groups": [
+                {"label": "Demographics", "variables": [{"code": "SEXP", "label": "Sex", "categories": []}]},
+                {"label": "Employment", "variables": [{"code": "INDP", "label": "Industry", "categories": []}]},
+            ],
+        }
+        summary = _generate_dataset_summary(tree)
+        assert "Demographics" in summary
+        assert "Employment" in summary
+
+    def test_dataset_summary_includes_counts(self):
+        """Dataset summary includes variable and group counts."""
+        tree = {
+            "dataset_name": "Test Survey, 2021",
+            "geographies": [],
+            "groups": [
+                {
+                    "label": "Demographics",
+                    "variables": [
+                        {"code": "SEXP", "label": "Sex", "categories": [{"label": "Male"}, {"label": "Female"}]},
+                        {"code": "AGEP", "label": "Age", "categories": [{"label": "0-14"}, {"label": "15+"}]},
+                    ],
+                }
+            ],
+        }
+        summary = _generate_dataset_summary(tree)
+        assert "2 variables" in summary
+
+    def test_variable_summary_includes_label(self):
+        """Variable summary contains the variable label."""
+        summary = _generate_variable_summary(
+            code="SEXP", label="Sex", categories=["Male", "Female"],
+            group_path="Demographics", dataset_name="Test Survey, 2021",
+        )
+        assert "Sex" in summary
+
+    def test_variable_summary_includes_categories(self):
+        """Variable summary lists category labels."""
+        summary = _generate_variable_summary(
+            code="SEXP", label="Sex", categories=["Male", "Female"],
+            group_path="Demographics", dataset_name="Test Survey, 2021",
+        )
+        assert "Male" in summary
+        assert "Female" in summary
+
+    def test_variable_summary_truncates_long_categories(self):
+        """Variable summary truncates after 10 categories."""
+        cats = [f"Category {i}" for i in range(20)]
+        summary = _generate_variable_summary(
+            code="TEST", label="Test Var", categories=cats,
+            group_path="Group", dataset_name="Dataset",
+        )
+        assert "20 total" in summary
+        assert "Category 0" in summary
+        # Should not list all 20
+        assert "Category 19" not in summary
