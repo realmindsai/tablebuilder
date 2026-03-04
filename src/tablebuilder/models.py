@@ -40,3 +40,36 @@ class TableRequest:
         for var in self.wafers:
             result[var] = Axis.WAFER
         return result
+
+
+@dataclass
+class CategoryInfo:
+    """A single leaf category in a variable tree."""
+
+    label: str
+
+
+@dataclass
+class VariableInfo:
+    """A variable with its code and categories."""
+
+    code: str
+    label: str
+    categories: list[CategoryInfo] = field(default_factory=list)
+
+
+@dataclass
+class VariableGroup:
+    """A group of related variables."""
+
+    label: str
+    variables: list[VariableInfo] = field(default_factory=list)
+
+
+@dataclass
+class DatasetTree:
+    """The complete variable tree for one dataset."""
+
+    dataset_name: str
+    geographies: list[str] = field(default_factory=list)
+    groups: list[VariableGroup] = field(default_factory=list)

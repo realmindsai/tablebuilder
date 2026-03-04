@@ -158,3 +158,20 @@ def search_variable(page: Page, variable_name: str, knowledge=None) -> None:
 
     page.wait_for_timeout(1000)
     logger.debug("Variable search for '%s' submitted", variable_name)
+
+
+DATA_CATALOGUE_URL = (
+    "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml"
+)
+
+
+def navigate_back_to_catalogue(page: Page) -> None:
+    """Navigate from Table View back to the dataset catalogue.
+
+    Uses direct URL navigation rather than clicking the Back button,
+    which is more reliable across different UI states.
+    """
+    logger.debug("Navigating back to dataset catalogue")
+    page.goto(DATA_CATALOGUE_URL, wait_until="networkidle")
+    page.wait_for_timeout(2000)
+    logger.debug("Arrived at dataset catalogue")

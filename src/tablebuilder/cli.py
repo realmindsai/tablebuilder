@@ -1,5 +1,5 @@
 # ABOUTME: Click CLI entry point for the tablebuilder command.
-# ABOUTME: Provides fetch, datasets, variables, and doctor subcommands.
+# ABOUTME: Provides fetch, datasets, dictionary, and doctor subcommands.
 
 import sys
 from datetime import datetime
@@ -138,13 +138,93 @@ def datasets(ctx, user_id, password):
 
 
 @cli.command()
-@click.argument("dataset")
+@click.option("--dataset", default=None, help="Single dataset (fuzzy-matched). Omit for all.")
+@click.option(
+    "-o",
+    "--output",
+    default=None,
+    help="Output markdown path. Defaults to ./data_dictionary_YYYYMMDD.md.",
+)
+@click.option("--headed", is_flag=True, help="Show browser window for debugging.")
 @click.option("--user-id", default=None, help="ABS User ID (overrides .env).")
 @click.option("--password", default=None, help="ABS password (overrides .env).")
-def variables(dataset, user_id, password):
-    """List variables in a TableBuilder dataset."""
-    click.echo("Not yet implemented.")
-    sys.exit(1)
+@click.option(
+    "--exclude-census/--include-census",
+    default=True,
+    help="Exclude Census datasets (default: exclude).",
+)
+@click.option("--resume/--no-resume", default=True, help="Resume from previous run.")
+@click.option("--clear-cache", is_flag=True, help="Clear cached extractions.")
+@click.pass_context
+def dictionary(ctx, dataset, output, headed, user_id, password, exclude_census, resume, clear_cache):
+    """Extract data dictionary from TableBuilder datasets."""
+    import shutil
+    from pathlib import Path
+
+    from tablebuilder.browser import TableBuilderSession, LoginError
+    from tablebuilder.dict_formatter import format_data_dictionary
+    from tablebuilder.navigator import NavigationError, open_dataset, navigate_back_to_catalogue
+    from tablebuilder.tree_extractor import (
+        extract_all_datasets,
+        extract_dataset_tree,
+        DICT_CACHE_DIR,
+    )
+
+    knowledge = ctx.obj['knowledge']
+
+    if clear_cache and DICT_CACHE_DIR.exists():
+        shutil.rmtree(DICT_CACHE_DIR)
+        click.echo("Cleared extraction cache.")
+
+    if output is None:
+        output = f"data_dictionary_{datetime.now().strftime('%Y%m%d')}.md"
+
+    try:
+        config = load_config(user_id=user_id, password=password)
+    except ConfigError as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
+
+    try:
+        with TableBuilderSession(config, headless=not headed, knowledge=knowledge) as page:
+            click.echo("Logged in to TableBuilder.")
+
+            if dataset:
+                # Single dataset mode
+                click.echo(f"Opening dataset: {dataset}")
+                open_dataset(page, dataset, knowledge=knowledge)
+                tree = extract_dataset_tree(page, dataset, knowledge=knowledge)
+                markdown = format_data_dictionary([tree])
+                with open(output, 'w') as f:
+                    f.write(markdown)
+                click.echo(f"Dictionary saved to {output}")
+                click.echo(
+                    f"  {len(tree.geographies)} geographies, "
+                    f"{len(tree.groups)} variable groups"
+                )
+            else:
+                # Batch mode
+                click.echo("Extracting data dictionary for all datasets...")
+                trees = extract_all_datasets(
+                    page,
+                    exclude_census=exclude_census,
+                    resume=resume,
+                    knowledge=knowledge,
+                )
+                markdown = format_data_dictionary(trees)
+                with open(output, 'w') as f:
+                    f.write(markdown)
+                click.echo(f"Done! Dictionary saved to {output}")
+                click.echo(f"  {len(trees)} datasets extracted")
+
+    except LoginError as e:
+        click.echo(f"Login error: {e}", err=True)
+        sys.exit(1)
+    except NavigationError as e:
+        click.echo(f"Navigation error: {e}", err=True)
+        sys.exit(1)
+    finally:
+        knowledge.save()
 
 
 @cli.command()
