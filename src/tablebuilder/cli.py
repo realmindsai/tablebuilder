@@ -155,8 +155,9 @@ def datasets(ctx, user_id, password):
 )
 @click.option("--resume/--no-resume", default=True, help="Resume from previous run.")
 @click.option("--clear-cache", is_flag=True, help="Clear cached extractions.")
+@click.option("--rebuild-db", is_flag=True, help="Rebuild the SQLite search database from cache.")
 @click.pass_context
-def dictionary(ctx, dataset, output, headed, user_id, password, exclude_census, resume, clear_cache):
+def dictionary(ctx, dataset, output, headed, user_id, password, exclude_census, resume, clear_cache, rebuild_db):
     """Extract data dictionary from TableBuilder datasets."""
     import shutil
     from pathlib import Path
@@ -175,6 +176,13 @@ def dictionary(ctx, dataset, output, headed, user_id, password, exclude_census, 
     if clear_cache and DICT_CACHE_DIR.exists():
         shutil.rmtree(DICT_CACHE_DIR)
         click.echo("Cleared extraction cache.")
+
+    if rebuild_db:
+        from tablebuilder.dictionary_db import build_db as db_build, DEFAULT_DB_PATH, DEFAULT_CACHE_DIR as DB_CACHE_DIR
+        db_build(DB_CACHE_DIR, DEFAULT_DB_PATH)
+        click.echo(f"Database rebuilt at {DEFAULT_DB_PATH}")
+        if not dataset and not output:
+            return
 
     if output is None:
         output = f"data_dictionary_{datetime.now().strftime('%Y%m%d')}.md"
@@ -237,3 +245,34 @@ def doctor(ctx):
     credentials_ok = check_credentials()
     report = run_doctor(knowledge, credentials_ok=credentials_ok)
     click.echo(report)
+
+
+@cli.command()
+@click.argument("query")
+@click.option("--limit", default=20, help="Maximum results (default: 20).")
+@click.option("--datasets", is_flag=True, help="Search datasets instead of variables.")
+def search(query, limit, datasets):
+    """Search the data dictionary for variables or datasets."""
+    from tablebuilder.dictionary_db import search as db_search, DEFAULT_DB_PATH
+
+    if not DEFAULT_DB_PATH.exists():
+        click.echo(
+            "No dictionary database found. Run 'tablebuilder dictionary --rebuild-db' first.",
+            err=True,
+        )
+        sys.exit(1)
+
+    results = db_search(DEFAULT_DB_PATH, query, limit=limit)
+    if not results:
+        click.echo("No results found.")
+        return
+
+    for r in results:
+        code_str = f" ({r['code']})" if r.get('code') else ""
+        click.echo(f"  {r['dataset_name']} > {r['group_path']}")
+        click.echo(f"    {r['label']}{code_str}")
+        cats = r.get('categories_text', '')
+        if cats:
+            truncated = cats[:120] + "..." if len(cats) > 120 else cats
+            click.echo(f"    Categories: {truncated}")
+        click.echo()

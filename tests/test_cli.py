@@ -48,6 +48,31 @@ class TestCliDictionary:
         assert "--headed" in result.output
 
 
+class TestCliSearch:
+    def test_search_help_shows_query(self):
+        """search --help shows the QUERY argument."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["search", "--help"])
+        assert result.exit_code == 0
+        assert "QUERY" in result.output or "query" in result.output
+
+    def test_search_help_shows_limit(self):
+        """search --help shows --limit option."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["search", "--help"])
+        assert result.exit_code == 0
+        assert "--limit" in result.output
+
+
+class TestCliDictionaryRebuildDb:
+    def test_dictionary_help_shows_rebuild_db(self):
+        """dictionary --help lists --rebuild-db."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["dictionary", "--help"])
+        assert result.exit_code == 0
+        assert "--rebuild-db" in result.output
+
+
 class TestCliFetch:
     def test_fetch_requires_dataset(self):
         """fetch without --dataset exits with error."""
