@@ -155,3 +155,19 @@ uv run pytest tests/test_browser.py -v
 - Integration tests (`test_integration.py`) require real ABS credentials and a browser
 - Integration tests are marked with `@pytest.mark.integration` and skipped by default
 - Run `uv run pytest --ignore=tests/test_integration.py -q` for a quick check
+
+## Data Dictionary Search
+
+SQLite database at `~/.tablebuilder/dictionary.db` contains 96 ABS TableBuilder datasets
+(28,561 variables, 256,578 categories) with FTS5 full-text search.
+
+```bash
+# CLI search
+uv run tablebuilder search "employment industry"
+
+# Direct SQLite (for Claude Code sessions)
+sqlite3 ~/.tablebuilder/dictionary.db "SELECT dataset_name, label, categories_text FROM variables_fts WHERE variables_fts MATCH 'sex age' ORDER BY rank LIMIT 10;"
+
+# Rebuild after new extractions
+uv run tablebuilder dictionary --rebuild-db
+```
