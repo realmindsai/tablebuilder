@@ -20,6 +20,10 @@ class NavigationError(Exception):
     """Raised when navigation in TableBuilder fails."""
 
 
+class SessionExpiredError(NavigationError):
+    """Raised when the ABS session appears to have expired."""
+
+
 def fuzzy_match_dataset(query: str, available: list[str]) -> str:
     """Find the best matching dataset name from available options.
 

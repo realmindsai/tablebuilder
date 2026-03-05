@@ -3,7 +3,7 @@
 
 import pytest
 
-from tablebuilder.navigator import fuzzy_match_dataset, NavigationError
+from tablebuilder.navigator import fuzzy_match_dataset, NavigationError, SessionExpiredError
 
 
 class TestFuzzyMatch:
@@ -37,6 +37,18 @@ class TestFuzzyMatch:
         with pytest.raises(NavigationError) as exc_info:
             fuzzy_match_dataset("Census", datasets)
         assert "Labour Force Survey" in str(exc_info.value)
+
+
+class TestSessionExpiredError:
+    def test_is_navigation_error_subclass(self):
+        """SessionExpiredError is a subclass of NavigationError."""
+        err = SessionExpiredError("session died")
+        assert isinstance(err, NavigationError)
+
+    def test_message(self):
+        """SessionExpiredError carries its message."""
+        err = SessionExpiredError("session died")
+        assert str(err) == "session died"
 
 
 @pytest.mark.integration
