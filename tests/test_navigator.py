@@ -2,6 +2,7 @@
 # ABOUTME: Unit tests for fuzzy matching; integration tests for real UI navigation.
 
 import pytest
+from unittest.mock import MagicMock, patch
 
 from tablebuilder.navigator import fuzzy_match_dataset, NavigationError, SessionExpiredError
 
@@ -49,6 +50,27 @@ class TestSessionExpiredError:
         """SessionExpiredError carries its message."""
         err = SessionExpiredError("session died")
         assert str(err) == "session died"
+
+
+class TestOpenDatasetSessionExpiry:
+    @patch("tablebuilder.navigator.list_datasets")
+    def test_empty_catalogue_raises_session_expired(self, mock_list):
+        """When list_datasets returns empty, open_dataset raises SessionExpiredError."""
+        mock_list.return_value = []
+        page = MagicMock()
+        with pytest.raises(SessionExpiredError, match="Session expired"):
+            from tablebuilder.navigator import open_dataset
+            open_dataset(page, "Census 2021")
+
+    @patch("tablebuilder.navigator.list_datasets")
+    def test_nonempty_catalogue_raises_navigation_error(self, mock_list):
+        """When catalogue has datasets but query doesn't match, raises NavigationError (not SessionExpiredError)."""
+        mock_list.return_value = ["Labour Force", "CPI"]
+        page = MagicMock()
+        with pytest.raises(NavigationError) as exc_info:
+            from tablebuilder.navigator import open_dataset
+            open_dataset(page, "Census 2021")
+        assert not isinstance(exc_info.value, SessionExpiredError)
 
 
 @pytest.mark.integration

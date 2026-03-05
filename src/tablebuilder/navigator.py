@@ -114,6 +114,10 @@ def open_dataset(page: Page, dataset_query: str, knowledge=None) -> None:
     """Find and open a dataset in TableBuilder, reaching Table View."""
     logger.info("Opening dataset matching '%s'", dataset_query)
     available = list_datasets(page, knowledge)
+    if not available:
+        raise SessionExpiredError(
+            "Session expired -- catalogue returned 0 datasets"
+        )
     matched_name = fuzzy_match_dataset(dataset_query, available)
     logger.debug("Fuzzy matched to '%s'", matched_name)
 
