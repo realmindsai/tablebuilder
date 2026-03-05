@@ -29,6 +29,27 @@ class TestEndToEnd:
         content = output.read_text()
         assert len(content) > 0
 
+    def test_fetch_geography_produces_csv(self, tmp_path, abs_config):
+        """Fetch SA remoteness from Census 2021 produces a CSV file."""
+        output = tmp_path / "sa_remoteness.csv"
+        runner = CliRunner()
+        result = runner.invoke(
+            cli,
+            [
+                "fetch",
+                "--dataset", "2021 Census - cultural diversity",
+                "--geography", "Remoteness Areas",
+                "--geo-filter", "South Australia",
+                "--user-id", abs_config.user_id,
+                "--password", abs_config.password,
+                "-o", str(output),
+            ],
+        )
+        assert result.exit_code == 0, f"CLI failed: {result.output}"
+        assert output.exists()
+        content = output.read_text()
+        assert len(content) > 0
+
     def test_datasets_command(self, abs_config):
         """datasets command lists available datasets."""
         runner = CliRunner()
