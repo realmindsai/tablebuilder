@@ -50,6 +50,9 @@ Category selection walks sibling nodes after the variable node, checking leaf ch
 ### Search Behavior
 Searching shows group-level results only. After search, `_expand_all_collapsed()` must run to reveal individual categories within each group.
 
+### Census Geography Selection
+Census datasets have geography as a separate tree section ("Geographical Areas..."), not as regular variables. The `--geography` flag triggers special handling: expand the geography group, click the level, expand state nodes, check leaf checkboxes. The `--geo-filter` flag narrows to a specific state. Geography is always added to rows before any `--rows` variables.
+
 ### Queue Flow
 1. Select CSV from the format dropdown (`downloadControl:downloadType`)
 2. Click Queue button (`pageForm:retB`) on the table view
@@ -125,6 +128,12 @@ uv run playwright install chromium
 
 # Fetch a table
 uv run tablebuilder fetch --dataset "Census 2021" --rows "SEXP Sex" -o out.csv
+
+# Fetch with Census geography
+uv run tablebuilder fetch --dataset "2021 Census - cultural diversity" --geography "Remoteness Areas" --geo-filter "South Australia" -o sa_remoteness.csv
+
+# Fetch all states by remoteness
+uv run tablebuilder fetch --dataset "2021 Census - cultural diversity" --geography "Remoteness Areas" -o all_remoteness.csv
 
 # List datasets
 uv run tablebuilder datasets
