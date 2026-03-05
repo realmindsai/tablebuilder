@@ -25,10 +25,18 @@ def cli(ctx, verbose):
 @cli.command()
 @click.option("--dataset", required=True, help="Dataset name (fuzzy-matched).")
 @click.option(
-    "--rows", multiple=True, required=True, help="Variable(s) to place in rows."
+    "--rows", multiple=True, help="Variable(s) to place in rows."
 )
 @click.option("--cols", multiple=True, help="Variable(s) to place in columns.")
 @click.option("--wafers", multiple=True, help="Variable(s) to place in wafers.")
+@click.option(
+    "--geography", default=None,
+    help='Geography level for Census datasets (e.g., "Remoteness Areas").',
+)
+@click.option(
+    "--geo-filter", default=None,
+    help='Filter geography to a state/region (e.g., "South Australia"). Requires --geography.',
+)
 @click.option(
     "-o",
     "--output",
@@ -45,10 +53,18 @@ def cli(ctx, verbose):
     help="Queue timeout in seconds (default: 600).",
 )
 @click.pass_context
-def fetch(ctx, dataset, rows, cols, wafers, output, headed, user_id, password, timeout):
+def fetch(ctx, dataset, rows, cols, wafers, geography, geo_filter, output, headed, user_id, password, timeout):
     """Fetch a table from ABS TableBuilder and download as CSV."""
     knowledge = ctx.obj['knowledge']
     knowledge.record_run()
+
+    # Validate geography flags
+    if geo_filter and not geography:
+        click.echo("Error: --geo-filter requires --geography.", err=True)
+        sys.exit(1)
+    if not rows and not geography:
+        click.echo("Error: --rows or --geography is required.", err=True)
+        sys.exit(1)
 
     try:
         config = load_config(user_id=user_id, password=password)
@@ -61,13 +77,20 @@ def fetch(ctx, dataset, rows, cols, wafers, output, headed, user_id, password, t
         rows=list(rows),
         cols=list(cols),
         wafers=list(wafers),
+        geography=geography,
+        geo_filter=geo_filter,
     )
 
     if output is None:
         output = f"tablebuilder_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
     click.echo(f"Dataset: {request.dataset}")
-    click.echo(f"Rows: {', '.join(request.rows)}")
+    if request.geography:
+        click.echo(f"Geography: {request.geography}")
+        if request.geo_filter:
+            click.echo(f"Geo filter: {request.geo_filter}")
+    if request.rows:
+        click.echo(f"Rows: {', '.join(request.rows)}")
     if request.cols:
         click.echo(f"Cols: {', '.join(request.cols)}")
     if request.wafers:

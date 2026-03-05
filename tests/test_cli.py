@@ -80,10 +80,37 @@ class TestCliFetch:
         result = runner.invoke(cli, ["fetch", "--rows", "Age"])
         assert result.exit_code != 0
 
-    def test_fetch_requires_rows(self):
-        """fetch without --rows exits with error."""
+    def test_fetch_requires_rows_or_geography(self):
+        """fetch without --rows or --geography exits with error."""
         runner = CliRunner()
         result = runner.invoke(
             cli, ["fetch", "--dataset", "Census 2021 Basic"]
         )
         assert result.exit_code != 0
+
+
+class TestCliFetchGeography:
+    def test_fetch_help_shows_geography(self):
+        """fetch --help lists --geography and --geo-filter."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["fetch", "--help"])
+        assert result.exit_code == 0
+        assert "--geography" in result.output
+        assert "--geo-filter" in result.output
+
+    def test_geo_filter_without_geography_errors(self):
+        """--geo-filter without --geography shows error."""
+        runner = CliRunner()
+        result = runner.invoke(cli, [
+            "fetch",
+            "--dataset", "Census 2021",
+            "--geo-filter", "South Australia",
+        ])
+        assert result.exit_code != 0
+
+    def test_geography_without_rows_help_accepted(self):
+        """--geography is shown in help as optional alongside --rows."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["fetch", "--help"])
+        assert "--rows" in result.output
+        assert "--geography" in result.output
