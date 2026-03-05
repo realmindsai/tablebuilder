@@ -84,6 +84,52 @@ class TestSelectGeographyErrors:
             select_geography(page, "Remoteness Areas", geo_filter="Nonexistent State")
 
 
+class TestBuildTableWithGeography:
+    @patch('tablebuilder.table_builder.select_geography')
+    @patch('tablebuilder.table_builder.add_variable')
+    def test_geography_called_before_variables(self, mock_add_var, mock_select_geo):
+        """build_table calls select_geography before add_variable."""
+        call_order = []
+        mock_select_geo.side_effect = lambda *a, **kw: call_order.append('geo')
+        mock_add_var.side_effect = lambda *a, **kw: call_order.append('var')
+
+        page = MagicMock()
+        request = TableRequest(
+            dataset="Census 2021",
+            rows=["SEXP Sex"],
+            geography="Remoteness Areas",
+            geo_filter="South Australia",
+        )
+        build_table(page, request)
+
+        assert call_order == ['geo', 'var']
+        mock_select_geo.assert_called_once_with(
+            page, "Remoteness Areas", "South Australia", None
+        )
+
+    @patch('tablebuilder.table_builder.select_geography')
+    def test_geography_only_no_variables(self, mock_select_geo):
+        """build_table works with geography and no row variables."""
+        page = MagicMock()
+        request = TableRequest(
+            dataset="Census 2021",
+            geography="Remoteness Areas",
+        )
+        build_table(page, request)
+        mock_select_geo.assert_called_once()
+
+    @patch('tablebuilder.table_builder.add_variable')
+    def test_no_geography_skips_select(self, mock_add_var):
+        """build_table without geography doesn't call select_geography."""
+        page = MagicMock()
+        request = TableRequest(
+            dataset="Census 2021",
+            rows=["SEXP Sex"],
+        )
+        build_table(page, request)
+        mock_add_var.assert_called_once()
+
+
 @pytest.mark.integration
 class TestAddVariableIntegration:
     def test_add_variable_to_row(self, abs_page_with_dataset):

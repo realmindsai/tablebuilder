@@ -298,6 +298,10 @@ def select_geography(page, geography, geo_filter=None, knowledge=None):
 def build_table(page: Page, request: TableRequest, knowledge=None) -> None:
     """Add all variables from a TableRequest to their respective axes."""
     logger.info("Building table for dataset '%s'", request.dataset)
+
+    if request.geography:
+        select_geography(page, request.geography, request.geo_filter, knowledge)
+
     for var in request.rows:
         add_variable(page, var, Axis.ROW, knowledge)
 
