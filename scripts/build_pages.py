@@ -76,6 +76,23 @@ def build(db):
     else:
         click.echo(f"Warning: logo not found at {LOGO_SOURCE}", err=True)
 
+    # Download vendor dependencies
+    import urllib.request
+
+    vendors = {
+        "sql-wasm.js": "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.11.0/sql-wasm.js",
+        "sql-wasm.wasm": "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.11.0/sql-wasm.wasm",
+        "fuse.min.js": "https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js",
+    }
+
+    for filename, url in vendors.items():
+        dest = VENDOR_DIR / filename
+        if not dest.exists():
+            click.echo(f"Downloading {filename}...")
+            urllib.request.urlretrieve(url, dest)
+        else:
+            click.echo(f"  {filename} already exists, skipping")
+
     click.echo(f"Done! Static site ready at {DOCS_DIR}")
 
 
