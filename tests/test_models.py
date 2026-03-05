@@ -35,14 +35,14 @@ class TestTableRequest:
         with pytest.raises(ValueError, match="dataset"):
             TableRequest(dataset="", rows=["Age"])
 
-    def test_rejects_empty_rows(self):
-        """At least one row variable is required."""
-        with pytest.raises(ValueError, match="rows"):
+    def test_rejects_empty_rows_without_geography(self):
+        """Empty rows without geography raises ValueError."""
+        with pytest.raises(ValueError, match="rows.*geography"):
             TableRequest(dataset="Census 2021 Basic", rows=[])
 
-    def test_rejects_no_rows(self):
-        """Rows parameter is mandatory."""
-        with pytest.raises(TypeError):
+    def test_rejects_no_rows_without_geography(self):
+        """Missing rows without geography raises ValueError."""
+        with pytest.raises(ValueError, match="rows.*geography"):
             TableRequest(dataset="Census 2021 Basic")
 
     def test_all_variables_returns_flat_list(self):
@@ -64,6 +64,34 @@ class TestTableRequest:
         )
         axes = req.variable_axes()
         assert axes == {"Age": Axis.ROW, "Sex": Axis.COL}
+
+
+class TestTableRequestGeography:
+    def test_geography_only_valid(self):
+        """A request with dataset and geography (no rows) is valid."""
+        req = TableRequest(
+            dataset="Census 2021",
+            geography="Remoteness Areas",
+        )
+        assert req.geography == "Remoteness Areas"
+        assert req.geo_filter is None
+
+    def test_geo_filter_without_geography_raises(self):
+        """geo_filter without geography raises ValueError."""
+        with pytest.raises(ValueError, match="geo_filter"):
+            TableRequest(
+                dataset="Census 2021",
+                rows=["Age"],
+                geo_filter="South Australia",
+            )
+
+    def test_no_rows_no_geography_raises(self):
+        """Neither rows nor geography raises ValueError."""
+        with pytest.raises(ValueError, match="rows.*geography"):
+            TableRequest(
+                dataset="Census 2021",
+                rows=[],
+            )
 
 
 class TestAxis:

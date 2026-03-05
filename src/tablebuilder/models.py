@@ -16,15 +16,19 @@ class TableRequest:
     """Describes a table to fetch from ABS TableBuilder."""
 
     dataset: str
-    rows: list[str]
+    rows: list[str] = field(default_factory=list)
     cols: list[str] = field(default_factory=list)
     wafers: list[str] = field(default_factory=list)
+    geography: str | None = None
+    geo_filter: str | None = None
 
     def __post_init__(self):
         if not self.dataset or not self.dataset.strip():
             raise ValueError("dataset name cannot be empty")
-        if not self.rows:
-            raise ValueError("rows must contain at least one variable")
+        if self.geo_filter and not self.geography:
+            raise ValueError("geo_filter requires geography to be set")
+        if not self.rows and not self.geography:
+            raise ValueError("rows must contain at least one variable, or geography must be set")
 
     def all_variables(self) -> list[str]:
         """Return all variables across all axes in order."""
