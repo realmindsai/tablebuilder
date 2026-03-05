@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABS Data Dictionary Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="#" class="logo-link">
+                <img src="assets/rmai_logo.svg" alt="RMAI" class="logo">
+            </a>
+            <div class="header-text">
+                <h1>ABS Data Dictionary Explorer</h1>
+                <p class="subtitle">Search 131 datasets, 36,000 variables, 317,000 categories</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="search-section">
+            <div class="search-container">
+                <input type="text" id="search-input"
+                       placeholder="Search variables, codes, categories..."
+                       autocomplete="off" autofocus>
+                <div id="typeahead-dropdown" class="typeahead-dropdown hidden"></div>
+            </div>
+            <div id="search-status" class="search-status"></div>
+            <div id="search-results" class="results-list"></div>
+        </section>
+
+        <section id="dataset-section" class="hidden">
+            <button id="back-btn" class="back-btn">&larr; Back to search</button>
+            <div id="dataset-detail"></div>
+        </section>
+
+        <section id="variable-section" class="hidden">
+            <button id="var-back-btn" class="back-btn">&larr; Back</button>
+            <div id="variable-detail"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Data extracted from <a href="https://tablebuilder.abs.gov.au" target="_blank" rel="noopener">ABS TableBuilder</a>. Not affiliated with the Australian Bureau of Statistics.</p>
+        <p class="footer-brand">Built by Real Minds Artificial Intelligence</p>
+    </footer>
+
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <p>Loading dictionary database...</p>
+            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+            <p id="loading-status" class="loading-status">Preparing search index...</p>
+        </div>
+    </div>
+
+    <script src="vendor/fuse.min.js"></script>
+    <script src="vendor/sql-wasm.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
