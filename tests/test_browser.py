@@ -10,6 +10,15 @@ from tablebuilder.config import Config
 TABLEBUILDER_URL = "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml"
 
 
+class TestTableBuilderSessionRelogin:
+    def test_relogin_method_exists(self):
+        """TableBuilderSession has a public relogin() method."""
+        config = Config(user_id="fake", password="fake")
+        session = TableBuilderSession(config, headless=True)
+        assert hasattr(session, "relogin")
+        assert callable(session.relogin)
+
+
 class TestTableBuilderSession:
     def test_session_is_context_manager(self):
         """TableBuilderSession can be used as a context manager."""

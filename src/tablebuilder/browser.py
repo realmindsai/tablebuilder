@@ -48,6 +48,11 @@ class TableBuilderSession:
             self._playwright.stop()
         return False
 
+    def relogin(self):
+        """Re-authenticate the current browser session."""
+        logger.info("Re-login requested")
+        self._login()
+
     @retry(max_attempts=2, retryable_exceptions=(PlaywrightTimeout,))
     def _login(self):
         """Navigate to login page, fill credentials, verify success."""
