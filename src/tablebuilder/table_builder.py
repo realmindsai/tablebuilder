@@ -138,6 +138,163 @@ def add_variable(page: Page, variable_name: str, axis: Axis, knowledge=None) -> 
     logger.info("Variable '%s' added to %s", variable_name, axis.value)
 
 
+def _find_geography_group(page):
+    """Find and expand the 'Geographical Areas...' top-level group.
+
+    Returns the matched label element after expansion.
+    Raises TableBuildError if no geography group found.
+    """
+    labels = page.query_selector_all('.treeNodeElement .label')
+    geo_label = None
+    for lbl in labels:
+        text = (lbl.text_content() or '').strip()
+        if text.startswith("Geographical Areas"):
+            geo_label = lbl
+            break
+
+    if not geo_label:
+        raise TableBuildError(
+            "No geography group found. This dataset may not support geography selection."
+        )
+
+    # Expand the geography group if collapsed
+    node = geo_label.evaluate_handle('el => el.closest(".treeNodeElement")')
+    expander = node.as_element().query_selector('.treeNodeExpander')
+    if expander and 'collapsed' in (expander.get_attribute('class') or ''):
+        expander.click()
+        page.wait_for_timeout(3000)
+
+    logger.debug("Geography group expanded")
+    return geo_label
+
+
+def _find_geography_level(page, level_name):
+    """Find and click a geography level label (e.g., 'Remoteness Areas').
+
+    Fuzzy-matches: the level label must contain level_name as a substring.
+    Returns the matched label element.
+    Raises TableBuildError if not found, listing available levels.
+    """
+    labels = page.query_selector_all('.treeNodeElement .label')
+    available_levels = []
+    matched_label = None
+
+    for lbl in labels:
+        text = (lbl.text_content() or '').strip()
+        if text.startswith("Geographical Areas"):
+            continue
+        # Geography levels are children of the geo group with suffixes like "(UR)" or "(POE)"
+        if '(' in text and text.endswith(')'):
+            available_levels.append(text)
+            if level_name.lower() in text.lower() and matched_label is None:
+                matched_label = lbl
+
+    if not matched_label:
+        level_list = "\n".join(f"  - {l}" for l in available_levels)
+        raise TableBuildError(
+            f"Geography level '{level_name}' not found. "
+            f"Available levels:\n{level_list}"
+        )
+
+    # Click the level to populate state nodes
+    matched_label.click()
+    page.wait_for_timeout(5000)
+    logger.debug("Geography level '%s' selected", level_name)
+    return matched_label
+
+
+def _find_and_check_states(page, geo_filter=None):
+    """Expand state nodes and check their leaf category checkboxes.
+
+    If geo_filter is set, only expand and check that state.
+    Otherwise, expand all states and check all categories.
+    Returns total number of checked checkboxes.
+    Raises TableBuildError if geo_filter state not found or zero checked.
+    """
+    nodes = page.query_selector_all('.treeNodeElement')
+    all_nodes = list(nodes)
+
+    # Find state nodes: non-leaf nodes with checkboxes
+    state_nodes = []
+    for node in all_nodes:
+        label_el = node.query_selector('.label')
+        expander = node.query_selector('.treeNodeExpander')
+        cb = node.query_selector('input[type=checkbox]')
+        if not label_el or not expander or not cb:
+            continue
+        if 'leaf' in (expander.get_attribute('class') or ''):
+            continue
+        label_text = (label_el.text_content() or '').strip()
+        if label_text:
+            state_nodes.append((label_text, node, expander))
+
+    if geo_filter:
+        # Find the matching state
+        matched = None
+        for label_text, node, expander in state_nodes:
+            if geo_filter.lower() in label_text.lower():
+                matched = (label_text, node, expander)
+                break
+        if not matched:
+            state_list = "\n".join(f"  - {s[0]}" for s in state_nodes)
+            raise TableBuildError(
+                f"Geography state/region '{geo_filter}' not found. "
+                f"Available:\n{state_list}"
+            )
+        states_to_expand = [matched]
+    else:
+        states_to_expand = state_nodes
+
+    total_checked = 0
+    for label_text, node, expander in states_to_expand:
+        if 'collapsed' in (expander.get_attribute('class') or ''):
+            expander.click()
+            page.wait_for_timeout(2000)
+        logger.debug("Expanded state: %s", label_text)
+
+    # Re-query after expansion to get updated DOM
+    nodes = page.query_selector_all('.treeNodeElement')
+    for node in nodes:
+        expander = node.query_selector('.treeNodeExpander')
+        if not expander or 'leaf' not in (expander.get_attribute('class') or ''):
+            continue
+        cb = node.query_selector('input[type=checkbox]')
+        if cb and not cb.is_checked():
+            cb.click()
+            page.wait_for_timeout(200)
+        if cb:
+            total_checked += 1
+
+    if total_checked == 0:
+        raise TableBuildError("No geography categories found to check.")
+
+    logger.debug("Checked %d geography categories", total_checked)
+    return total_checked
+
+
+def select_geography(page, geography, geo_filter=None, knowledge=None):
+    """Select a Census geography level and check its categories.
+
+    Expands the 'Geographical Areas' group, clicks the geography level,
+    optionally filters to a state, checks leaf checkboxes, and submits
+    to the row axis.
+    """
+    logger.info(
+        "Selecting geography '%s'%s",
+        geography,
+        f" filtered to '{geo_filter}'" if geo_filter else "",
+    )
+
+    _find_geography_group(page)
+    _find_geography_level(page, geography)
+    checked = _find_and_check_states(page, geo_filter)
+
+    # Submit to rows
+    _submit_axis_button(page, Axis.ROW)
+
+    logger.info("Geography added to rows (%d categories)", checked)
+
+
 def build_table(page: Page, request: TableRequest, knowledge=None) -> None:
     """Add all variables from a TableRequest to their respective axes."""
     logger.info("Building table for dataset '%s'", request.dataset)
