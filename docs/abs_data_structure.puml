@@ -1,0 +1,153 @@
+@startuml ABS_Data_Structure
+!theme plain
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title ABS TableBuilder - Data Structure and Domain Model
+
+package "ABS TableBuilder Domain" {
+
+  class Dataset {
+    +name : str
+    +geographies : list[str]
+    +summary : str
+    --
+    Census datasets have 60+ geography types
+    Non-Census datasets have no geographies
+    131 total datasets in catalogue
+  }
+
+  class VariableGroup {
+    +label : str
+    +path : str
+    --
+    Hierarchical path: "Parent > Child > Leaf"
+    Depth ranges from 0 to 6 levels
+    6,762 groups across all datasets
+  }
+
+  class Variable {
+    +code : str
+    +label : str
+    --
+    Code is ALL-CAPS, <= 10 chars
+    e.g. SEXP, AGEP, ANCP, ANZSCO
+    93.5% of variables have no code
+    36,015 total variables
+  }
+
+  class Category {
+    +label : str
+    --
+    Leaf values for cross-tabulation
+    e.g. "Male", "Female", "0-4 years"
+    317,274 total categories
+    Max 4,525 per variable
+  }
+
+  Dataset "1" *-- "1..*" VariableGroup : contains >
+  VariableGroup "1" *-- "1..*" Variable : contains >
+  Variable "1" *-- "1..*" Category : has >
+}
+
+package "Census Geography Domain" {
+
+  class GeographySection {
+    +label : str = "Geographical Areas (...)"
+    --
+    Only in Census datasets (11 of 131)
+    Separate from regular variables
+    Identified by absence of checkboxes
+  }
+
+  class GeographyLevel {
+    +name : str
+    --
+    e.g. "Remoteness Areas"
+    "Main Statistical Area Structure"
+    "Local Government Areas (2021)"
+    60+ distinct geography types
+  }
+
+  class State {
+    +name : str
+    --
+    e.g. "New South Wales"
+    "Victoria", "Queensland"
+    Parent container for areas
+  }
+
+  class GeographicArea {
+    +label : str
+    --
+    Leaf selectable categories
+    e.g. "Greater Sydney"
+    "Major Cities of Australia"
+  }
+
+  Dataset "1" *-- "0..1" GeographySection
+  GeographySection "1" *-- "1..*" GeographyLevel
+  GeographyLevel "1" *-- "1..*" State
+  State "1" *-- "1..*" GeographicArea
+}
+
+package "Table Request (Runtime)" {
+
+  enum Axis {
+    ROW
+    COL
+    WAFER
+  }
+
+  class TableRequest {
+    +dataset : str
+    +rows : list[str]
+    +cols : list[str]
+    +wafers : list[str]
+    +geography : str | None
+    +geo_filter : str | None
+    --
+    +all_variables() : list[str]
+    +variable_axes() : dict[str, Axis]
+  }
+
+  TableRequest --> Dataset : references by name
+  TableRequest --> Axis : assigns variables to
+  TableRequest ..> GeographyLevel : optional geography
+  TableRequest ..> State : optional geo_filter
+}
+
+package "Data Pipeline" {
+
+  class TreeExtractor {
+    +extract_dataset_tree(page, name) : DatasetTree
+    +extract_all_datasets(page) : list[DatasetTree]
+    --
+    Playwright browser automation
+    JS DOM extraction via page.evaluate()
+    Crash recovery with JSON cache
+  }
+
+  class DictionaryDB {
+    +build_db(cache_dir, db_path)
+    +search(db_path, query) : list[dict]
+    +get_dataset(db_path, name) : dict
+    +get_variables_by_code(db_path, code) : list[dict]
+    --
+    SQLite + FTS5 full-text search
+    Idempotent rebuild from cache
+  }
+
+  class JSONCache {
+    +path : ~/.tablebuilder/dict_cache/
+    --
+    131 JSON files
+    One per dataset
+    Filename: sanitized dataset name
+  }
+
+  TreeExtractor --> JSONCache : writes
+  JSONCache --> DictionaryDB : reads
+}
+
+@enduml

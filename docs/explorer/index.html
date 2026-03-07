@@ -6,53 +6,86 @@
     <title>ABS Data Dictionary Explorer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <div class="header-inner">
-            <a href="https://realmindsai.com.au" target="_blank" rel="noopener" class="logo-link">
-                <img src="assets/rmai_logo.svg" alt="RMAI" class="logo">
-            </a>
-            <a href="#" class="header-text">
-                <h1>ABS Data Dictionary Explorer</h1>
-                <p class="subtitle">Search 131 datasets, 36,000 variables, 317,000 categories</p>
-            </a>
-        </div>
-    </header>
-
-    <main>
-        <section id="search-section">
-            <div class="search-container">
-                <input type="text" id="search-input"
-                       placeholder="Search variables, codes, categories..."
-                       autocomplete="off" autofocus>
-                <div id="typeahead-dropdown" class="typeahead-dropdown hidden"></div>
+    <div class="app">
+        <aside class="nav-panel">
+            <div class="nav-brand">
+                <a href="https://realmindsai.com.au" target="_blank" rel="noopener" class="logo-link" title="Real Minds AI">
+                    <img src="assets/rmai_logo.svg" alt="RMAI" class="logo">
+                </a>
+                <a href="#" class="brand-title">
+                    <span class="brand-name">ABS Data Dictionary</span>
+                    <span class="brand-stats">131 datasets &middot; 36K variables</span>
+                </a>
             </div>
-            <div id="search-status" class="search-status"></div>
-            <div id="search-results" class="results-list"></div>
-        </section>
 
-        <section id="dataset-section" class="hidden">
-            <button id="back-btn" class="back-btn">&larr; Back to search</button>
-            <div id="dataset-detail"></div>
-        </section>
+            <div class="search-area">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="8.5" cy="8.5" r="5.5"/><line x1="12.5" y1="12.5" x2="17" y2="17"/>
+                    </svg>
+                    <input type="text" id="search-input"
+                           placeholder="Search variables, codes, categories..."
+                           autocomplete="off" autofocus>
+                    <kbd class="search-shortcut">/</kbd>
+                </div>
+            </div>
 
-        <section id="variable-section" class="hidden">
-            <button id="var-back-btn" class="back-btn">&larr; Back</button>
-            <div id="variable-detail"></div>
-        </section>
-    </main>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="results">Results</button>
+                <button class="nav-tab" data-tab="browse">Browse</button>
+            </div>
 
-    <footer>
-        <p>Data extracted from <a href="https://tablebuilder.abs.gov.au" target="_blank" rel="noopener">ABS TableBuilder</a>. Not affiliated with the Australian Bureau of Statistics.</p>
-        <p class="footer-brand">Built by Real Minds Artificial Intelligence</p>
-    </footer>
+            <div class="nav-content">
+                <div id="results-panel" class="tab-panel active">
+                    <div id="results-status" class="panel-status"></div>
+                    <div id="results-list"></div>
+                </div>
+                <div id="browse-panel" class="tab-panel">
+                    <div id="dataset-tree"></div>
+                </div>
+            </div>
+
+            <div class="nav-footer">
+                <span>Data from <a href="https://tablebuilder.abs.gov.au" target="_blank" rel="noopener">ABS TableBuilder</a></span>
+            </div>
+        </aside>
+
+        <main class="detail-panel">
+            <div id="breadcrumbs" class="breadcrumbs"></div>
+            <div id="detail-content" class="detail-content">
+                <div class="welcome-state">
+                    <div class="welcome-icon">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                            <rect x="6" y="6" width="36" height="36" rx="4"/>
+                            <line x1="6" y1="18" x2="42" y2="18"/>
+                            <line x1="18" y1="18" x2="18" y2="42"/>
+                            <line x1="6" y1="28" x2="42" y2="28"/>
+                            <line x1="6" y1="36" x2="42" y2="36"/>
+                        </svg>
+                    </div>
+                    <h2>Explore ABS Data</h2>
+                    <p>Search for variables, codes, or categories in the box to the left. Or browse datasets by clicking the Browse tab.</p>
+                    <div class="welcome-hints">
+                        <span class="hint-pill" data-query="sex">sex</span>
+                        <span class="hint-pill" data-query="income">income</span>
+                        <span class="hint-pill" data-query="country of birth">country of birth</span>
+                        <span class="hint-pill" data-query="remoteness">remoteness</span>
+                        <span class="hint-pill" data-query="employment">employment</span>
+                        <span class="hint-pill" data-query="ANCP">ANCP</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-content">
-            <p>Loading dictionary database...</p>
+            <img src="assets/rmai_logo.svg" alt="" class="loading-logo">
+            <h2>ABS Data Dictionary Explorer</h2>
             <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
             <p id="loading-status" class="loading-status">Preparing search index...</p>
         </div>

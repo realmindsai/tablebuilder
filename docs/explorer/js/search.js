@@ -20,6 +20,7 @@ const Search = (() => {
             distance: 100,
             includeScore: true,
             minMatchCharLength: 2,
+            useExtendedSearch: true,
             limit: 10
         });
         indexReady = true;
@@ -33,14 +34,34 @@ const Search = (() => {
     }
 
     function fullSearch(query, limit = 30) {
+        // Try FTS5 first, fall back to Fuse if FTS5 returns nothing or errors
         if (DictDB.isReady()) {
-            return DictDB.searchFTS(query, limit);
+            const ftsResults = DictDB.searchFTS(query, limit);
+            if (ftsResults.length) return ftsResults;
         }
-        // Fallback to Fuse if DB not loaded yet
-        if (fuse) {
+        // Fuse fallback — covers: DB not loaded, FTS5 empty, FTS5 errors
+        if (!fuse) return [];
+
+        // For multi-word queries, search each word individually and merge results.
+        // This finds "Sex" and "Age" when the user types "age and sex".
+        const words = query.split(/\s+/).filter(w => w.length >= 2 && w.toLowerCase() !== "and" && w.toLowerCase() !== "or");
+        if (words.length <= 1) {
             return fuse.search(query, { limit }).map(r => r.item);
         }
-        return [];
+
+        // Search each word, deduplicate by variable identity (code+label+dataset)
+        const seen = new Set();
+        const merged = [];
+        for (const word of words) {
+            for (const r of fuse.search(word, { limit })) {
+                const key = `${r.item.code}|${r.item.label}|${r.item.dataset_name}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    merged.push(r.item);
+                }
+            }
+        }
+        return merged.slice(0, limit);
     }
 
     return { loadIndex, isIndexReady, fuzzySearch, fullSearch };

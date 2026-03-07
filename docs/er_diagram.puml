@@ -1,0 +1,95 @@
+@startuml ABS_Dictionary_ER_Diagram
+!theme plain
+skinparam linetype ortho
+skinparam roundcorner 5
+skinparam shadowing false
+
+title ABS TableBuilder Dictionary Database - ER Diagram
+
+entity "datasets" as ds {
+  * **id** : INTEGER <<PK>>
+  --
+  * name : TEXT <<UNIQUE>>
+  geographies_json : TEXT
+  summary : TEXT
+}
+note right of ds
+  131 datasets
+  11 with geographies (Census)
+  Avg 51.6 groups per dataset
+end note
+
+entity "groups" as gr {
+  * **id** : INTEGER <<PK>>
+  --
+  * dataset_id : INTEGER <<FK>>
+  * label : TEXT
+  * path : TEXT
+}
+note right of gr
+  6,762 groups
+  Depth 0-6 levels
+  Path uses " > " separator
+  e.g. "Age and Sex > SEXP Sex"
+end note
+
+entity "variables" as va {
+  * **id** : INTEGER <<PK>>
+  --
+  * group_id : INTEGER <<FK>>
+  code : TEXT
+  * label : TEXT
+}
+note right of va
+  36,015 variables
+  2,330 with codes (6.5%)
+  33,685 without codes
+  Avg 5.3 per group
+end note
+
+entity "categories" as ca {
+  * **id** : INTEGER <<PK>>
+  --
+  * variable_id : INTEGER <<FK>>
+  * label : TEXT
+}
+note right of ca
+  317,274 categories
+  Avg 8.8 per variable
+  Max 4,525 per variable
+end note
+
+entity "datasets_fts" as dfts <<FTS5>> {
+  name : TEXT
+  summary : TEXT
+}
+note bottom of dfts
+  Full-text search
+  for dataset discovery
+end note
+
+entity "variables_fts" as vfts <<FTS5>> {
+  dataset_name : TEXT
+  group_path : TEXT
+  code : TEXT
+  label : TEXT
+  categories_text : TEXT
+  summary : TEXT
+}
+note bottom of vfts
+  Denormalized FTS5
+  for variable search
+  Categories joined as CSV text
+end note
+
+ds ||--o{ gr : "contains"
+gr ||--o{ va : "contains"
+va ||--o{ ca : "has"
+
+ds ..> dfts : "populates"
+ds ..> vfts : "populates\n(denormalized)"
+gr ..> vfts
+va ..> vfts
+ca ..> vfts
+
+@enduml

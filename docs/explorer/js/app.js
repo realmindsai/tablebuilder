@@ -1,5 +1,5 @@
-// ABOUTME: Main application logic for the ABS Dictionary Explorer.
-// ABOUTME: Handles routing, UI rendering, search interaction, and data loading.
+// ABOUTME: Split-panel workbench app for the ABS Dictionary Explorer.
+// ABOUTME: Sidebar search/browse + detail panel with clickable code pills and inline expansion.
 
 const App = (() => {
     const $ = (sel) => document.querySelector(sel);
@@ -7,11 +7,10 @@ const App = (() => {
 
     let datasets = [];
     let debounceTimer = null;
-    let selectedTypeaheadIdx = -1;
+    let activeNavItem = null;
 
-    // --- Loading ---
+    // ── Loading ──
     async function init() {
-        // Phase 1: Load Fuse index (fast, enables typeahead)
         updateLoadingStatus("Loading search index...");
         try {
             await Search.loadIndex();
@@ -20,13 +19,11 @@ const App = (() => {
             updateLoadingStatus("Warning: fuzzy search unavailable");
         }
 
-        // Load datasets list for browse view
         try {
             const resp = await fetch("data/datasets.json");
             datasets = await resp.json();
         } catch (_) {}
 
-        // Phase 2: Load full SQLite DB (slow, enables FTS5)
         try {
             await DictDB.load((progress) => {
                 const pct = Math.round(progress * 100);
@@ -38,18 +35,16 @@ const App = (() => {
             updateLoadingStatus("Database load failed — using fuzzy search only");
         }
 
-        // Hide loading overlay
-        setTimeout(() => {
-            $("#loading-overlay").classList.add("hidden");
-        }, 300);
+        // Fade out loading overlay
+        const overlay = $("#loading-overlay");
+        overlay.classList.add("fade-out");
+        setTimeout(() => overlay.remove(), 500);
 
-        // Set up event listeners
+        setupTabs();
         setupSearch();
         setupRouting();
-
-        // Render initial view
+        renderBrowseTree();
         handleRoute();
-        renderBrowseList();
     }
 
     function updateLoadingStatus(msg) {
@@ -57,7 +52,25 @@ const App = (() => {
         if (el) el.textContent = msg;
     }
 
-    // --- Routing ---
+    // ── Tabs ──
+    function setupTabs() {
+        $$(".nav-tab").forEach(tab => {
+            tab.addEventListener("click", () => {
+                $$(".nav-tab").forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                $$(".tab-panel").forEach(p => p.classList.remove("active"));
+                $(`#${tab.dataset.tab}-panel`).classList.add("active");
+            });
+        });
+    }
+
+    function switchToTab(name) {
+        $$(".nav-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+        $$(".tab-panel").forEach(p => p.classList.remove("active"));
+        $(`#${name}-panel`).classList.add("active");
+    }
+
+    // ── Routing ──
     function setupRouting() {
         window.addEventListener("hashchange", handleRoute);
     }
@@ -66,110 +79,138 @@ const App = (() => {
         const hash = location.hash || "#";
         if (hash.startsWith("#dataset/")) {
             const name = decodeURIComponent(hash.slice(9));
-            showDatasetView(name);
+            renderDatasetDetail(name);
         } else if (hash.startsWith("#variable/")) {
             const parts = hash.slice(10).split("/");
             const code = decodeURIComponent(parts[0]);
             const dataset = parts[1] ? decodeURIComponent(parts[1]) : null;
-            showVariableView(code, dataset);
+            renderVariableDetail(code, dataset);
         } else {
-            showSearchView();
+            renderWelcome();
         }
     }
 
-    function showSearchView() {
-        $("#search-section").classList.remove("hidden");
-        $("#dataset-section").classList.add("hidden");
-        $("#variable-section").classList.add("hidden");
-    }
-
-    function showDatasetView(name) {
-        $("#search-section").classList.add("hidden");
-        $("#dataset-section").classList.remove("hidden");
-        $("#variable-section").classList.add("hidden");
-        renderDataset(name);
-    }
-
-    function showVariableView(code, dataset) {
-        $("#search-section").classList.add("hidden");
-        $("#dataset-section").classList.add("hidden");
-        $("#variable-section").classList.remove("hidden");
-        renderVariable(code, dataset);
-    }
-
-    // --- Search ---
+    // ── Search ──
     function setupSearch() {
         const input = $("#search-input");
-        const dropdown = $("#typeahead-dropdown");
+
+        // "/" shortcut to focus
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "/" && document.activeElement !== input) {
+                e.preventDefault();
+                input.focus();
+                switchToTab("results");
+            }
+        });
 
         input.addEventListener("input", () => {
             clearTimeout(debounceTimer);
             const q = input.value.trim();
             if (q.length < 2) {
-                hideTypeahead();
                 clearResults();
                 return;
             }
-            // Instant typeahead
-            showTypeahead(Search.fuzzySearch(q));
-            // Debounced full search
+            switchToTab("results");
             debounceTimer = setTimeout(() => {
                 renderSearchResults(Search.fullSearch(q));
-            }, 300);
+            }, 200);
         });
 
         input.addEventListener("keydown", (e) => {
-            const items = $$(".typeahead-item");
-            if (e.key === "ArrowDown") {
+            if (e.key === "Enter") {
                 e.preventDefault();
-                selectedTypeaheadIdx = Math.min(selectedTypeaheadIdx + 1, items.length - 1);
-                updateTypeaheadSelection(items);
-            } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                selectedTypeaheadIdx = Math.max(selectedTypeaheadIdx - 1, -1);
-                updateTypeaheadSelection(items);
-            } else if (e.key === "Enter") {
-                e.preventDefault();
-                if (selectedTypeaheadIdx >= 0 && items[selectedTypeaheadIdx]) {
-                    items[selectedTypeaheadIdx].click();
-                } else {
-                    hideTypeahead();
-                    renderSearchResults(Search.fullSearch(input.value.trim()));
+                const q = input.value.trim();
+                if (q.length >= 2) {
+                    renderSearchResults(Search.fullSearch(q));
                 }
             } else if (e.key === "Escape") {
-                hideTypeahead();
+                input.blur();
             }
         });
 
-        // Close typeahead when clicking outside
+        // Welcome hint pills
         document.addEventListener("click", (e) => {
-            if (!e.target.closest(".search-container")) hideTypeahead();
+            const hint = e.target.closest(".hint-pill");
+            if (hint) {
+                input.value = hint.dataset.query;
+                input.focus();
+                switchToTab("results");
+                renderSearchResults(Search.fullSearch(hint.dataset.query));
+            }
         });
 
-        // Back buttons
-        $("#back-btn").addEventListener("click", () => { location.hash = "#"; });
-        $("#var-back-btn").addEventListener("click", () => { history.back(); });
+        // Global code pill click handler
+        document.addEventListener("click", (e) => {
+            const pill = e.target.closest(".code-pill");
+            if (pill && pill.dataset.code) {
+                e.stopPropagation();
+                const code = pill.dataset.code;
+                const dataset = pill.dataset.dataset || null;
+                if (dataset) {
+                    location.hash = `#variable/${encodeURIComponent(code)}/${encodeURIComponent(dataset)}`;
+                } else {
+                    location.hash = `#variable/${encodeURIComponent(code)}`;
+                }
+            }
+        });
     }
 
-    function showTypeahead(results) {
-        const dropdown = $("#typeahead-dropdown");
-        selectedTypeaheadIdx = -1;
+    function clearResults() {
+        $("#results-list").innerHTML = "";
+        $("#results-status").textContent = "";
+    }
+
+    function renderSearchResults(results) {
+        const container = $("#results-list");
+        const status = $("#results-status");
+
         if (!results.length) {
-            hideTypeahead();
+            status.textContent = "No results found";
+            container.innerHTML = "";
             return;
         }
-        dropdown.innerHTML = results.map((r, i) => `
-            <div class="typeahead-item" data-index="${i}"
-                 data-code="${esc(r.code)}" data-dataset="${esc(r.dataset_name)}">
-                <span class="item-label">${esc(r.label)}</span>
-                ${r.code ? `<span class="item-code">${esc(r.code)}</span>` : ""}
-                <span class="item-dataset">${esc(r.dataset_name)} &rsaquo; ${esc(r.group_path)}</span>
-            </div>
-        `).join("");
-        dropdown.classList.remove("hidden");
 
-        dropdown.querySelectorAll(".typeahead-item").forEach(item => {
-            item.addEventListener("click", () => {
+        // Group by label to deduplicate variables across datasets
+        const grouped = new Map();
+        for (const r of results) {
+            const key = (r.label || "").toLowerCase();
+            if (!grouped.has(key)) {
+                grouped.set(key, { code: r.code || "", label: r.label, datasets: [], codeDataset: null });
+            }
+            const g = grouped.get(key);
+            // Prefer a code over no code; track a dataset that has the code
+            if (r.code) {
+                if (!g.code) g.code = r.code;
+                if (!g.codeDataset) g.codeDataset = r.dataset_name;
+            }
+            g.datasets.push(r.dataset_name);
+        }
+
+        const groups = [...grouped.values()];
+        status.textContent = `${groups.length} variable${groups.length === 1 ? "" : "s"}`;
+
+        container.innerHTML = groups.map(g => {
+            const dsCount = g.datasets.length;
+            const dsLabel = dsCount === 1
+                ? esc(g.datasets[0])
+                : `${dsCount} datasets`;
+            // Use a dataset that has the code for navigation, else first dataset
+            const defaultDs = g.codeDataset || g.datasets[0];
+            return `
+                <div class="nav-item" data-code="${esc(g.code)}" data-dataset="${esc(defaultDs)}">
+                    <div class="nav-item-label">
+                        ${g.code ? `<span class="code-pill" data-code="${esc(g.code)}" data-dataset="${esc(defaultDs)}">${esc(g.code)}</span>` : ""}
+                        <span>${esc(g.label)}</span>
+                    </div>
+                    <div class="nav-item-meta">${dsLabel}</div>
+                </div>
+            `;
+        }).join("");
+
+        container.querySelectorAll(".nav-item").forEach(item => {
+            item.addEventListener("click", (e) => {
+                if (e.target.closest(".code-pill")) return;
+                setActiveNavItem(item);
                 const code = item.dataset.code;
                 const dataset = item.dataset.dataset;
                 if (code) {
@@ -177,127 +218,176 @@ const App = (() => {
                 } else {
                     location.hash = `#dataset/${encodeURIComponent(dataset)}`;
                 }
-                hideTypeahead();
             });
         });
     }
 
-    function hideTypeahead() {
-        $("#typeahead-dropdown").classList.add("hidden");
-        selectedTypeaheadIdx = -1;
+    function setActiveNavItem(el) {
+        if (activeNavItem) activeNavItem.classList.remove("active");
+        if (el) el.classList.add("active");
+        activeNavItem = el;
     }
 
-    function updateTypeaheadSelection(items) {
-        items.forEach((el, i) => {
-            el.classList.toggle("active", i === selectedTypeaheadIdx);
-        });
-    }
-
-    function clearResults() {
-        $("#search-results").innerHTML = "";
-        $("#search-status").textContent = "";
-    }
-
-    // --- Rendering ---
-    function renderSearchResults(results) {
-        const container = $("#search-results");
-        const status = $("#search-status");
-
-        if (!results.length) {
-            status.textContent = "No results found.";
-            container.innerHTML = "";
-            return;
-        }
-
-        status.textContent = `${results.length} result${results.length === 1 ? "" : "s"}`;
-        container.innerHTML = results.map(r => `
-            <div class="result-card" data-code="${esc(r.code)}" data-dataset="${esc(r.dataset_name)}">
-                <div>
-                    <span class="result-label">${esc(r.label)}</span>
-                    ${r.code ? `<span class="result-code">${esc(r.code)}</span>` : ""}
+    // ── Browse Tree ──
+    function renderBrowseTree() {
+        const container = $("#dataset-tree");
+        container.innerHTML = datasets.map(ds => `
+            <div class="tree-dataset" data-name="${esc(ds.name)}">
+                <div class="tree-dataset-header">
+                    <span class="tree-toggle">&#x25B6;</span>
+                    <span class="tree-dataset-name">${esc(ds.name)}</span>
                 </div>
-                <div class="result-dataset">${esc(r.dataset_name)}</div>
-                <div class="result-group">${esc(r.group_path)}</div>
-                ${r.categories_text ? `<div class="result-categories">${esc(truncate(r.categories_text, 150))}</div>` : ""}
+                <div class="tree-children"></div>
             </div>
         `).join("");
 
-        container.querySelectorAll(".result-card").forEach(card => {
-            card.addEventListener("click", () => {
-                const code = card.dataset.code;
-                const dataset = card.dataset.dataset;
+        container.querySelectorAll(".tree-dataset-header").forEach(header => {
+            header.addEventListener("click", () => {
+                const ds = header.closest(".tree-dataset");
+                const children = ds.querySelector(".tree-children");
+                const toggle = header.querySelector(".tree-toggle");
+                const isOpen = children.classList.contains("open");
+
+                if (isOpen) {
+                    children.classList.remove("open");
+                    toggle.classList.remove("open");
+                } else {
+                    toggle.classList.add("open");
+                    children.classList.add("open");
+                    // Lazy-load tree content
+                    if (!children.dataset.loaded) {
+                        loadDatasetTree(ds.dataset.name, children);
+                        children.dataset.loaded = "true";
+                    }
+                }
+
+                // Also show dataset detail
+                location.hash = `#dataset/${encodeURIComponent(ds.dataset.name)}`;
+            });
+        });
+    }
+
+    function loadDatasetTree(name, container) {
+        if (!DictDB.isReady()) {
+            container.innerHTML = '<div style="padding:8px 16px;font-size:12px;color:#5C5D69;">Loading...</div>';
+            return;
+        }
+
+        const ds = DictDB.getDataset(name);
+        if (!ds) return;
+
+        container.innerHTML = ds.groups.map(grp => `
+            <div class="tree-group">
+                <div class="tree-group-header">
+                    <span class="tree-toggle">&#x25B6;</span>
+                    <span>${esc(grp.path)}</span>
+                </div>
+                <div class="tree-children">
+                    ${grp.variables.map(v => `
+                        <div class="tree-variable" data-code="${esc(v.code)}" data-dataset="${esc(name)}">
+                            ${v.code ? `<span class="code-pill" data-code="${esc(v.code)}" data-dataset="${esc(name)}">${esc(v.code)}</span>` : ""}
+                            <span>${esc(v.label)}</span>
+                        </div>
+                    `).join("")}
+                </div>
+            </div>
+        `).join("");
+
+        // Group expand/collapse
+        container.querySelectorAll(".tree-group-header").forEach(gh => {
+            gh.addEventListener("click", () => {
+                const children = gh.nextElementSibling;
+                const toggle = gh.querySelector(".tree-toggle");
+                children.classList.toggle("open");
+                toggle.classList.toggle("open");
+            });
+        });
+
+        // Variable click
+        container.querySelectorAll(".tree-variable").forEach(v => {
+            v.addEventListener("click", (e) => {
+                if (e.target.closest(".code-pill")) return;
+                const code = v.dataset.code;
+                const dataset = v.dataset.dataset;
                 if (code) {
                     location.hash = `#variable/${encodeURIComponent(code)}/${encodeURIComponent(dataset)}`;
-                } else {
-                    location.hash = `#dataset/${encodeURIComponent(dataset)}`;
                 }
             });
         });
     }
 
-    function renderBrowseList() {
-        // Add browse section below search results
-        const main = $("main");
-        let browseSection = $("#browse-section");
-        if (!browseSection) {
-            browseSection = document.createElement("section");
-            browseSection.id = "browse-section";
-            browseSection.className = "browse-header";
-            main.appendChild(browseSection);
-        }
-
-        browseSection.innerHTML = `
-            <h2>Browse All Datasets (${datasets.length})</h2>
-            ${datasets.map(ds => `
-                <div class="dataset-list-item" data-name="${esc(ds.name)}">
-                    <div class="ds-name">${esc(ds.name)}</div>
-                    <div class="ds-summary">${esc(truncate(ds.summary, 120))}</div>
+    // ── Detail: Welcome ──
+    function renderWelcome() {
+        setBreadcrumbs([]);
+        const content = $("#detail-content");
+        content.innerHTML = `
+            <div class="welcome-state">
+                <div class="welcome-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                        <rect x="6" y="6" width="36" height="36" rx="4"/>
+                        <line x1="6" y1="18" x2="42" y2="18"/>
+                        <line x1="18" y1="18" x2="18" y2="42"/>
+                        <line x1="6" y1="28" x2="42" y2="28"/>
+                        <line x1="6" y1="36" x2="42" y2="36"/>
+                    </svg>
                 </div>
-            `).join("")}
+                <h2>Explore ABS Data</h2>
+                <p>Search for variables, codes, or categories in the box to the left. Or browse datasets by clicking the Browse tab.</p>
+                <div class="welcome-hints">
+                    <span class="hint-pill" data-query="sex">sex</span>
+                    <span class="hint-pill" data-query="income">income</span>
+                    <span class="hint-pill" data-query="country of birth">country of birth</span>
+                    <span class="hint-pill" data-query="remoteness">remoteness</span>
+                    <span class="hint-pill" data-query="employment">employment</span>
+                    <span class="hint-pill" data-query="ANCP">ANCP</span>
+                </div>
+            </div>
         `;
-
-        browseSection.querySelectorAll(".dataset-list-item").forEach(item => {
-            item.addEventListener("click", () => {
-                location.hash = `#dataset/${encodeURIComponent(item.dataset.name)}`;
-            });
-        });
     }
 
-    function renderDataset(name) {
-        const container = $("#dataset-detail");
-        const ds = DictDB.isReady() ? DictDB.getDataset(name) : null;
+    // ── Detail: Dataset ──
+    function renderDatasetDetail(name) {
+        const content = $("#detail-content");
 
-        if (!ds) {
-            container.innerHTML = `<p>Dataset "${esc(name)}" not found. Database may still be loading.</p>`;
+        if (!DictDB.isReady()) {
+            content.innerHTML = '<p style="color:var(--slate-gray);">Database still loading...</p>';
             return;
         }
 
+        const ds = DictDB.getDataset(name);
+        if (!ds) {
+            content.innerHTML = `<p style="color:var(--slate-gray);">Dataset "${esc(name)}" not found.</p>`;
+            return;
+        }
+
+        setBreadcrumbs([{ label: "Datasets", hash: "#" }, { label: name }]);
+
         const geoHtml = ds.geographies.length
-            ? `<div class="dataset-geographies">
-                 <strong>Geographies:</strong>
-                 ${ds.geographies.map(g => `<span>${esc(g)}</span>`).join("")}
-               </div>`
+            ? `<div class="geo-tags">${ds.geographies.map(g => `<span class="geo-tag">${esc(g)}</span>`).join("")}</div>`
             : "";
 
-        container.innerHTML = `
-            <div class="dataset-header">
+        const totalVars = ds.groups.reduce((sum, g) => sum + g.variables.length, 0);
+
+        content.innerHTML = `
+            <div class="detail-header">
                 <h2>${esc(ds.name)}</h2>
-                <div class="dataset-summary">${esc(ds.summary)}</div>
+                <div class="detail-summary">${esc(ds.summary)}</div>
+                <div class="detail-summary" style="margin-top:4px;">${ds.groups.length} groups, ${totalVars} variables</div>
                 ${geoHtml}
             </div>
             ${ds.groups.map(grp => `
                 <div class="group-section">
-                    <div class="group-header" data-expanded="false">
-                        <span>${esc(grp.path)} (${grp.variables.length})</span>
-                        <span class="toggle">&#x25B6;</span>
+                    <div class="group-header">
+                        <span class="group-toggle">&#x25B6;</span>
+                        <span class="group-name">${esc(grp.path)}</span>
+                        <span class="group-count">${grp.variables.length}</span>
                     </div>
-                    <div class="group-body hidden">
+                    <div class="group-body">
                         ${grp.variables.map(v => `
-                            <div class="variable-row"
-                                 data-code="${esc(v.code)}" data-dataset="${esc(name)}">
-                                ${v.code ? `<span class="var-code">${esc(v.code)}</span>` : ""}
-                                ${esc(v.label)}
-                                <span style="color:var(--slate-gray);font-size:12px;margin-left:4px;">(${v.categories.length})</span>
+                            <div class="var-row" data-code="${esc(v.code)}" data-dataset="${esc(name)}">
+                                ${v.code ? `<span class="code-pill code-pill-light" data-code="${esc(v.code)}" data-dataset="${esc(name)}">${esc(v.code)}</span>` : ""}
+                                <span class="var-row-label">${esc(v.label)}</span>
+                                <span class="var-row-count">${v.categories.length} cat</span>
                             </div>
                         `).join("")}
                     </div>
@@ -306,20 +396,19 @@ const App = (() => {
         `;
 
         // Group expand/collapse
-        container.querySelectorAll(".group-header").forEach(header => {
+        content.querySelectorAll(".group-header").forEach(header => {
             header.addEventListener("click", () => {
                 const body = header.nextElementSibling;
-                const toggle = header.querySelector(".toggle");
-                const expanded = header.dataset.expanded === "true";
-                body.classList.toggle("hidden", expanded);
-                header.dataset.expanded = expanded ? "false" : "true";
-                toggle.innerHTML = expanded ? "&#x25B6;" : "&#x25BC;";
+                const toggle = header.querySelector(".group-toggle");
+                body.classList.toggle("open");
+                toggle.classList.toggle("open");
             });
         });
 
-        // Variable click
-        container.querySelectorAll(".variable-row").forEach(row => {
-            row.addEventListener("click", () => {
+        // Variable row click → show variable detail
+        content.querySelectorAll(".var-row").forEach(row => {
+            row.addEventListener("click", (e) => {
+                if (e.target.closest(".code-pill")) return;
                 const code = row.dataset.code;
                 const dataset = row.dataset.dataset;
                 if (code) {
@@ -329,15 +418,15 @@ const App = (() => {
         });
     }
 
-    function renderVariable(code, datasetName) {
-        const container = $("#variable-detail");
+    // ── Detail: Variable ──
+    function renderVariableDetail(code, datasetName) {
+        const content = $("#detail-content");
 
         if (!DictDB.isReady()) {
-            container.innerHTML = "<p>Database still loading...</p>";
+            content.innerHTML = '<p style="color:var(--slate-gray);">Database still loading...</p>';
             return;
         }
 
-        // Get the specific variable from the dataset context
         let variable = null;
         if (datasetName) {
             const ds = DictDB.getDataset(datasetName);
@@ -354,12 +443,10 @@ const App = (() => {
             }
         }
 
-        // Cross-reference: find same code in other datasets
         const crossRefs = DictDB.getVariablesByCode(code);
 
         if (!variable && crossRefs.length) {
             variable = crossRefs[0];
-            // Load categories for this variable
             const cats = DictDB.query(
                 "SELECT label FROM categories WHERE variable_id = ? ORDER BY label",
                 [variable.id]
@@ -368,49 +455,84 @@ const App = (() => {
         }
 
         if (!variable) {
-            container.innerHTML = `<p>Variable "${esc(code)}" not found.</p>`;
+            content.innerHTML = `<p style="color:var(--slate-gray);">Variable "${esc(code)}" not found.</p>`;
             return;
         }
 
+        const dsName = variable.dataset_name || datasetName;
+        setBreadcrumbs([
+            { label: "Datasets", hash: "#" },
+            { label: dsName, hash: `#dataset/${encodeURIComponent(dsName)}` },
+            { label: variable.label }
+        ]);
+
         const crossRefHtml = crossRefs.length > 1
-            ? `<div class="cross-ref">
-                 <h3>Also appears in (${crossRefs.length} datasets)</h3>
+            ? `<div class="cross-ref-section">
+                 <h3>Also in ${crossRefs.length} datasets</h3>
                  ${crossRefs.map(cr => `
-                     <div class="cross-ref-item" data-dataset="${esc(cr.dataset_name)}">
-                         ${esc(cr.dataset_name)} &rsaquo; ${esc(cr.group_path)}
+                     <div class="cross-ref-row" data-code="${esc(code)}" data-dataset="${esc(cr.dataset_name)}">
+                         <span class="cross-ref-dataset">${esc(cr.dataset_name)}</span>
+                         <span class="cross-ref-group">${esc(cr.group_path)}</span>
                      </div>
                  `).join("")}
                </div>`
             : "";
 
-        container.innerHTML = `
+        content.innerHTML = `
             <div class="var-detail-header">
                 <h2>${esc(variable.label)}</h2>
-                ${variable.code ? `<div class="var-detail-code">${esc(variable.code)}</div>` : ""}
+                ${variable.code ? `<div class="var-detail-code"><span class="code-pill code-pill-light" data-code="${esc(variable.code)}">${esc(variable.code)}</span></div>` : ""}
                 <div class="var-detail-meta">
-                    ${esc(variable.dataset_name || datasetName)} &rsaquo; ${esc(variable.group_path)}
+                    <span class="crumb" data-hash="#dataset/${encodeURIComponent(dsName)}">${esc(dsName)}</span>
+                    <span class="crumb-sep">/</span>
+                    <span>${esc(variable.group_path)}</span>
                 </div>
             </div>
-            <h3 style="margin-top:16px;font-size:15px;font-weight:600;">
-                Categories (${variable.categories ? variable.categories.length : 0})
-            </h3>
-            <div class="categories-grid">
-                ${(variable.categories || []).map(c => `
-                    <div class="category-chip">${esc(c)}</div>
-                `).join("")}
+            <div class="categories-section">
+                <h3>Categories (${variable.categories ? variable.categories.length : 0})</h3>
+                <div class="categories-grid">
+                    ${(variable.categories || []).map(c => `<div class="cat-chip">${esc(c)}</div>`).join("")}
+                </div>
             </div>
             ${crossRefHtml}
         `;
 
-        // Cross-ref click
-        container.querySelectorAll(".cross-ref-item").forEach(item => {
-            item.addEventListener("click", () => {
-                location.hash = `#variable/${encodeURIComponent(code)}/${encodeURIComponent(item.dataset.dataset)}`;
+        // Clickable crumbs in meta
+        content.querySelectorAll(".var-detail-meta .crumb[data-hash]").forEach(crumb => {
+            crumb.addEventListener("click", () => {
+                location.hash = crumb.dataset.hash;
+            });
+        });
+
+        // Cross-ref clicks
+        content.querySelectorAll(".cross-ref-row").forEach(row => {
+            row.addEventListener("click", () => {
+                location.hash = `#variable/${encodeURIComponent(row.dataset.code)}/${encodeURIComponent(row.dataset.dataset)}`;
             });
         });
     }
 
-    // --- Helpers ---
+    // ── Breadcrumbs ──
+    function setBreadcrumbs(items) {
+        const el = $("#breadcrumbs");
+        if (!items.length) {
+            el.innerHTML = "";
+            return;
+        }
+        el.innerHTML = items.map((item, i) => {
+            const isLast = i === items.length - 1;
+            if (isLast) return `<span style="color:var(--core-black);font-weight:500;">${esc(item.label)}</span>`;
+            return `<span class="crumb" data-hash="${esc(item.hash)}">${esc(item.label)}</span><span class="crumb-sep">&rsaquo;</span>`;
+        }).join("");
+
+        el.querySelectorAll(".crumb[data-hash]").forEach(crumb => {
+            crumb.addEventListener("click", () => {
+                location.hash = crumb.dataset.hash;
+            });
+        });
+    }
+
+    // ── Helpers ──
     function esc(str) {
         if (!str) return "";
         const div = document.createElement("div");
@@ -423,7 +545,7 @@ const App = (() => {
         return str.slice(0, len) + "...";
     }
 
-    // --- Start ---
+    // ── Start ──
     document.addEventListener("DOMContentLoaded", init);
 
     return { init };
