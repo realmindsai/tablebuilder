@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Job {{ job.id[:8] }} - TableBuilder Service{% endblock %}
+{% block content %}
+<h2>Job {{ job.id[:8] }}</h2>
+<dl>
+    <dt>Status</dt>
+    <dd><span class="status-{{ job.status }}">{{ job.status }}</span></dd>
+    <dt>Dataset</dt>
+    <dd>{{ job.dataset_name }}</dd>
+    <dt>Submitted</dt>
+    <dd>{{ job.created_at }}</dd>
+    {% if job.error_message %}
+    <dt>Error</dt>
+    <dd>{{ job.error_message }}</dd>
+    {% endif %}
+</dl>
+
+{% if events %}
+<h3>Event Timeline</h3>
+<table>
+    <thead><tr><th>Time</th><th>Type</th><th>Message</th></tr></thead>
+    <tbody>
+        {% for event in events %}
+        <tr>
+            <td>{{ event.timestamp[:19] }}</td>
+            <td>{{ event.event_type }}</td>
+            <td>{{ event.message }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if screenshots %}
+<h3>Screenshots</h3>
+<div class="filmstrip">
+    {% for ss in screenshots %}
+    <img src="/web/screenshot/{{ job.id }}/{{ ss }}" alt="{{ ss }}" title="{{ ss }}">
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Chat - TableBuilder Service{% endblock %}
+{% block content %}
+<div class="chat-container">
+    <div id="chat-messages" class="chat-messages">
+        {% if not api_key %}
+        <article>
+            <h3>Enter your ABS credentials</h3>
+            <form hx-post="/web/register" hx-target="#chat-messages" hx-swap="innerHTML">
+                <label for="abs_user_id">ABS User ID</label>
+                <input type="text" name="abs_user_id" id="abs_user_id" required>
+                <label for="abs_password">ABS Password</label>
+                <input type="password" name="abs_password" id="abs_password" required>
+                <button type="submit">Register</button>
+            </form>
+        </article>
+        {% else %}
+        <p>Ask me for ABS data. For example: "population by remoteness area from the 2021 census"</p>
+        {% endif %}
+    </div>
+    {% if api_key %}
+    <form hx-post="/web/chat" hx-target="#chat-messages" hx-swap="beforeend" hx-on::after-request="this.reset()">
+        <input type="hidden" name="session_id" id="session_id" value="">
+        <div role="group">
+            <input type="text" name="message" placeholder="Ask for data..." required autofocus>
+            <button type="submit">Send</button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}
