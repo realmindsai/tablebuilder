@@ -87,3 +87,13 @@ class TestCliFetch:
             cli, ["fetch", "--dataset", "Census 2021 Basic"]
         )
         assert result.exit_code != 0
+
+
+class TestCliServe:
+    def test_serve_help_shows_flags(self):
+        """serve --help lists --port and --host."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["serve", "--help"])
+        assert result.exit_code == 0
+        assert "--port" in result.output
+        assert "--host" in result.output
