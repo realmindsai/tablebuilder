@@ -55,6 +55,12 @@ def create_app(
     from tablebuilder.service.routes_api import router as api_router
     app.include_router(api_router)
 
+    from tablebuilder.service.routes_chat import router as chat_router
+    app.include_router(chat_router)
+
+    from tablebuilder.service.routes_web import router as web_router
+    app.include_router(web_router)
+
     return app
 
 

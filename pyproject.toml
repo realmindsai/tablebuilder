@@ -12,6 +12,7 @@ dependencies = [
     "jinja2>=3.1",
     "anthropic>=0.52",
     "cryptography>=44.0",
+    "python-multipart>=0.0.22",
 ]
 
 [project.scripts]
