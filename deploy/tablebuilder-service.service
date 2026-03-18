@@ -1,0 +1,20 @@
+[Unit]
+Description=TableBuilder API Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dewoller
+WorkingDirectory=/tank/services/active_services/tablebuilder-service
+
+ExecStartPre=+/usr/local/bin/sops-decrypt.sh tablebuilder-service
+EnvironmentFile=-/run/secrets/tablebuilder-service/.env
+ExecStart=/tank/services/active_services/tablebuilder-service/.venv/bin/uvicorn tablebuilder.service.app:app --host 0.0.0.0 --port 8080
+ExecStopPost=+/bin/rm -rf /run/secrets/tablebuilder-service
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
