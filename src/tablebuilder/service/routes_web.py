@@ -20,17 +20,30 @@ TEMPLATES_DIR = Path(__file__).parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
-def _get_api_key_from_cookie(request: Request) -> str | None:
-    return request.cookies.get("tb_api_key")
+def _get_valid_api_key(request: Request) -> str | None:
+    """Get API key from cookie, but only if the user still exists in the DB."""
+    api_key = request.cookies.get("tb_api_key")
+    if not api_key:
+        return None
+    key_hash = hash_api_key(api_key)
+    db = request.app.state.db
+    user = db.get_user_by_api_key_hash(key_hash)
+    if user is None:
+        return None
+    return api_key
 
 
 @router.get("/", response_class=HTMLResponse)
 async def chat_page(request: Request):
-    api_key = _get_api_key_from_cookie(request)
-    return templates.TemplateResponse("chat.html", {
+    api_key = _get_valid_api_key(request)
+    response = templates.TemplateResponse("chat.html", {
         "request": request,
         "api_key": api_key,
     })
+    # Clear stale cookie if user no longer exists
+    if request.cookies.get("tb_api_key") and not api_key:
+        response.delete_cookie("tb_api_key")
+    return response
 
 
 @router.post("/web/register", response_class=HTMLResponse)
@@ -60,7 +73,7 @@ async def web_chat(
     message: str = Form(...),
     session_id: str = Form(""),
 ):
-    api_key = _get_api_key_from_cookie(request)
+    api_key = _get_valid_api_key(request)
     if not api_key:
         return HTMLResponse("<p>Please register first.</p>", status_code=401)
 
@@ -114,7 +127,7 @@ async def web_chat(
 
 @router.post("/web/confirm", response_class=HTMLResponse)
 async def web_confirm(request: Request, session_id: str = Form(...)):
-    api_key = _get_api_key_from_cookie(request)
+    api_key = _get_valid_api_key(request)
     if not api_key:
         return HTMLResponse("<p>Please register first.</p>", status_code=401)
 
@@ -166,7 +179,7 @@ async def web_job_status(job_id: str, request: Request):
 
 @router.get("/jobs", response_class=HTMLResponse)
 async def jobs_page(request: Request):
-    api_key = _get_api_key_from_cookie(request)
+    api_key = _get_valid_api_key(request)
     jobs = []
     if api_key:
         db = request.app.state.db
@@ -191,7 +204,7 @@ async def jobs_page(request: Request):
 
 @router.get("/jobs/{job_id}", response_class=HTMLResponse)
 async def job_detail_page(job_id: str, request: Request):
-    api_key = _get_api_key_from_cookie(request)
+    api_key = _get_valid_api_key(request)
     if not api_key:
         return templates.TemplateResponse("jobs.html", {
             "request": request, "api_key": None, "jobs": [],

@@ -10,21 +10,22 @@ from tablebuilder.logging_config import get_logger
 
 logger = get_logger("tablebuilder.service.chat_resolver")
 
-SYSTEM_PROMPT = """You are a data assistant for ABS TableBuilder. You help users find and request Australian Bureau of Statistics census data.
+SYSTEM_PROMPT = """You are a data assistant for ABS TableBuilder. You help users find and request Australian Bureau of Statistics census and survey data.
 
-You have access to a dictionary of datasets and variables. Use the search_dictionary tool to find matching datasets and variables. Use get_dataset_variables to see the full variable tree for a specific dataset.
+You have access to a dictionary of datasets and variables. Your workflow:
+1. Use search_dictionary to find matching variables across all datasets
+2. If needed, use get_dataset_variables to see the full variable tree for a specific dataset
+3. Propose a structured request and confirm with the user
 
-When the user asks for data, search the dictionary, identify the right dataset and variables, and propose a structured request. Always confirm with the user before they submit.
+IMPORTANT: When searching, try multiple search terms. For example, for "housing tenure by state", search for "tenure", then "state", to find the right variables. The search uses OR logic for multi-word queries.
 
-Respond with a JSON object containing:
-- "dataset": the exact dataset name
-- "rows": list of variable labels for rows (required, at least one)
-- "cols": list of variable labels for columns (optional)
-- "wafers": list of variable labels for wafers/layers (optional)
-- "confirmation": a human-readable summary asking the user to confirm
+IMPORTANT: Variable labels in the response must EXACTLY match the labels from the dictionary. Do not modify or abbreviate them.
 
-If you need clarification (ambiguous dataset, multiple matches), ask a follow-up question instead of guessing. In that case, respond with:
-- "clarification": the question to ask the user"""
+When you have identified the right dataset and variables, respond with ONLY a JSON object (no markdown, no extra text):
+{"dataset": "exact dataset name", "rows": ["exact variable label"], "cols": [], "wafers": [], "confirmation": "human-readable summary"}
+
+If you need clarification, respond with ONLY:
+{"clarification": "your question"}"""
 
 TOOLS = [
     {
@@ -127,7 +128,27 @@ class ChatResolver:
             if not DEFAULT_DB_PATH.exists():
                 return json.dumps(None)
             result = get_dataset(DEFAULT_DB_PATH, tool_input["dataset_name"])
-            return json.dumps(result)
+            if result is None:
+                return json.dumps(None)
+            # Truncate to avoid token overflow — return group names and
+            # variable labels only, without full category lists
+            summary = {
+                "name": result["name"],
+                "geographies": result.get("geographies", []),
+                "groups": [],
+            }
+            for group in result.get("groups", []):
+                g = {"path": group["path"], "variables": []}
+                for var in group.get("variables", []):
+                    cats = var.get("categories", [])
+                    g["variables"].append({
+                        "code": var.get("code", ""),
+                        "label": var["label"],
+                        "category_count": len(cats),
+                        "sample_categories": cats[:5],
+                    })
+                summary["groups"].append(g)
+            return json.dumps(summary)
 
         return json.dumps({"error": f"Unknown tool: {tool_name}"})
 
@@ -139,7 +160,7 @@ class ChatResolver:
         messages = list(conversation_history or [])
         messages.append({"role": "user", "content": user_message})
 
-        for round_num in range(5):
+        for round_num in range(10):
             try:
                 response = self.client.messages.create(
                     model="claude-sonnet-4-20250514",
