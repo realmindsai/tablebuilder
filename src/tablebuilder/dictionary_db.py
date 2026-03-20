@@ -9,8 +9,19 @@ from tablebuilder.logging_config import get_logger
 
 logger = get_logger("tablebuilder.dictionary_db")
 
-DEFAULT_DB_PATH = Path.home() / ".tablebuilder" / "dictionary.db"
-DEFAULT_CACHE_DIR = Path.home() / ".tablebuilder" / "dict_cache"
+def _resolve_data_path(filename: str) -> Path:
+    """Resolve a data file path: TABLEBUILDER_DATA_DIR env > ./data/ > ~/.tablebuilder/."""
+    import os
+    if env_dir := os.environ.get("TABLEBUILDER_DATA_DIR"):
+        return Path(env_dir) / filename
+    local = Path.cwd() / "data" / filename
+    if local.exists():
+        return local
+    return Path.home() / ".tablebuilder" / filename
+
+
+DEFAULT_DB_PATH = _resolve_data_path("dictionary.db")
+DEFAULT_CACHE_DIR = _resolve_data_path("dict_cache")
 
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS datasets (

@@ -52,36 +52,144 @@ _EXTRACT_TREE_JS = """
 """
 
 
-_MAX_EXPAND_SECONDS = 120
-_MAX_EXPAND_ROUNDS = 100
+_MAX_EXPAND_SECONDS = 300
+_MAX_EXPAND_ROUNDS = 200
+
+
+# JavaScript that clicks all collapsed expanders in the schema tree at once,
+# returning how many were clicked. Much faster than clicking from Python one
+# by one because it avoids the round-trip overhead per click.
+_BATCH_EXPAND_JS = """
+() => {
+    const container = document.querySelector('#tableViewSchemaTree')
+                    || document.querySelector('.treeControl');
+    if (!container) return 0;
+    const collapsed = container.querySelectorAll('.treeNodeExpander.collapsed');
+    let clicked = 0;
+    collapsed.forEach(el => {
+        try { el.click(); clicked++; } catch(e) {}
+    });
+    return clicked;
+}
+"""
+
+
+# JavaScript that scrolls the tree's scrollable container through its full
+# height in increments, forcing the browser to render virtualized/lazy-loaded
+# nodes. Tries the tree container, its ancestors, and falls back to the page.
+# Returns {scrollHeight, steps, target} so we know what scrolled.
+_SCROLL_TREE_JS = """
+(stepPx) => {
+    const container = document.querySelector('#tableViewSchemaTree')
+                    || document.querySelector('.treeControl');
+    if (!container) return {scrollHeight: 0, steps: 0, target: 'none'};
+
+    // Build a list of candidate scrollable elements:
+    // the container itself, all ancestors, and finally the page
+    const candidates = [container];
+    let el = container.parentElement;
+    while (el) {
+        candidates.push(el);
+        el = el.parentElement;
+    }
+
+    // Find the first element that is actually scrollable
+    let scrollable = null;
+    let targetName = 'window';
+    for (const c of candidates) {
+        if (c.scrollHeight > c.clientHeight + 50) {
+            scrollable = c;
+            targetName = c.id || c.className.split(' ')[0] || c.tagName;
+            break;
+        }
+    }
+
+    // Fallback to window scrolling if no scrollable container found
+    if (!scrollable) {
+        const totalHeight = document.documentElement.scrollHeight;
+        let steps = 0;
+        window.scrollTo(0, 0);
+        const viewH = window.innerHeight;
+        let pos = 0;
+        while (pos < totalHeight - viewH) {
+            pos += stepPx;
+            window.scrollTo(0, pos);
+            steps++;
+        }
+        window.scrollTo(0, 0);
+        return {scrollHeight: totalHeight, steps: steps, target: 'window'};
+    }
+
+    const totalHeight = scrollable.scrollHeight;
+    let steps = 0;
+    scrollable.scrollTop = 0;
+    while (scrollable.scrollTop < totalHeight - scrollable.clientHeight) {
+        scrollable.scrollTop += stepPx;
+        steps++;
+    }
+    scrollable.scrollTop = 0;
+    return {scrollHeight: totalHeight, steps: steps, target: targetName};
+}
+"""
+
+
+def _scroll_tree(page: Page, step_px: int = 300) -> dict:
+    """Scroll through the tree container to force lazy-loaded nodes to render.
+
+    The ABS tree panel uses virtual scrolling — nodes only exist in the DOM
+    when visible in the viewport. Scrolling through the full height forces
+    the browser to render all sections.
+    """
+    result = page.evaluate(_SCROLL_TREE_JS, step_px)
+    if result["steps"] > 0:
+        # Give the browser time to render newly visible nodes
+        page.wait_for_timeout(500)
+    return result
 
 
 def _expand_tree_bounded(page: Page) -> None:
     """Expand all collapsed tree nodes in the schema tree with a time limit.
 
     Only expands nodes inside #tableViewSchemaTree to avoid touching
-    the saved tables tree. Uses a time limit to prevent infinite loops.
+    the saved tables tree. Uses JavaScript batch clicks for speed —
+    expanding all collapsed nodes in one shot, then waiting for DOM
+    updates before the next round.
+
+    Each round: scroll the tree to force lazy nodes to render, then
+    click all collapsed expanders. Repeat until no more are found.
     """
     start = time.time()
     rounds = 0
-    selector = '#tableViewSchemaTree .treeNodeExpander.collapsed'
     while rounds < _MAX_EXPAND_ROUNDS:
         if time.time() - start > _MAX_EXPAND_SECONDS:
             logger.warning("Tree expansion timed out after %ds", _MAX_EXPAND_SECONDS)
             break
-        collapsed = page.query_selector_all(selector)
-        if not collapsed:
-            break
+
+        # Scroll the full tree to force virtual/lazy nodes into the DOM
+        scroll_info = _scroll_tree(page)
+        if rounds == 0:
+            logger.debug(
+                "Tree scroll: %dpx height, %d steps, target=%s",
+                scroll_info["scrollHeight"],
+                scroll_info["steps"],
+                scroll_info.get("target", "unknown"),
+            )
+
+        clicked = page.evaluate(_BATCH_EXPAND_JS)
+        if clicked == 0:
+            # Double-check: scroll once more and try again in case
+            # scrolling revealed new collapsed nodes
+            _scroll_tree(page)
+            clicked = page.evaluate(_BATCH_EXPAND_JS)
+            if clicked == 0:
+                break
+
         rounds += 1
-        logger.debug("Expand round %d: %d collapsed nodes", rounds, len(collapsed))
-        for expander in collapsed:
-            try:
-                expander.click()
-                page.wait_for_timeout(300)
-            except Exception:
-                continue
-        # Brief pause between rounds for DOM updates
-        page.wait_for_timeout(500)
+        logger.debug("Expand round %d: clicked %d collapsed nodes", rounds, clicked)
+        # Wait for the server to respond and DOM to update.
+        # Shorter waits for small batches, longer for large ones.
+        wait_ms = min(2000, max(500, clicked * 50))
+        page.wait_for_timeout(wait_ms)
     logger.debug("Expansion done after %d rounds (%.1fs)", rounds, time.time() - start)
 
 
@@ -275,6 +383,34 @@ def _parse_variable_tree(nodes: list[dict]) -> list[VariableGroup]:
     return groups
 
 
+def _wait_for_tree(page: Page, min_nodes: int = 3, timeout: int = 30000) -> int:
+    """Wait for the variable tree to populate with at least min_nodes elements.
+
+    The tree panel loads asynchronously after the dataset opens. We need
+    to wait until the top-level groups appear before starting expansion.
+    Returns the number of tree nodes found.
+    """
+    import time as _time
+    deadline = _time.time() + timeout / 1000
+    selector = '.treeNodeElement'
+
+    while _time.time() < deadline:
+        count = page.evaluate(
+            f"() => document.querySelectorAll('{selector}').length"
+        )
+        if count >= min_nodes:
+            logger.debug("Tree loaded with %d nodes", count)
+            return count
+        page.wait_for_timeout(500)
+
+    # Final count
+    count = page.evaluate(
+        f"() => document.querySelectorAll('{selector}').length"
+    )
+    logger.warning("Tree wait timed out with %d nodes (wanted %d)", count, min_nodes)
+    return count
+
+
 def extract_dataset_tree(
     page: Page, dataset_name: str, knowledge=None
 ) -> DatasetTree:
@@ -285,26 +421,20 @@ def extract_dataset_tree(
     """
     logger.info("Extracting tree for dataset '%s'", dataset_name)
 
-    # Wait for the variable tree panel to load in Table View
-    page.wait_for_timeout(3000)
-
-    # Debug: count tree elements before expansion
-    pre_count = page.evaluate(
-        "() => document.querySelectorAll('.treeNodeElement').length"
-    )
+    # Wait for the variable tree panel to populate (not just appear)
+    pre_count = _wait_for_tree(page, min_nodes=3, timeout=30000)
     logger.debug("Tree nodes before expansion: %d", pre_count)
 
     if pre_count == 0:
-        # Try waiting longer — the tree panel may load asynchronously
-        logger.debug("No tree nodes yet, waiting for tree panel to load...")
-        try:
-            page.wait_for_selector(
-                '#tableViewSchemaTree .treeNodeElement', timeout=10000
-            )
-        except Exception:
-            logger.warning("No tree nodes found for dataset '%s'", dataset_name)
+        logger.warning("No tree nodes found for dataset '%s'", dataset_name)
 
     _expand_tree_bounded(page)
+
+    # Final scroll pass to ensure all lazy/virtualized nodes are in the DOM
+    # before extraction. The expansion loop scrolls too, but a final pass
+    # catches anything that appeared after the last expansion round.
+    _scroll_tree(page, step_px=200)
+    page.wait_for_timeout(300)
 
     nodes = _extract_tree_with_depths(page)
     logger.debug("Extracted %d raw tree nodes", len(nodes))

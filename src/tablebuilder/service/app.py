@@ -10,8 +10,20 @@ from tablebuilder.service.db import ServiceDB
 from tablebuilder.service.worker import Worker
 
 
-DEFAULT_DB_PATH = Path.home() / ".tablebuilder" / "service.db"
-DEFAULT_RESULTS_DIR = Path.home() / ".tablebuilder" / "results"
+def _data_dir() -> Path:
+    """Resolve the data directory: DATA_DIR env var > ./data/ > ~/.tablebuilder/."""
+    import os
+    if env_dir := os.environ.get("TABLEBUILDER_DATA_DIR"):
+        return Path(env_dir)
+    # Check if ./data/ exists (project-local mode)
+    local_data = Path.cwd() / "data"
+    if local_data.exists():
+        return local_data
+    return Path.home() / ".tablebuilder"
+
+
+DEFAULT_DB_PATH = _data_dir() / "service.db"
+DEFAULT_RESULTS_DIR = _data_dir() / "results"
 
 
 def create_app(
