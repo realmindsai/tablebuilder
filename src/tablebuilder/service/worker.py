@@ -76,12 +76,47 @@ class Worker(threading.Thread):
         job_timeout = job["timeout_seconds"] or 600
 
         try:
-            jl.log_progress("Logging in via HTTP...")
-            with TableBuilderHTTPSession(config, knowledge=self.knowledge) as session:
-                jl.log_progress("Finding dataset and building table...")
-                http_fetch_table(session, request, str(result_path))
+            from tablebuilder.http_catalogue import find_database, open_database, get_schema, find_variable
+            from tablebuilder.http_table import (
+                select_all_categories, add_to_axis, retrieve_data,
+                select_csv_format, _playwright_download,
+            )
 
-            jl.log_progress("Download complete")
+            jl.log_progress("Logging in...")
+            session = TableBuilderHTTPSession(config, knowledge=self.knowledge)
+            session.login()
+
+            jl.log_progress("Finding dataset...")
+            tree = session.rest_get("/rest/catalogue/databases/tree")
+            result = find_database(tree, request.dataset)
+            if not result:
+                raise RuntimeError(f"Database not found: {request.dataset}")
+            path, db_node = result
+            db_name = db_node["data"]["name"]
+
+            jl.log_progress(f"Opening {db_name}...")
+            open_database(session, path)
+
+            jl.log_progress("Loading variables...")
+            schema = get_schema(session)
+
+            for var_name, axis in request.variable_axes().items():
+                jl.log_progress(f"Adding {var_name} to {axis.value}...")
+                var_info = find_variable(schema, var_name)
+                if not var_info:
+                    raise RuntimeError(f"Variable not found: {var_name}")
+                select_all_categories(session, schema, var_info)
+                add_to_axis(session, axis.value)
+
+            jl.log_progress("Retrieving data...")
+            retrieve_data(session)
+            select_csv_format(session)
+
+            jl.log_progress("Downloading CSV...")
+            _playwright_download(session, str(result_path))
+
+            session._session.close()
+            jl.log_progress("Complete!")
             self.db.mark_completed(job_id, str(result_path))
             self.knowledge.save()
 
