@@ -27,8 +27,11 @@ class SessionExpiredError(NavigationError):
 def fuzzy_match_dataset(query: str, available: list[str]) -> str:
     """Find the best matching dataset name from available options.
 
-    Tries exact match first, then case-insensitive, then substring.
+    Tries exact match first, then case-insensitive, then word-level substring,
+    then word-level with punctuation stripped, then with years dropped.
     """
+    import re
+
     query_lower = query.lower()
 
     # Exact match
@@ -47,6 +50,37 @@ def fuzzy_match_dataset(query: str, available: list[str]) -> str:
         name_lower = name.lower()
         if all(word in name_lower for word in query_words):
             return name
+
+    # Word match with punctuation stripped — handles commas, periods, etc.
+    query_tokens = re.findall(r'\w+', query_lower)
+    for name in available:
+        name_tokens_str = ' '.join(re.findall(r'\w+', name.lower()))
+        if all(token in name_tokens_str for token in query_tokens):
+            return name
+
+    # Year-tolerant match — drop 4-digit years from query, match remaining words,
+    # then pick the best match among candidates
+    non_year_tokens = [t for t in query_tokens if not re.match(r'^\d{4}$', t)]
+    if non_year_tokens and len(non_year_tokens) < len(query_tokens):
+        candidates = []
+        for name in available:
+            name_tokens_str = ' '.join(re.findall(r'\w+', name.lower()))
+            if all(token in name_tokens_str for token in non_year_tokens):
+                candidates.append(name)
+        if len(candidates) == 1:
+            return candidates[0]
+        if candidates:
+            # Pick the candidate whose year is closest to the query year
+            query_years = [int(t) for t in query_tokens if re.match(r'^\d{4}$', t)]
+            if query_years:
+                target_year = max(query_years)
+                def year_distance(name):
+                    name_years = [int(y) for y in re.findall(r'\d{4}', name)]
+                    if not name_years:
+                        return 9999
+                    return min(abs(y - target_year) for y in name_years)
+                candidates.sort(key=year_distance)
+            return candidates[0]
 
     raise NavigationError(
         f"No dataset matching '{query}'. Available datasets:\n"
@@ -73,12 +107,31 @@ def _expand_node(page: Page, label_text: str) -> bool:
     return False
 
 
-def _expand_all_collapsed(page: Page) -> None:
-    """Keep expanding collapsed tree nodes until none remain."""
-    while True:
+def _expand_all_collapsed(page: Page, max_rounds: int = 50) -> None:
+    """Keep expanding collapsed tree nodes until none remain.
+
+    Stops when no collapsed nodes are found, when no progress is made
+    (same count after a full iteration), or after max_rounds iterations.
+    """
+    prev_count = -1
+    stale_rounds = 0
+    for _round in range(max_rounds):
         collapsed = find_all_elements(page, TREE_EXPANDER_COLLAPSED)
         if not collapsed:
             break
+        # Detect stale loops where the same elements remain unexpandable
+        if len(collapsed) == prev_count:
+            stale_rounds += 1
+            if stale_rounds >= 1:
+                logger.warning(
+                    "Stopping expansion: %d collapsed elements remain "
+                    "after %d rounds with no progress (likely non-tree elements)",
+                    len(collapsed), _round + 1,
+                )
+                break
+        else:
+            stale_rounds = 0
+        prev_count = len(collapsed)
         for expander in collapsed:
             try:
                 expander.click()

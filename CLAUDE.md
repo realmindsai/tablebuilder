@@ -45,22 +45,25 @@ The ABS variable tree uses `.treeNodeElement` containers, each containing:
 - `.treeNodeExpander` (collapsed/expanded toggle; `.leaf` class = no children)
 - `.label` (display text)
 
-Category selection walks sibling nodes after the variable node, checking leaf checkboxes until hitting a non-leaf node.
+**Variable labels in the UI include a code prefix**: "SEXP Sex", "INDP Industry of Employment", "AGE10P Age in Ten Year Groups". The dictionary DB stores code and label separately. `_label_matches()` in `table_builder.py` handles both "Sex" and "SEXP Sex" formats.
+
+**Category selection** walks sibling nodes after the variable node. For variables with nested sub-groups (e.g. Industry → Agriculture → sub-categories), intermediate group nodes are skipped — only leaf checkboxes are checked. Walking stops when the next variable-level node is detected (by the `CODE Label` naming pattern via `_is_variable_node()`).
+
+**Tree expansion gotcha**: The fallback selector `[aria-expanded="false"]` matches 7-8 non-tree UI elements that can never be expanded. `_expand_all_collapsed()` has stale detection (breaks after 3 rounds of no progress) to avoid infinite loops. This stale loop costs ~6 minutes per variable search.
 
 ### Search Behavior
 Searching shows group-level results only. After search, `_expand_all_collapsed()` must run to reveal individual categories within each group.
 
-### Census Geography Selection
-Census datasets have geography as a separate tree section ("Geographical Areas..."), not as regular variables. The `--geography` flag triggers special handling: expand the geography group, click the level, expand state nodes, check leaf checkboxes. The `--geo-filter` flag narrows to a specific state. Geography is always added to rows before any `--rows` variables.
-
-### Queue Flow
+### Download Flow (corrected 2026-03-21)
+**IMPORTANT**: `pageForm:retB` is the **Retrieve Data** button, NOT a Queue button. The correct flow:
 1. Select CSV from the format dropdown (`downloadControl:downloadType`)
-2. Click Queue button (`pageForm:retB`) on the table view
-3. Fill the name field in the dialog (`downloadTableModeForm:downloadTableNameTxt`)
-4. Submit the dialog (`downloadTableModeForm:queueTableButton`)
-5. Navigate to saved tables page
-6. Poll for "click here to download" link matching the table name
-7. Click to download ZIP, extract the CSV file
+2. Click Retrieve Data (`pageForm:retB`) with `force=True` (blocked by `autoRetrieve` overlay)
+3. Wait for table cells to populate with numeric data
+4. Click "Download table" button (`input[value="Download table"]`) directly
+5. Playwright `expect_download()` captures the file
+6. Extract CSV from ZIP if needed
+
+For large tables that can't download directly, there's a fallback queue flow using `downloadTableModeForm` dialog, but direct download works for most tables.
 
 ## Selector Registry
 
@@ -80,7 +83,7 @@ Census datasets have geography as a separate tree section ("Geographical Areas..
 | SEARCH_BUTTON | `#searchButton` | `button:has-text("Search")` | Search submit |
 | CATEGORY_CHECKBOX | `input[type=checkbox]` | `[role="checkbox"]` | Category checkbox |
 | FORMAT_DROPDOWN | `#downloadControl\:downloadType` | `select[name*="downloadType"]` | Download format |
-| QUEUE_BUTTON | `#pageForm\:retB` | `button:has-text("Queue")` | Open queue dialog |
+| QUEUE_BUTTON | `#pageForm\:retB` | `button:has-text("Queue")` | **Retrieve Data** (NOT queue — name is legacy) |
 | QUEUE_DIALOG | `#downloadTableModePanel_container` | `[role="dialog"]`, `.modal` | Queue modal |
 | QUEUE_NAME_INPUT | `#downloadTableModeForm\:downloadTableNameTxt` | `input[name*="TableName"]` | Table name input |
 | QUEUE_SUBMIT | `#downloadTableModeForm\:queueTableButton` | `button:has-text("Queue")` | Queue submit |
@@ -129,12 +132,6 @@ uv run playwright install chromium
 # Fetch a table
 uv run tablebuilder fetch --dataset "Census 2021" --rows "SEXP Sex" -o out.csv
 
-# Fetch with Census geography
-uv run tablebuilder fetch --dataset "2021 Census - cultural diversity" --geography "Remoteness Areas" --geo-filter "South Australia" -o sa_remoteness.csv
-
-# Fetch all states by remoteness
-uv run tablebuilder fetch --dataset "2021 Census - cultural diversity" --geography "Remoteness Areas" -o all_remoteness.csv
-
 # List datasets
 uv run tablebuilder datasets
 
@@ -165,6 +162,26 @@ uv run pytest tests/test_browser.py -v
 - Integration tests are marked with `@pytest.mark.integration` and skipped by default
 - Run `uv run pytest --ignore=tests/test_integration.py -q` for a quick check
 
+## Known Issues & Improvement Opportunities
+
+### Performance: Stale Expansion Loop (~6 min per variable)
+The `[aria-expanded="false"]` fallback selector matches 7-8 non-tree UI elements. Each stale detection round wastes ~2 min clicking these phantom elements. Fix: scope the fallback selector to only match elements within the tree panel (e.g. `.treeNodeExpander[aria-expanded="false"]`), or just drop the `[aria-expanded="false"]` fallback entirely since the primary `.treeNodeExpander.collapsed` works fine.
+
+### Resolver Returns Variable Codes Instead of Labels
+The ChatResolver sometimes returns "OCCP" instead of "Occupation". The system prompt says labels must exactly match, but the LLM doesn't always comply. `_find_variable_node()` has a code-prefix fallback (pass 3) but ideally the resolver should be fixed to always return labels.
+
+### Some Variables Fail Category Selection
+"Age" (single years, 100+ categories) fails with "No categories found". The `_is_variable_node()` regex may incorrectly identify some intermediate nodes as variables, causing the walker to stop too early. Needs investigation with headed browser to see the actual tree structure for these variables.
+
+### Context Destruction on Long Sessions
+Queries 14, 18, 20 failed with "Execution context was destroyed" — the browser session times out or the page navigates during a long operation. Possible fix: add session health checks and re-login if needed.
+
+### Dataset Name Fuzzy Matching
+Query 17 failed because the resolver returned "Labour Force Survey, 2006 to 2025" but the actual dataset name uses different formatting. The fuzzy matcher should be more lenient with date ranges and punctuation.
+
+### Batch Fetch Performance
+Each fetch takes 8-28 minutes (avg ~15 min), dominated by tree expansion. Total batch of 20 queries took ~5.5 hours. To improve: reuse browser sessions across queries for the same dataset, or skip tree expansion when auto-retrieve is enabled (data populates automatically when variables are added).
+
 ## Data Dictionary Search
 
 SQLite database at `~/.tablebuilder/dictionary.db` contains 96 ABS TableBuilder datasets
@@ -180,23 +197,3 @@ sqlite3 ~/.tablebuilder/dictionary.db "SELECT dataset_name, label, categories_te
 # Rebuild after new extractions
 uv run tablebuilder dictionary --rebuild-db
 ```
-
-## REST API (discovered 2026-03-21)
-
-Behind the JSF/Playwright facade, ABS TableBuilder has REST JSON APIs accessible via authenticated `requests.Session`:
-
-```
-GET  /webapi/rest/catalogue/databases/tree      — Full catalogue (197 databases)
-POST /webapi/rest/catalogue/databases/tree      — Expand/select: {"currentNode": [...path]}
-GET  /webapi/rest/catalogue/tableSchema/tree    — Variable tree for open database
-POST /webapi/rest/catalogue/tableSchema/tree    — Expand/select variable nodes
-POST /webapi/jsf/dataCatalogueExplorer.xhtml    — RichFaces AJAX to open database (doubleClickDatabase)
-     /webapi/downloadTable                       — Download servlet (protocol TBD)
-```
-
-Node IDs are base64-encoded (e.g., `b64("2021PersonsEN")` = `MjAyMVBlcnNvbnNFTg`).
-Variable keys: `SXV4__<database>__<record>__<field>_FLD`.
-Login requires `loginForm:_idcl=loginForm:login2` in POST body.
-
-Full plan: `docs/superpowers/plans/2026-03-21-direct-api-access.md`
-Captured data: `output/api_catalogue_tree.json`, `output/api_schema.json`, `output/api_tableview.html`

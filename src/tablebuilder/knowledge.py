@@ -10,7 +10,18 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-KNOWLEDGE_PATH = Path.home() / ".tablebuilder" / "knowledge.json"
+def _resolve_knowledge_path() -> Path:
+    """Resolve knowledge file path: TABLEBUILDER_DATA_DIR env > ./data/ > ~/.tablebuilder/."""
+    import os
+    if env_dir := os.environ.get("TABLEBUILDER_DATA_DIR"):
+        return Path(env_dir) / "knowledge.json"
+    local = Path.cwd() / "data" / "knowledge.json"
+    if local.exists():
+        return local
+    return Path.home() / ".tablebuilder" / "knowledge.json"
+
+
+KNOWLEDGE_PATH = _resolve_knowledge_path()
 
 
 class KnowledgeBase:

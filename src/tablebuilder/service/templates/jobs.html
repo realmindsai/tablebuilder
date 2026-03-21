@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Jobs - TableBuilder Service{% endblock %}
+{% block content %}
+<h2>Your Jobs</h2>
+{% if not api_key %}
+<p>Please <a href="/">register</a> first.</p>
+{% elif jobs %}
+<table>
+    <thead>
+        <tr>
+            <th>Dataset</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Duration</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for job in jobs %}
+        <tr>
+            <td>{{ job.dataset_name }}</td>
+            <td><span class="status-{{ job.status }}">{{ job.status }}</span></td>
+            <td>{{ job.created_at[:16] }}</td>
+            <td>{{ job.duration or "-" }}</td>
+            <td>
+                {% if job.status == "completed" %}
+                <a href="/api/jobs/{{ job.id }}/download">Download CSV</a>
+                {% elif job.status == "failed" %}
+                <a href="/jobs/{{ job.id }}">View Error</a>
+                {% elif job.status == "running" %}
+                <span hx-get="/web/job-status/{{ job.id }}" hx-trigger="every 10s" hx-swap="outerHTML">
+                    {{ job.progress or "Starting..." }}
+                </span>
+                {% else %}
+                Queued
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No jobs yet. <a href="/">Start a chat</a> to request data.</p>
+{% endif %}
+{% endblock %}

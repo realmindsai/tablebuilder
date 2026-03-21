@@ -326,3 +326,26 @@ def search(query, limit, datasets):
             truncated = cats[:120] + "..." if len(cats) > 120 else cats
             click.echo(f"    Categories: {truncated}")
         click.echo()
+
+
+@cli.command()
+@click.option("--port", default=8080, type=int, help="Port to listen on (default: 8080).")
+@click.option("--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0).")
+def serve(port, host):
+    """Start the TableBuilder API service."""
+    import os
+    import uvicorn
+    from tablebuilder.service.app import create_app
+
+    encryption_key = os.environ.get("DB_ENCRYPTION_KEY", "")
+    if not encryption_key:
+        click.echo(
+            "Warning: DB_ENCRYPTION_KEY not set. "
+            "Credential encryption will not work.",
+            err=True,
+        )
+
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    app = create_app(encryption_key=encryption_key, anthropic_api_key=anthropic_key)
+    click.echo(f"Starting TableBuilder service on {host}:{port}")
+    uvicorn.run(app, host=host, port=port)

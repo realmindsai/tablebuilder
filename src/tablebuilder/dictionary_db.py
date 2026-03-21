@@ -9,8 +9,19 @@ from tablebuilder.logging_config import get_logger
 
 logger = get_logger("tablebuilder.dictionary_db")
 
-DEFAULT_DB_PATH = Path.home() / ".tablebuilder" / "dictionary.db"
-DEFAULT_CACHE_DIR = Path.home() / ".tablebuilder" / "dict_cache"
+def _resolve_data_path(filename: str) -> Path:
+    """Resolve a data file path: TABLEBUILDER_DATA_DIR env > ./data/ > ~/.tablebuilder/."""
+    import os
+    if env_dir := os.environ.get("TABLEBUILDER_DATA_DIR"):
+        return Path(env_dir) / filename
+    local = Path.cwd() / "data" / filename
+    if local.exists():
+        return local
+    return Path.home() / ".tablebuilder" / filename
+
+
+DEFAULT_DB_PATH = _resolve_data_path("dictionary.db")
+DEFAULT_CACHE_DIR = _resolve_data_path("dict_cache")
 
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS datasets (
@@ -216,20 +227,38 @@ def build_db(cache_dir: Path, db_path: Path) -> None:
     logger.info("Database built: %s", db_path)
 
 
+def _to_or_query(query: str) -> str:
+    """Convert a plain multi-word query to FTS5 OR syntax.
+
+    FTS5 defaults to AND for multiple terms which is too restrictive.
+    This joins terms with OR so "remoteness population" becomes
+    "remoteness OR population", ranking results with more matches higher.
+    Already-structured queries (containing OR, AND, NOT, or quotes) pass through.
+    """
+    if any(op in query.upper() for op in [" OR ", " AND ", " NOT ", '"']):
+        return query
+    terms = query.strip().split()
+    if len(terms) <= 1:
+        return query
+    return " OR ".join(terms)
+
+
 def search(db_path: Path, query: str, limit: int = 20) -> list[dict]:
     """Search the dictionary database using FTS5 full-text search.
 
     Returns a ranked list of matching variables with dataset context.
+    Multi-word queries default to OR logic for broader matching.
     """
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
+    fts_query = _to_or_query(query)
     try:
         rows = conn.execute(
             "SELECT dataset_name, group_path, code, label, categories_text, summary "
             "FROM variables_fts "
             "WHERE variables_fts MATCH ? "
             "ORDER BY rank LIMIT ?",
-            (query, limit),
+            (fts_query, limit),
         ).fetchall()
         return [dict(r) for r in rows]
     except Exception:
