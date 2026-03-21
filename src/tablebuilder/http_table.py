@@ -164,12 +164,11 @@ def get_category_keys(
     expand_payload = build_expand_payload(group_key, field_key)
     response = session.rest_post(SCHEMA_TREE_PATH, expand_payload)
 
-    # Extract category keys from the response
+    # Extract category keys from the response — categories are direct nodeList items
     category_keys = []
     if response and "nodeList" in response:
         for node in response["nodeList"]:
-            for child in node.get("children", []):
-                category_keys.append(child["key"])
+            category_keys.append(node["key"])
 
     logger.info(
         "Variable '%s': group_key=%s, %d categories discovered",
