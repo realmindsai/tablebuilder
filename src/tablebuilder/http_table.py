@@ -372,10 +372,13 @@ def http_fetch_table(
         select_all_categories(session, schema, var_info)
         add_to_axis(session, axis.value)
 
-    # 5. Retrieve and download
+    # 5. Retrieve data
     retrieve_data(session)
     select_csv_format(session)
-    download_table(session, output_path)
+
+    # 6. Download — use Playwright for the download step since the download
+    # servlet requires browser-side JavaScript to trigger
+    _playwright_download(session, output_path)
     logger.info("Downloaded table to %s", output_path)
 
 
@@ -466,3 +469,103 @@ def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
         time.sleep(5)
 
     raise RuntimeError("Download timed out after 5 minutes of polling.")
+
+
+def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> None:
+    """Download the table using a brief Playwright session with transferred cookies.
+
+    After HTTP-based login/build/retrieve, we transfer the session cookies to
+    Playwright and use browser-side JavaScript to trigger the download. This
+    handles the download servlet which requires browser JS to initiate.
+    """
+    import time as _time
+    from playwright.sync_api import sync_playwright
+
+    logger.info("Starting Playwright download session")
+
+    # Transfer cookies from requests session to Playwright
+    pw_cookies = []
+    for cookie in session._session.cookies:
+        pw_cookies.append({
+            "name": cookie.name,
+            "value": cookie.value,
+            "domain": cookie.domain or "tablebuilder.abs.gov.au",
+            "path": cookie.path or "/",
+        })
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context()
+        context.add_cookies(pw_cookies)
+        page = context.new_page()
+
+        # Navigate to tableView — the server should have our built table
+        page.goto(TABLEVIEW_URL, wait_until="networkidle", timeout=30000)
+        page.wait_for_timeout(2000)
+
+        # If we landed on the catalogue page instead, the session transfer failed
+        if "dataCatalogueExplorer" in page.url:
+            logger.warning("Session transfer failed, falling back to queue flow in Playwright")
+            browser.close()
+            raise RuntimeError(
+                "Playwright session transfer failed — landed on catalogue instead of tableView. "
+                "The HTTP session cookies may not carry the JSF server state."
+            )
+
+        # Wait for data to appear (auto-retrieve may need time)
+        for _ in range(15):
+            cells = page.query_selector_all("td")
+            data_cells = [c for c in cells[:30]
+                          if (c.text_content() or "").strip().replace(",", "").isdigit()]
+            if data_cells:
+                logger.info("Table data visible (%d cells)", len(data_cells))
+                break
+            page.wait_for_timeout(2000)
+
+        # Select CSV format if dropdown exists
+        fmt = page.query_selector("#downloadControl\\:downloadType")
+        if fmt:
+            page.select_option("#downloadControl\\:downloadType", "CSV")
+            page.wait_for_timeout(500)
+
+        # Try direct download button
+        dl_btn = page.query_selector(
+            '#downloadControl\\:downloadGoButton, input[value="Download table"]'
+        )
+        if dl_btn:
+            logger.info("Clicking download button")
+            try:
+                with page.expect_download(timeout=30000) as dl_info:
+                    dl_btn.click()
+                download = dl_info.value
+                download.save_as(output_path)
+                # Extract CSV from ZIP if needed
+                _extract_if_zip(output_path)
+                logger.info("Downloaded via direct button to %s", output_path)
+                browser.close()
+                return
+            except Exception as e:
+                logger.warning("Direct download failed: %s", e)
+
+        # Fall back to queue flow via Playwright
+        logger.info("Falling back to Playwright queue flow")
+        from tablebuilder.downloader import queue_and_download
+        queue_and_download(page, output_path)
+        browser.close()
+
+
+def _extract_if_zip(path: str) -> None:
+    """If the file at path is a ZIP, extract the first file and replace."""
+    try:
+        if zipfile.is_zipfile(path):
+            with zipfile.ZipFile(path, "r") as zf:
+                names = zf.namelist()
+                if names:
+                    csv_name = names[0]
+                    with zf.open(csv_name) as src:
+                        content = src.read()
+                    with open(path, "wb") as f:
+                        f.write(content)
+                    logger.debug("Extracted %s from ZIP", csv_name)
+    except Exception as e:
+        logger.warning("ZIP extraction failed: %s", e)

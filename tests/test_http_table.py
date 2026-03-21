@@ -905,7 +905,7 @@ class TestHTTPFetchTable:
              patch(f"{self._TBL}.add_to_axis") as mock_add_axis, \
              patch(f"{self._TBL}.retrieve_data") as mock_retrieve, \
              patch(f"{self._TBL}.select_csv_format") as mock_csv, \
-             patch(f"{self._TBL}.download_table") as mock_download:
+             patch(f"{self._TBL}._playwright_download") as mock_download:
 
             # Track ordering via side_effect
             session.rest_get.return_value = SAMPLE_CATALOGUE_TREE
@@ -917,7 +917,7 @@ class TestHTTPFetchTable:
             mock_add_axis.side_effect = lambda *a, **kw: call_order.append("add_to_axis")
             mock_retrieve.side_effect = lambda *a, **kw: call_order.append("retrieve_data")
             mock_csv.side_effect = lambda *a, **kw: call_order.append("select_csv_format")
-            mock_download.side_effect = lambda *a, **kw: call_order.append("download_table")
+            mock_download.side_effect = lambda *a, **kw: call_order.append("playwright_download")
 
             http_fetch_table(session, request, "/tmp/test_output.csv")
 
@@ -933,7 +933,7 @@ class TestHTTPFetchTable:
                 "add_to_axis",
                 "retrieve_data",
                 "select_csv_format",
-                "download_table",
+                "playwright_download",
             ]
 
     def test_raises_navigation_error_when_database_not_found(self):
@@ -995,7 +995,7 @@ class TestHTTPFetchTable:
              patch(f"{self._TBL}.add_to_axis") as mock_add_axis, \
              patch(f"{self._TBL}.retrieve_data"), \
              patch(f"{self._TBL}.select_csv_format"), \
-             patch(f"{self._TBL}.download_table"):
+             patch(f"{self._TBL}._playwright_download"):
 
             session.rest_get.return_value = SAMPLE_CATALOGUE_TREE
             mock_find_db.return_value = (["root_key", "db_key"], SAMPLE_CATALOGUE_TREE["nodeList"][0]["children"][0])
@@ -1008,7 +1008,7 @@ class TestHTTPFetchTable:
             assert axis_calls == ["row", "col", "wafer"]
 
     def test_downloads_to_specified_output_path(self):
-        """download_table is called with the correct output path."""
+        """_playwright_download is called with the correct output path."""
         from tablebuilder.http_table import http_fetch_table
         from tablebuilder.models import TableRequest
 
@@ -1023,7 +1023,7 @@ class TestHTTPFetchTable:
              patch(f"{self._TBL}.add_to_axis"), \
              patch(f"{self._TBL}.retrieve_data"), \
              patch(f"{self._TBL}.select_csv_format"), \
-             patch(f"{self._TBL}.download_table") as mock_download:
+             patch(f"{self._TBL}._playwright_download") as mock_download:
 
             session.rest_get.return_value = SAMPLE_CATALOGUE_TREE
             mock_find_db.return_value = (["root_key", "db_key"], SAMPLE_CATALOGUE_TREE["nodeList"][0]["children"][0])
