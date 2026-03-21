@@ -180,3 +180,23 @@ sqlite3 ~/.tablebuilder/dictionary.db "SELECT dataset_name, label, categories_te
 # Rebuild after new extractions
 uv run tablebuilder dictionary --rebuild-db
 ```
+
+## REST API (discovered 2026-03-21)
+
+Behind the JSF/Playwright facade, ABS TableBuilder has REST JSON APIs accessible via authenticated `requests.Session`:
+
+```
+GET  /webapi/rest/catalogue/databases/tree      — Full catalogue (197 databases)
+POST /webapi/rest/catalogue/databases/tree      — Expand/select: {"currentNode": [...path]}
+GET  /webapi/rest/catalogue/tableSchema/tree    — Variable tree for open database
+POST /webapi/rest/catalogue/tableSchema/tree    — Expand/select variable nodes
+POST /webapi/jsf/dataCatalogueExplorer.xhtml    — RichFaces AJAX to open database (doubleClickDatabase)
+     /webapi/downloadTable                       — Download servlet (protocol TBD)
+```
+
+Node IDs are base64-encoded (e.g., `b64("2021PersonsEN")` = `MjAyMVBlcnNvbnNFTg`).
+Variable keys: `SXV4__<database>__<record>__<field>_FLD`.
+Login requires `loginForm:_idcl=loginForm:login2` in POST body.
+
+Full plan: `docs/superpowers/plans/2026-03-21-direct-api-access.md`
+Captured data: `output/api_catalogue_tree.json`, `output/api_schema.json`, `output/api_tableview.html`
