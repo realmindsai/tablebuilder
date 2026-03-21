@@ -59,10 +59,8 @@ async def web_register(
     encrypted = encrypt_credentials(encryption_key, abs_user_id, abs_password)
     db.create_user(api_key_hash=key_hash, abs_credentials_encrypted=encrypted)
 
-    response = HTMLResponse(
-        '<p>Registered! Ask me for ABS data. For example: '
-        '"population by remoteness area from the 2021 census"</p>'
-    )
+    from fastapi.responses import RedirectResponse
+    response = RedirectResponse(url="/", status_code=303)
     response.set_cookie("tb_api_key", api_key, httponly=True, max_age=86400 * 365)
     return response
 
