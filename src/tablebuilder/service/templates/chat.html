@@ -19,13 +19,22 @@
         {% endif %}
     </div>
     {% if api_key %}
-    <form hx-post="/web/chat" hx-target="#chat-messages" hx-swap="beforeend" hx-on::after-request="this.reset()">
+    <form id="chat-form" hx-post="/web/chat" hx-target="#chat-messages" hx-swap="beforeend"
+          hx-on::before-request="document.getElementById('send-btn').setAttribute('aria-busy','true')"
+          hx-on::after-request="this.reset(); document.getElementById('send-btn').removeAttribute('aria-busy'); document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight">
         <input type="hidden" name="session_id" id="session_id" value="">
         <div role="group">
             <input type="text" name="message" placeholder="Ask for data..." required autofocus>
-            <button type="submit">Send</button>
+            <button type="submit" id="send-btn">Send</button>
         </div>
     </form>
     {% endif %}
 </div>
+<script>
+// Auto-scroll chat on any HTMX swap
+document.body.addEventListener('htmx:afterSwap', function() {
+    var el = document.getElementById('chat-messages');
+    if (el) el.scrollTop = el.scrollHeight;
+});
+</script>
 {% endblock %}

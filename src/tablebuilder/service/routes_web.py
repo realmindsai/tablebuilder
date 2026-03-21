@@ -165,7 +165,7 @@ async def web_job_status(job_id: str, request: Request):
     if status == "completed":
         return HTMLResponse(
             f'<span class="status-completed">Completed!</span> '
-            f'<a href="/api/jobs/{job_id}/download">Download CSV</a>'
+            f'<a href="/web/download/{job_id}">Download CSV</a>'
         )
     elif status == "failed":
         return HTMLResponse(
@@ -234,6 +234,35 @@ async def job_detail_page(job_id: str, request: Request):
         "events": events,
         "screenshots": screenshots,
     })
+
+
+@router.get("/web/download/{job_id}")
+async def web_download(job_id: str, request: Request):
+    api_key = _get_valid_api_key(request)
+    if not api_key:
+        return HTMLResponse("Please register first.", status_code=401)
+
+    db = request.app.state.db
+    key_hash = hash_api_key(api_key)
+    user = db.get_user_by_api_key_hash(key_hash)
+    if not user:
+        return HTMLResponse("Unauthorized", status_code=401)
+
+    job = db.get_job(job_id)
+    if not job or job["user_id"] != user["id"]:
+        return HTMLResponse("Job not found", status_code=404)
+    if job["status"] != "completed" or not job.get("result_path"):
+        return HTMLResponse("Job not ready for download", status_code=400)
+
+    result_path = Path(job["result_path"])
+    if not result_path.exists():
+        return HTMLResponse("Result file not found", status_code=404)
+
+    return FileResponse(
+        result_path,
+        media_type="text/csv",
+        filename=f"tablebuilder_{job_id[:8]}.csv",
+    )
 
 
 @router.get("/web/screenshot/{job_id}/{filename}")
