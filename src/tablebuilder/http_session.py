@@ -192,6 +192,16 @@ class TableBuilderHTTPSession:
             f"{form_id}_SUBMIT": "1",
             "javax.faces.ViewState": self._viewstate,
             "org.richfaces.ajax.component": component_id,
+            component_id: component_id,
+            "rfExt": "null",
+            "AJAX:EVENTS_COUNT": "1",
+            "incId": "1",
+            "javax.faces.partial.event": "undefined",
+            "javax.faces.source": component_id,
+            "javax.faces.partial.ajax": "true",
+            "javax.faces.partial.execute": "@component",
+            "javax.faces.partial.render": "@component",
+            form_id: form_id,
         }
 
         if extra_params:
@@ -200,6 +210,7 @@ class TableBuilderHTTPSession:
         headers = {
             "Faces-Request": "partial/ajax",
             "X-Requested-With": "XMLHttpRequest",
+            "Referer": url,
         }
 
         resp = self._session.post(url, data=data, headers=headers)
