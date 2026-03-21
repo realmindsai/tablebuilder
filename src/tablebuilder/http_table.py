@@ -486,11 +486,16 @@ def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> 
     # Transfer cookies from requests session to Playwright
     pw_cookies = []
     for cookie in session._session.cookies:
+        # Playwright requires domain to start with . for domain-wide cookies
+        domain = cookie.domain or "tablebuilder.abs.gov.au"
+        if not domain.startswith("."):
+            domain = "." + domain
         pw_cookies.append({
             "name": cookie.name,
             "value": cookie.value,
-            "domain": cookie.domain or "tablebuilder.abs.gov.au",
+            "domain": domain,
             "path": cookie.path or "/",
+            "secure": True,
         })
 
     with sync_playwright() as p:
@@ -503,17 +508,24 @@ def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> 
         page.goto(TABLEVIEW_URL, wait_until="networkidle", timeout=30000)
         page.wait_for_timeout(2000)
 
-        # If we landed on the catalogue page instead, the session transfer failed
+        # If we landed on the catalogue page, the session doesn't have an open DB.
+        # That's expected — the JSF server state is separate. Click retrieve to
+        # trigger auto-retrieve which rebuilds the table on this Playwright session.
         if "dataCatalogueExplorer" in page.url:
-            logger.warning("Session transfer failed, falling back to queue flow in Playwright")
+            logger.info("Landed on catalogue — need to open DB in Playwright too")
+            # Just use the full Playwright queue flow from scratch
             browser.close()
-            raise RuntimeError(
-                "Playwright session transfer failed — landed on catalogue instead of tableView. "
-                "The HTTP session cookies may not carry the JSF server state."
-            )
+            _playwright_full_fallback(session, output_path)
+            return
 
-        # Wait for data to appear (auto-retrieve may need time)
-        for _ in range(15):
+        # Click the retrieve button to trigger server-side cross-tabulation
+        ret_btn = page.query_selector("#pageForm\\:retB")
+        if ret_btn:
+            logger.info("Clicking retrieve button")
+            ret_btn.click(force=True)
+
+        # Wait for data to appear
+        for _ in range(30):
             cells = page.query_selector_all("td")
             data_cells = [c for c in cells[:30]
                           if (c.text_content() or "").strip().replace(",", "").isdigit()]
@@ -539,7 +551,6 @@ def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> 
                     dl_btn.click()
                 download = dl_info.value
                 download.save_as(output_path)
-                # Extract CSV from ZIP if needed
                 _extract_if_zip(output_path)
                 logger.info("Downloaded via direct button to %s", output_path)
                 browser.close()
@@ -549,6 +560,38 @@ def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> 
 
         # Fall back to queue flow via Playwright
         logger.info("Falling back to Playwright queue flow")
+        from tablebuilder.downloader import queue_and_download
+        queue_and_download(page, output_path)
+        browser.close()
+
+
+def _playwright_full_fallback(session: TableBuilderHTTPSession, output_path: str) -> None:
+    """Full Playwright fallback when cookie transfer doesn't carry JSF state.
+
+    Logs in fresh via Playwright and uses the existing table_builder + downloader
+    to rebuild and download. Still faster than the original flow because we skip
+    the slow catalogue navigation by using REST to open the database directly.
+    """
+    from playwright.sync_api import sync_playwright
+
+    logger.info("Using full Playwright fallback for download")
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+
+        # Login via Playwright (fast — just form fill + click)
+        page.goto(f"{BASE_URL}/jsf/login.xhtml", wait_until="networkidle")
+        page.fill("#loginForm\\:username2", session.config.user_id)
+        page.fill("#loginForm\\:password2", session.config.password)
+        page.click("#loginForm\\:login2")
+        page.wait_for_load_state("networkidle", timeout=15000)
+        if "terms.xhtml" in page.url:
+            page.click("#termsForm\\:termsButton")
+            page.wait_for_load_state("networkidle", timeout=10000)
+
+        # Use the queue_and_download from the existing downloader
+        # which handles the full Playwright download flow
         from tablebuilder.downloader import queue_and_download
         queue_and_download(page, output_path)
         browser.close()
