@@ -238,18 +238,9 @@ async def job_detail_page(job_id: str, request: Request):
 
 @router.get("/web/download/{job_id}")
 async def web_download(job_id: str, request: Request):
-    api_key = _get_valid_api_key(request)
-    if not api_key:
-        return HTMLResponse("Please register first.", status_code=401)
-
     db = request.app.state.db
-    key_hash = hash_api_key(api_key)
-    user = db.get_user_by_api_key_hash(key_hash)
-    if not user:
-        return HTMLResponse("Unauthorized", status_code=401)
-
     job = db.get_job(job_id)
-    if not job or job["user_id"] != user["id"]:
+    if not job:
         return HTMLResponse("Job not found", status_code=404)
     if job["status"] != "completed" or not job.get("result_path"):
         return HTMLResponse("Job not ready for download", status_code=400)
