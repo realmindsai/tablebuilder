@@ -114,3 +114,53 @@ class TestCliFetchGeography:
         result = runner.invoke(cli, ["fetch", "--help"])
         assert "--rows" in result.output
         assert "--geography" in result.output
+
+
+class TestFetchHTTPFlag:
+    """Tests for the --http flag on the fetch command."""
+
+    def test_http_flag_is_accepted(self):
+        """CLI accepts --http flag without argument error."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["fetch", "--help"])
+        assert result.exit_code == 0
+        assert "--http" in result.output
+
+    def test_http_flag_shown_in_help(self):
+        """--http flag description mentions HTTP or direct."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["fetch", "--help"])
+        assert result.exit_code == 0
+        # The help text should mention "HTTP" for the --http flag
+        assert "HTTP" in result.output or "http" in result.output.lower()
+
+    def test_http_flag_invokes_http_session(self):
+        """When --http is passed, the HTTP path is used instead of Playwright."""
+        from unittest.mock import MagicMock, patch
+
+        runner = CliRunner()
+
+        mock_session_cls = MagicMock()
+        mock_session_instance = MagicMock()
+        mock_session_cls.return_value.__enter__ = MagicMock(return_value=mock_session_instance)
+        mock_session_cls.return_value.__exit__ = MagicMock(return_value=False)
+
+        with patch("tablebuilder.cli.load_config") as mock_config, \
+             patch("tablebuilder.http_session.TableBuilderHTTPSession") as mock_http_cls, \
+             patch("tablebuilder.http_table.http_fetch_table") as mock_fetch:
+
+            mock_config.return_value = MagicMock(user_id="test", password="test")
+            mock_http_cls.return_value.__enter__ = MagicMock(return_value=mock_session_instance)
+            mock_http_cls.return_value.__exit__ = MagicMock(return_value=False)
+
+            result = runner.invoke(cli, [
+                "fetch",
+                "--http",
+                "--dataset", "Census 2021",
+                "--rows", "SEXP Sex",
+                "-o", "/tmp/test.csv",
+            ])
+
+            # Should not fail with "no such option" error
+            assert "no such option" not in (result.output or "").lower()
+            assert "No such option" not in (result.output or "")

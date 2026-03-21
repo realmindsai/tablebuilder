@@ -43,6 +43,7 @@ def cli(ctx, verbose):
     default=None,
     help="Output CSV path. Defaults to ./tablebuilder_YYYYMMDD_HHMMSS.csv.",
 )
+@click.option("--http", "use_http", is_flag=True, help="Use direct HTTP instead of browser automation.")
 @click.option("--headed", is_flag=True, help="Show browser window for debugging.")
 @click.option("--user-id", default=None, help="ABS User ID (overrides .env).")
 @click.option("--password", default=None, help="ABS password (overrides .env).")
@@ -53,7 +54,7 @@ def cli(ctx, verbose):
     help="Queue timeout in seconds (default: 600).",
 )
 @click.pass_context
-def fetch(ctx, dataset, rows, cols, wafers, geography, geo_filter, output, headed, user_id, password, timeout):
+def fetch(ctx, dataset, rows, cols, wafers, geography, geo_filter, output, use_http, headed, user_id, password, timeout):
     """Fetch a table from ABS TableBuilder and download as CSV."""
     knowledge = ctx.obj['knowledge']
     knowledge.record_run()
@@ -97,40 +98,66 @@ def fetch(ctx, dataset, rows, cols, wafers, geography, geo_filter, output, heade
         click.echo(f"Wafers: {', '.join(request.wafers)}")
     click.echo(f"Output: {output}")
 
-    from tablebuilder.browser import TableBuilderSession, LoginError
-    from tablebuilder.navigator import open_dataset, NavigationError
-    from tablebuilder.table_builder import build_table, TableBuildError
-    from tablebuilder.downloader import queue_and_download, DownloadError
+    if use_http:
+        from tablebuilder.browser import LoginError
+        from tablebuilder.http_session import TableBuilderHTTPSession
+        from tablebuilder.http_table import http_fetch_table
+        from tablebuilder.navigator import NavigationError
+        from tablebuilder.table_builder import TableBuildError
 
-    try:
-        with TableBuilderSession(config, headless=not headed, knowledge=knowledge) as page:
-            click.echo("Logged in to TableBuilder.")
+        try:
+            with TableBuilderHTTPSession(config, knowledge=knowledge) as session:
+                click.echo("Logged in via HTTP.")
+                click.echo("Fetching table...")
+                http_fetch_table(session, request, output)
+                click.echo(f"Done! CSV saved to {output}")
 
-            click.echo(f"Opening dataset: {request.dataset}")
-            open_dataset(page, request.dataset, knowledge=knowledge)
+        except LoginError as e:
+            click.echo(f"Login error: {e}", err=True)
+            sys.exit(1)
+        except NavigationError as e:
+            click.echo(f"Navigation error: {e}", err=True)
+            sys.exit(1)
+        except TableBuildError as e:
+            click.echo(f"Table build error: {e}", err=True)
+            sys.exit(1)
+        finally:
+            knowledge.save()
+    else:
+        from tablebuilder.browser import TableBuilderSession, LoginError
+        from tablebuilder.navigator import open_dataset, NavigationError
+        from tablebuilder.table_builder import build_table, TableBuildError
+        from tablebuilder.downloader import queue_and_download, DownloadError
 
-            click.echo("Building table...")
-            build_table(page, request, knowledge=knowledge)
+        try:
+            with TableBuilderSession(config, headless=not headed, knowledge=knowledge) as page:
+                click.echo("Logged in to TableBuilder.")
 
-            click.echo(f"Queuing and downloading to {output}...")
-            queue_and_download(page, output, timeout=timeout, knowledge=knowledge)
+                click.echo(f"Opening dataset: {request.dataset}")
+                open_dataset(page, request.dataset, knowledge=knowledge)
 
-            click.echo(f"Done! CSV saved to {output}")
+                click.echo("Building table...")
+                build_table(page, request, knowledge=knowledge)
 
-    except LoginError as e:
-        click.echo(f"Login error: {e}", err=True)
-        sys.exit(1)
-    except NavigationError as e:
-        click.echo(f"Navigation error: {e}", err=True)
-        sys.exit(1)
-    except TableBuildError as e:
-        click.echo(f"Table build error: {e}", err=True)
-        sys.exit(1)
-    except DownloadError as e:
-        click.echo(f"Download error: {e}", err=True)
-        sys.exit(1)
-    finally:
-        knowledge.save()
+                click.echo(f"Queuing and downloading to {output}...")
+                queue_and_download(page, output, timeout=timeout, knowledge=knowledge)
+
+                click.echo(f"Done! CSV saved to {output}")
+
+        except LoginError as e:
+            click.echo(f"Login error: {e}", err=True)
+            sys.exit(1)
+        except NavigationError as e:
+            click.echo(f"Navigation error: {e}", err=True)
+            sys.exit(1)
+        except TableBuildError as e:
+            click.echo(f"Table build error: {e}", err=True)
+            sys.exit(1)
+        except DownloadError as e:
+            click.echo(f"Download error: {e}", err=True)
+            sys.exit(1)
+        finally:
+            knowledge.save()
 
 
 @cli.command()
