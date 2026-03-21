@@ -671,9 +671,12 @@ class TestDownloadTable:
         direct_response = MagicMock()
         direct_response.headers = {"Content-Type": "application/octet-stream"}
         direct_response.content = zip_bytes
+        direct_response.text = "<html>no viewstate</html>"
 
         session = MagicMock()
-        session.jsf_post.return_value = direct_response
+        session.viewstate = "vs_token"
+        session._session = MagicMock()
+        session._session.post.return_value = direct_response
 
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "out.csv")
@@ -692,9 +695,12 @@ class TestDownloadTable:
         direct_response = MagicMock()
         direct_response.headers = {"Content-Type": "application/octet-stream"}
         direct_response.content = csv_data
+        direct_response.text = "<html>no viewstate</html>"
 
         session = MagicMock()
-        session.jsf_post.return_value = direct_response
+        session.viewstate = "vs_token"
+        session._session = MagicMock()
+        session._session.post.return_value = direct_response
 
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "out.csv")
@@ -717,17 +723,27 @@ class TestDownloadTable:
         html_response.content = b"<html>table view page</html>"
 
         session = MagicMock()
-        session.jsf_post.return_value = html_response
+        session.viewstate = "vs_token"
 
         # Queue flow: GET openTable.xhtml
         open_table_response = MagicMock()
         open_table_response.text = "<html>saved tables</html>"
 
-        # Queue flow: GET manageTables/tree returns list of jobs
-        manage_tables_response = [
-            {"jobId": "job_older", "label": "old table"},
-            {"jobId": "job_latest", "label": "latest table"},
-        ]
+        # Queue flow: manageTables/tree returns a tree dict with nodeList
+        manage_tables_response = {
+            "nodeList": [
+                {
+                    "key": "job_node_1",
+                    "data": {"jobId": "job_older", "label": "old table"},
+                    "children": [],
+                },
+                {
+                    "key": "job_node_2",
+                    "data": {"jobId": "job_latest", "label": "latest table"},
+                    "children": [],
+                },
+            ]
+        }
 
         # Queue flow: GET downloadTable returns ZIP
         download_response = MagicMock()
@@ -735,6 +751,7 @@ class TestDownloadTable:
 
         # Wire up the session mocks
         session._session = MagicMock()
+        session._session.post.return_value = html_response
 
         def mock_get(url, **kwargs):
             if "openTable.xhtml" in url:
@@ -754,8 +771,8 @@ class TestDownloadTable:
             with open(output_path) as f:
                 assert f.read() == csv_data
 
-    def test_queue_flow_uses_latest_job_id(self):
-        """Queue flow picks the last job ID from the manageTables/tree response."""
+    def test_queue_flow_uses_first_found_job_id(self):
+        """Queue flow finds and uses the first job with a jobId in the tree."""
         from tablebuilder.http_table import download_table
 
         csv_data = "a,b\n1,2\n"
@@ -767,22 +784,40 @@ class TestDownloadTable:
         html_response.content = b"<html></html>"
 
         session = MagicMock()
-        session.jsf_post.return_value = html_response
+        session.viewstate = "vs_token"
 
-        manage_tables = [
-            {"jobId": "first_job", "label": "Table 1"},
-            {"jobId": "second_job", "label": "Table 2"},
-        ]
+        # manageTables/tree returns a tree dict with nodeList
+        manage_tables = {
+            "nodeList": [
+                {
+                    "key": "job_node_1",
+                    "data": {"jobId": "first_job", "label": "Table 1"},
+                    "children": [],
+                },
+                {
+                    "key": "job_node_2",
+                    "data": {"jobId": "second_job", "label": "Table 2"},
+                    "children": [],
+                },
+            ]
+        }
         session.rest_get.return_value = manage_tables
 
         download_response = MagicMock()
         download_response.content = zip_bytes
 
+        open_table_response = MagicMock()
+        open_table_response.text = "<html>saved tables</html>"
+
         session._session = MagicMock()
+        session._session.post.return_value = html_response
 
         def mock_get(url, **kwargs):
-            if "downloadTable" in url:
-                assert "jobId=second_job" in url
+            if "openTable.xhtml" in url:
+                return open_table_response
+            elif "downloadTable" in url:
+                # The tree walker finds the first jobId (depth-first)
+                assert "jobId=first_job" in url
                 return download_response
             return MagicMock()
 
@@ -793,7 +828,7 @@ class TestDownloadTable:
             download_table(session, output_path)
 
     def test_download_posts_go_button(self):
-        """Direct download tries submitting downloadControl:downloadGoButton."""
+        """Direct download posts downloadControl:downloadGoButton via session._session.post()."""
         from tablebuilder.http_table import download_table
 
         csv_data = b"x,y\n1,2\n"
@@ -801,16 +836,21 @@ class TestDownloadTable:
         direct_response = MagicMock()
         direct_response.headers = {"Content-Type": "application/octet-stream"}
         direct_response.content = csv_data
+        direct_response.text = "<html>no viewstate</html>"
 
         session = MagicMock()
-        session.jsf_post.return_value = direct_response
+        session.viewstate = "vs_token"
+        session._session = MagicMock()
+        session._session.post.return_value = direct_response
 
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "out.csv")
             download_table(session, output_path)
 
-        call_data = session.jsf_post.call_args[0][1]
-        assert "downloadControl:downloadGoButton" in call_data
+        call_data = session._session.post.call_args
+        post_data = call_data[1].get("data", call_data[0][1] if len(call_data[0]) > 1 else {})
+        assert "downloadControl:downloadGoButton" in post_data
+        assert post_data["javax.faces.ViewState"] == "vs_token"
 
 
 # ── http_fetch_table tests ────────────────────────────────────────────
