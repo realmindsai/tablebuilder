@@ -134,29 +134,19 @@ SAMPLE_SCHEMA = {
 
 
 # Response from expanding a variable node (returned by rest_post)
+# Categories appear directly in nodeList (flat), not nested as children of a parent node.
 EXPAND_RESPONSE = {
     "nodeList": [
         {
-            "key": "var_sexp",
-            "data": {
-                "type": "VARIABLE",
-                "name": "SEXP Sex",
-                "iconType": "FIELD",
-                "draggable": True,
-            },
-            "children": [
-                {
-                    "key": "MQ",
-                    "data": {"type": "CATEGORY", "name": "Male"},
-                    "children": [],
-                },
-                {
-                    "key": "Mg",
-                    "data": {"type": "CATEGORY", "name": "Female"},
-                    "children": [],
-                },
-            ],
-        }
+            "key": "MQ",
+            "data": {"type": "CATEGORY", "name": "Male"},
+            "children": [],
+        },
+        {
+            "key": "Mg",
+            "data": {"type": "CATEGORY", "name": "Female"},
+            "children": [],
+        },
     ]
 }
 
@@ -328,25 +318,19 @@ class TestGetCategoryKeys:
 
         session = MagicMock()
         session.rest_get.return_value = SAMPLE_SCHEMA_TREE
-        # Expand response with geography categories
+        # Expand response with geography categories (flat nodeList)
         geo_expand = {
             "nodeList": [
                 {
-                    "key": "var_state",
-                    "data": {"type": "VARIABLE", "name": "STATE State"},
-                    "children": [
-                        {
-                            "key": "NSW",
-                            "data": {"type": "CATEGORY", "name": "New South Wales"},
-                            "children": [],
-                        },
-                        {
-                            "key": "VIC",
-                            "data": {"type": "CATEGORY", "name": "Victoria"},
-                            "children": [],
-                        },
-                    ],
-                }
+                    "key": "NSW",
+                    "data": {"type": "CATEGORY", "name": "New South Wales"},
+                    "children": [],
+                },
+                {
+                    "key": "VIC",
+                    "data": {"type": "CATEGORY", "name": "Victoria"},
+                    "children": [],
+                },
             ]
         }
         session.rest_post.return_value = geo_expand
