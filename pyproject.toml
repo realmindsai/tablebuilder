@@ -4,10 +4,15 @@ version = "0.1.0"
 description = "CLI to download data from ABS TableBuilder"
 requires-python = ">=3.12"
 dependencies = [
+    "anthropic>=0.86.0",
     "click>=8.1",
+    "cryptography>=46.0.5",
+    "fastapi>=0.135.1",
+    "jinja2>=3.1.6",
     "playwright>=1.40",
     "python-dotenv>=1.0",
     "requests>=2.32.5",
+    "uvicorn>=0.42.0",
 ]
 
 [project.scripts]
