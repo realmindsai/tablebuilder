@@ -1,5 +1,5 @@
 # ABOUTME: Tests for the background job worker thread.
-# ABOUTME: Validates job lifecycle, error handling, and screenshot capture.
+# ABOUTME: Validates job lifecycle, error handling, and HTTP-based fetch pipeline.
 
 import json
 import threading
@@ -40,20 +40,16 @@ def _create_test_job(db, encryption_key):
 
 
 class TestWorkerJobLifecycle:
-    @patch("tablebuilder.service.worker.TableBuilderSession")
-    @patch("tablebuilder.service.worker.open_dataset")
-    @patch("tablebuilder.service.worker.build_table")
-    @patch("tablebuilder.service.worker.queue_and_download")
+    @patch("tablebuilder.service.worker.http_fetch_table")
+    @patch("tablebuilder.service.worker.TableBuilderHTTPSession")
     def test_successful_job(
-        self, mock_download, mock_build, mock_open, mock_session,
+        self, mock_session_cls, mock_fetch,
         db, results_dir, encryption_key
     ):
         """A successful job moves from queued -> running -> completed."""
-        mock_page = MagicMock()
-        mock_session_instance = MagicMock()
-        mock_session_instance.__enter__ = MagicMock(return_value=mock_page)
-        mock_session_instance.__exit__ = MagicMock(return_value=False)
-        mock_session.return_value = mock_session_instance
+        mock_session = MagicMock()
+        mock_session_cls.return_value.__enter__ = MagicMock(return_value=mock_session)
+        mock_session_cls.return_value.__exit__ = MagicMock(return_value=False)
 
         job_id = _create_test_job(db, encryption_key)
 
@@ -69,13 +65,17 @@ class TestWorkerJobLifecycle:
         events = db.get_events(job_id)
         assert any("Logging in" in e["message"] for e in events)
         assert any("Download complete" in e["message"] for e in events)
+        mock_fetch.assert_called_once()
 
-    @patch("tablebuilder.service.worker.TableBuilderSession")
+    @patch("tablebuilder.service.worker.TableBuilderHTTPSession")
     def test_failed_job_captures_error(
-        self, mock_session, db, results_dir, encryption_key
+        self, mock_session_cls, db, results_dir, encryption_key
     ):
         """A failed job records error message, detail, and marks as failed."""
-        mock_session.side_effect = Exception("Browser exploded")
+        mock_session_cls.return_value.__enter__ = MagicMock(
+            side_effect=Exception("HTTP login failed")
+        )
+        mock_session_cls.return_value.__exit__ = MagicMock(return_value=False)
 
         job_id = _create_test_job(db, encryption_key)
 
@@ -88,22 +88,18 @@ class TestWorkerJobLifecycle:
 
         job = db.get_job(job_id)
         assert job["status"] == "failed"
-        assert "Browser exploded" in job["error_message"]
+        assert "HTTP login failed" in job["error_message"]
 
-    @patch("tablebuilder.service.worker.TableBuilderSession")
-    @patch("tablebuilder.service.worker.open_dataset")
-    def test_session_expired_marks_failed(
-        self, mock_open, mock_session, db, results_dir, encryption_key
+    @patch("tablebuilder.service.worker.http_fetch_table")
+    @patch("tablebuilder.service.worker.TableBuilderHTTPSession")
+    def test_fetch_error_marks_failed(
+        self, mock_session_cls, mock_fetch, db, results_dir, encryption_key
     ):
-        """SessionExpiredError during pipeline marks job as failed with event log."""
-        from tablebuilder.navigator import SessionExpiredError
-
-        mock_page = MagicMock()
-        mock_session_instance = MagicMock()
-        mock_session_instance.__enter__ = MagicMock(return_value=mock_page)
-        mock_session_instance.__exit__ = MagicMock(return_value=False)
-        mock_session.return_value = mock_session_instance
-        mock_open.side_effect = SessionExpiredError("Session expired")
+        """An error during fetch marks the job as failed with details."""
+        mock_session = MagicMock()
+        mock_session_cls.return_value.__enter__ = MagicMock(return_value=mock_session)
+        mock_session_cls.return_value.__exit__ = MagicMock(return_value=False)
+        mock_fetch.side_effect = Exception("Variable not found")
 
         job_id = _create_test_job(db, encryption_key)
 
@@ -116,9 +112,7 @@ class TestWorkerJobLifecycle:
 
         job = db.get_job(job_id)
         assert job["status"] == "failed"
-        assert "Session expired" in job["error_message"]
-        events = db.get_events(job_id)
-        assert any("Session expired" in e["message"] or "relogin" in e["message"].lower() for e in events)
+        assert "Variable not found" in job["error_message"]
 
     def test_no_jobs_returns_false(self, db, results_dir, encryption_key):
         """process_one_job returns False when no jobs are queued."""
