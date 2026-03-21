@@ -67,6 +67,10 @@ class TableBuilderHTTPSession:
         """The current JSF ViewState token."""
         return self._viewstate
 
+    @viewstate.setter
+    def viewstate(self, value: str | None) -> None:
+        self._viewstate = value
+
     @property
     def catalogue_html(self) -> str:
         """The HTML content of the data catalogue page after login."""

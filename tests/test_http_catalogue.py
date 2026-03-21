@@ -255,7 +255,7 @@ class TestOpenDatabase:
         )
 
     def test_fires_richfaces_ajax(self):
-        """Fires a RichFaces AJAX doubleClickDatabase call."""
+        """Fires selectedDatabase then doubleClickDatabase AJAX calls."""
         from tablebuilder.http_catalogue import open_database
 
         session = MagicMock()
@@ -269,11 +269,14 @@ class TestOpenDatabase:
         open_database(session, path)
 
         catalogue_url = f"{BASE_URL}/jsf/dataCatalogueExplorer.xhtml"
-        session.richfaces_ajax.assert_called_once_with(
-            catalogue_url,
-            form_id="j_id_3f",
-            component_id="j_id_3i",
-            extra_params={"doubleClickDatabase": "doubleClickDatabase"},
+        assert session.richfaces_ajax.call_count == 2
+        # First call: selectedDatabase
+        session.richfaces_ajax.assert_any_call(
+            catalogue_url, form_id="j_id_3f", component_id="j_id_3n",
+        )
+        # Second call: doubleClickDatabase
+        session.richfaces_ajax.assert_any_call(
+            catalogue_url, form_id="j_id_3f", component_id="j_id_3i",
         )
 
     def test_gets_tableview_and_updates_viewstate(self):
@@ -292,7 +295,7 @@ class TestOpenDatabase:
 
         tableview_url = f"{BASE_URL}/jsf/tableView/tableView.xhtml"
         session._session.get.assert_called_once_with(tableview_url)
-        assert session._viewstate == "tableview_viewstate"
+        assert session.viewstate == "tableview_viewstate"
 
     def test_call_order(self):
         """Calls happen in order: rest_post, richfaces_ajax, GET tableView."""
@@ -313,7 +316,7 @@ class TestOpenDatabase:
 
         open_database(session, ["k1", "k2", "k3"])
 
-        assert call_order == ["rest_post", "richfaces_ajax", "get"]
+        assert call_order == ["rest_post", "richfaces_ajax", "richfaces_ajax", "get"]
 
 
 # ── get_schema tests ─────────────────────────────────────────────────
