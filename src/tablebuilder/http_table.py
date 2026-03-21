@@ -393,41 +393,76 @@ def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
     """
     logger.info("Attempting direct table download")
 
-    # Try direct download via the Go button
-    resp = session.jsf_post(
+    # Try direct download via the Go button (regular form submit, not AJAX)
+    resp = session._session.post(
         TABLEVIEW_URL,
-        {
+        data={
             "downloadControl:downloadGoButton": "Download table",
             "downloadControl_SUBMIT": "1",
+            "javax.faces.ViewState": session.viewstate,
         },
+        allow_redirects=True,
     )
 
     content_type = resp.headers.get("Content-Type", "")
-    if "octet-stream" in content_type:
+    if "octet-stream" in content_type or "zip" in content_type:
         logger.info("Direct download succeeded, saving to %s", output_path)
         _save_content(resp.content, output_path)
+        # Update ViewState if the response has one
+        from tablebuilder.http_session import extract_viewstate
+        new_vs = extract_viewstate(resp.text if hasattr(resp, 'text') else "")
+        if new_vs:
+            session.viewstate = new_vs
         return
 
     # Fall back to queue flow
-    logger.info("Direct download returned HTML, falling back to queue flow")
+    logger.info("Direct download returned %s, falling back to queue flow", content_type)
+
+    # Queue the table via the downloadTableMode dialog
+    import time
+    table_name = f"tb_{int(time.time())}"
+    logger.info("Queuing table as '%s'", table_name)
+
+    # Open queue dialog and submit
+    session.jsf_post(TABLEVIEW_URL, {
+        "downloadTableModeForm:downloadTableNameTxt": table_name,
+        "downloadTableModeForm:queueTableButton": "Queue",
+        "downloadTableModeForm_SUBMIT": "1",
+    })
 
     # Navigate to saved tables page
-    session._session.get(OPEN_TABLE_URL)
+    resp = session._session.get(OPEN_TABLE_URL)
+    from tablebuilder.http_session import extract_viewstate
+    new_vs = extract_viewstate(resp.text)
+    if new_vs:
+        session.viewstate = new_vs
 
-    # Get list of managed tables/jobs
-    jobs = session.rest_get(MANAGE_TABLES_PATH)
+    # Poll for the download to be ready
+    for attempt in range(60):
+        jobs_tree = session.rest_get(MANAGE_TABLES_PATH)
+        # Walk the tree to find a node with a jobId
+        def find_job(nodes):
+            for node in nodes:
+                data = node.get("data", {})
+                if data.get("jobId"):
+                    return data
+                children = node.get("children", [])
+                result = find_job(children)
+                if result:
+                    return result
+            return None
 
-    if not jobs:
-        raise RuntimeError("No managed table jobs found for download.")
+        job = find_job(jobs_tree.get("nodeList", []))
+        if job and job.get("jobId"):
+            job_id = job["jobId"]
+            logger.info("Found job %s, downloading", job_id)
+            download_url = f"{DOWNLOAD_TABLE_URL}?jobId={job_id}"
+            resp = session._session.get(download_url)
+            _save_content(resp.content, output_path)
+            logger.info("Table saved to %s", output_path)
+            return
 
-    # Use the last (most recent) job
-    latest_job = jobs[-1]
-    job_id = latest_job["jobId"]
-    logger.info("Downloading job '%s' (jobId=%s)", latest_job.get("label", ""), job_id)
+        logger.debug("Polling for download... attempt %d", attempt + 1)
+        time.sleep(5)
 
-    # Download the table via the download servlet
-    download_url = f"{DOWNLOAD_TABLE_URL}?jobId={job_id}"
-    resp = session._session.get(download_url)
-
-    _save_content(resp.content, output_path)
-    logger.info("Table saved to %s", output_path)
+    raise RuntimeError("Download timed out after 5 minutes of polling.")
