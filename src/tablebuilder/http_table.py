@@ -1,7 +1,13 @@
-# ABOUTME: HTTP table operations for ABS TableBuilder category selection and axis assignment.
-# ABOUTME: Builds REST payloads, selects checkbox categories, and assigns variables to table axes.
+# ABOUTME: HTTP table operations for ABS TableBuilder category selection, axis assignment, and data download.
+# ABOUTME: Builds REST payloads, selects checkbox categories, assigns variables to axes, and retrieves/downloads results.
 
 from __future__ import annotations
+
+import io
+import os
+import shutil
+import tempfile
+import zipfile
 
 from tablebuilder.http_session import BASE_URL, TableBuilderHTTPSession
 from tablebuilder.logging_config import get_logger
@@ -242,3 +248,132 @@ def add_to_axis(session: TableBuilderHTTPSession, axis: str) -> None:
 
     logger.info("Adding selection to %s axis", axis)
     session.jsf_post(TABLEVIEW_URL, data)
+
+
+OPEN_TABLE_URL = f"{BASE_URL}/jsf/tableView/openTable.xhtml"
+MANAGE_TABLES_PATH = "/rest/catalogue/manageTables/tree"
+DOWNLOAD_TABLE_URL = f"{BASE_URL}/downloadTable"
+
+
+def retrieve_data(session: TableBuilderHTTPSession) -> None:
+    """Fire the retrieve/cross-tabulation AJAX call to generate table results.
+
+    Sends a RichFaces AJAX POST on pageForm:retB with the required empty
+    drag-and-drop fields and partial event type.  The server processes the
+    cross-tabulation and populates the table view.
+
+    Args:
+        session: An authenticated TableBuilderHTTPSession.
+    """
+    logger.info("Retrieving cross-tabulation data")
+    session.richfaces_ajax(
+        TABLEVIEW_URL,
+        form_id="pageForm",
+        component_id="pageForm:retB",
+        extra_params={
+            "dndItemType": "",
+            "dndItemArg": "",
+            "dndTargetType": "",
+            "dndTargetArg": "",
+            "javax.faces.partial.event": "click",
+        },
+    )
+
+
+def select_csv_format(session: TableBuilderHTTPSession) -> None:
+    """Select CSV as the download format from the dropdown control.
+
+    Posts the format selection change event to the tableView JSF page,
+    triggering the server to prepare CSV output.
+
+    Args:
+        session: An authenticated TableBuilderHTTPSession.
+    """
+    logger.info("Selecting CSV download format")
+    session.jsf_post(
+        TABLEVIEW_URL,
+        {
+            "downloadControl:downloadType": "CSV",
+            "downloadControl_SUBMIT": "1",
+            "javax.faces.behavior.event": "valueChange",
+            "javax.faces.source": "downloadControl:downloadType",
+            "javax.faces.partial.ajax": "true",
+        },
+    )
+
+
+def _save_content(content: bytes, output_path: str) -> None:
+    """Save download content to output_path, extracting CSV from ZIP if needed.
+
+    If the content is a valid ZIP archive, extracts the first file from it
+    and writes it to output_path. Otherwise, writes the raw bytes directly.
+
+    Args:
+        content: The raw bytes from the download response.
+        output_path: Filesystem path where the CSV should be saved.
+    """
+    if zipfile.is_zipfile(io.BytesIO(content)):
+        logger.debug("Downloaded content is a ZIP archive, extracting CSV")
+        with zipfile.ZipFile(io.BytesIO(content)) as zf:
+            # Extract the first file in the archive (the CSV)
+            csv_name = zf.namelist()[0]
+            with zf.open(csv_name) as src, open(output_path, "wb") as dst:
+                shutil.copyfileobj(src, dst)
+    else:
+        logger.debug("Downloaded content is raw CSV, saving directly")
+        with open(output_path, "wb") as f:
+            f.write(content)
+
+
+def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
+    """Download the cross-tabulation result as a CSV file.
+
+    Tries direct download first by submitting the downloadGoButton.
+    If the response is not binary (application/octet-stream), falls back
+    to the queue flow: navigate to saved tables, find the latest job,
+    and download via the download servlet.
+
+    Args:
+        session: An authenticated TableBuilderHTTPSession.
+        output_path: Filesystem path where the CSV should be saved.
+    """
+    logger.info("Attempting direct table download")
+
+    # Try direct download via the Go button
+    resp = session.jsf_post(
+        TABLEVIEW_URL,
+        {
+            "downloadControl:downloadGoButton": "Download table",
+            "downloadControl_SUBMIT": "1",
+        },
+    )
+
+    content_type = resp.headers.get("Content-Type", "")
+    if "octet-stream" in content_type:
+        logger.info("Direct download succeeded, saving to %s", output_path)
+        _save_content(resp.content, output_path)
+        return
+
+    # Fall back to queue flow
+    logger.info("Direct download returned HTML, falling back to queue flow")
+
+    # Navigate to saved tables page
+    session._session.get(OPEN_TABLE_URL)
+
+    # Get list of managed tables/jobs
+    jobs = session.rest_get(MANAGE_TABLES_PATH)
+
+    if not jobs:
+        raise RuntimeError("No managed table jobs found for download.")
+
+    # Use the last (most recent) job
+    latest_job = jobs[-1]
+    job_id = latest_job["jobId"]
+    logger.info("Downloading job '%s' (jobId=%s)", latest_job.get("label", ""), job_id)
+
+    # Download the table via the download servlet
+    download_url = f"{DOWNLOAD_TABLE_URL}?jobId={job_id}"
+    resp = session._session.get(download_url)
+
+    _save_content(resp.content, output_path)
+    logger.info("Table saved to %s", output_path)

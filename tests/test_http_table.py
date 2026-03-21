@@ -1,7 +1,11 @@
-# ABOUTME: Tests for HTTP table operations — category selection and axis assignment.
-# ABOUTME: Covers build_node_state, build_expand_payload, get_category_keys, select_all_categories, add_to_axis.
+# ABOUTME: Tests for HTTP table operations — category selection, axis assignment, and data retrieval/download.
+# ABOUTME: Covers build_node_state, build_expand_payload, get_category_keys, select_all_categories, add_to_axis, retrieve_data, select_csv_format, download_table.
 
-from unittest.mock import MagicMock, call
+import io
+import os
+import tempfile
+import zipfile
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 
@@ -553,3 +557,257 @@ class TestAddToAxis:
             add_to_axis(session, axis)
             url_arg = session.jsf_post.call_args[0][0]
             assert url_arg == TABLEVIEW_URL
+
+
+# ── retrieve_data tests ─────────────────────────────────────────────
+
+
+class TestRetrieveData:
+    """Tests for retrieve_data() which fires the retrieve/cross-tabulation AJAX call."""
+
+    def test_calls_richfaces_ajax_with_pageform(self):
+        """Fires richfaces_ajax on pageForm with component pageForm:retB."""
+        from tablebuilder.http_table import retrieve_data
+
+        session = MagicMock()
+        session.richfaces_ajax.return_value = MagicMock()
+
+        retrieve_data(session)
+
+        session.richfaces_ajax.assert_called_once()
+        call_kwargs = session.richfaces_ajax.call_args
+        assert call_kwargs[0][0] == TABLEVIEW_URL
+        assert call_kwargs[1]["form_id"] == "pageForm"
+        assert call_kwargs[1]["component_id"] == "pageForm:retB"
+
+    def test_includes_dnd_fields(self):
+        """Extra params include empty drag-and-drop fields."""
+        from tablebuilder.http_table import retrieve_data
+
+        session = MagicMock()
+        session.richfaces_ajax.return_value = MagicMock()
+
+        retrieve_data(session)
+
+        extra = session.richfaces_ajax.call_args[1]["extra_params"]
+        assert extra["dndItemType"] == ""
+        assert extra["dndItemArg"] == ""
+        assert extra["dndTargetType"] == ""
+        assert extra["dndTargetArg"] == ""
+
+    def test_includes_partial_event_click(self):
+        """Extra params include javax.faces.partial.event=click."""
+        from tablebuilder.http_table import retrieve_data
+
+        session = MagicMock()
+        session.richfaces_ajax.return_value = MagicMock()
+
+        retrieve_data(session)
+
+        extra = session.richfaces_ajax.call_args[1]["extra_params"]
+        assert extra["javax.faces.partial.event"] == "click"
+
+
+# ── select_csv_format tests ─────────────────────────────────────────
+
+
+class TestSelectCsvFormat:
+    """Tests for select_csv_format() which selects CSV from the download format dropdown."""
+
+    def test_calls_jsf_post_with_csv_selection(self):
+        """Posts format selection with downloadType=CSV."""
+        from tablebuilder.http_table import select_csv_format
+
+        session = MagicMock()
+        session.jsf_post.return_value = MagicMock()
+
+        select_csv_format(session)
+
+        session.jsf_post.assert_called_once()
+        url_arg = session.jsf_post.call_args[0][0]
+        data_arg = session.jsf_post.call_args[0][1]
+
+        assert url_arg == TABLEVIEW_URL
+        assert data_arg["downloadControl:downloadType"] == "CSV"
+        assert data_arg["downloadControl_SUBMIT"] == "1"
+
+    def test_includes_behavior_event_fields(self):
+        """Posts include JSF behavior event and source fields for the dropdown change."""
+        from tablebuilder.http_table import select_csv_format
+
+        session = MagicMock()
+        session.jsf_post.return_value = MagicMock()
+
+        select_csv_format(session)
+
+        data_arg = session.jsf_post.call_args[0][1]
+        assert data_arg["javax.faces.behavior.event"] == "valueChange"
+        assert data_arg["javax.faces.source"] == "downloadControl:downloadType"
+        assert data_arg["javax.faces.partial.ajax"] == "true"
+
+
+# ── download_table tests ────────────────────────────────────────────
+
+
+def _make_zip_bytes(csv_content: str, filename: str = "table.csv") -> bytes:
+    """Helper to create an in-memory ZIP containing a single CSV file."""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr(filename, csv_content)
+    return buf.getvalue()
+
+
+class TestDownloadTable:
+    """Tests for download_table() which downloads the result CSV via direct or queue flow."""
+
+    def test_direct_download_saves_csv_from_zip(self):
+        """Direct download: saves extracted CSV when response is a ZIP."""
+        from tablebuilder.http_table import download_table
+
+        csv_data = "col1,col2\n1,2\n3,4\n"
+        zip_bytes = _make_zip_bytes(csv_data)
+
+        # Mock the direct download response as octet-stream
+        direct_response = MagicMock()
+        direct_response.headers = {"Content-Type": "application/octet-stream"}
+        direct_response.content = zip_bytes
+
+        session = MagicMock()
+        session.jsf_post.return_value = direct_response
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = os.path.join(tmpdir, "out.csv")
+            download_table(session, output_path)
+
+            assert os.path.exists(output_path)
+            with open(output_path) as f:
+                assert f.read() == csv_data
+
+    def test_direct_download_saves_raw_csv(self):
+        """Direct download: saves raw CSV when response is not a ZIP."""
+        from tablebuilder.http_table import download_table
+
+        csv_data = b"col1,col2\n1,2\n3,4\n"
+
+        direct_response = MagicMock()
+        direct_response.headers = {"Content-Type": "application/octet-stream"}
+        direct_response.content = csv_data
+
+        session = MagicMock()
+        session.jsf_post.return_value = direct_response
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = os.path.join(tmpdir, "out.csv")
+            download_table(session, output_path)
+
+            assert os.path.exists(output_path)
+            with open(output_path) as f:
+                assert f.read() == csv_data.decode()
+
+    def test_queue_flow_when_direct_download_returns_html(self):
+        """Falls back to queue flow when direct download returns HTML (not octet-stream)."""
+        from tablebuilder.http_table import download_table
+
+        csv_data = "col1,col2\n1,2\n"
+        zip_bytes = _make_zip_bytes(csv_data)
+
+        # Direct download returns HTML (no octet-stream)
+        html_response = MagicMock()
+        html_response.headers = {"Content-Type": "text/html; charset=UTF-8"}
+        html_response.content = b"<html>table view page</html>"
+
+        session = MagicMock()
+        session.jsf_post.return_value = html_response
+
+        # Queue flow: GET openTable.xhtml
+        open_table_response = MagicMock()
+        open_table_response.text = "<html>saved tables</html>"
+
+        # Queue flow: GET manageTables/tree returns list of jobs
+        manage_tables_response = [
+            {"jobId": "job_older", "label": "old table"},
+            {"jobId": "job_latest", "label": "latest table"},
+        ]
+
+        # Queue flow: GET downloadTable returns ZIP
+        download_response = MagicMock()
+        download_response.content = zip_bytes
+
+        # Wire up the session mocks
+        session._session = MagicMock()
+
+        def mock_get(url, **kwargs):
+            if "openTable.xhtml" in url:
+                return open_table_response
+            elif "downloadTable" in url:
+                return download_response
+            return MagicMock()
+
+        session._session.get.side_effect = mock_get
+        session.rest_get.return_value = manage_tables_response
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = os.path.join(tmpdir, "out.csv")
+            download_table(session, output_path)
+
+            assert os.path.exists(output_path)
+            with open(output_path) as f:
+                assert f.read() == csv_data
+
+    def test_queue_flow_uses_latest_job_id(self):
+        """Queue flow picks the last job ID from the manageTables/tree response."""
+        from tablebuilder.http_table import download_table
+
+        csv_data = "a,b\n1,2\n"
+        zip_bytes = _make_zip_bytes(csv_data)
+
+        # Direct download returns HTML
+        html_response = MagicMock()
+        html_response.headers = {"Content-Type": "text/html"}
+        html_response.content = b"<html></html>"
+
+        session = MagicMock()
+        session.jsf_post.return_value = html_response
+
+        manage_tables = [
+            {"jobId": "first_job", "label": "Table 1"},
+            {"jobId": "second_job", "label": "Table 2"},
+        ]
+        session.rest_get.return_value = manage_tables
+
+        download_response = MagicMock()
+        download_response.content = zip_bytes
+
+        session._session = MagicMock()
+
+        def mock_get(url, **kwargs):
+            if "downloadTable" in url:
+                assert "jobId=second_job" in url
+                return download_response
+            return MagicMock()
+
+        session._session.get.side_effect = mock_get
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = os.path.join(tmpdir, "out.csv")
+            download_table(session, output_path)
+
+    def test_download_posts_go_button(self):
+        """Direct download tries submitting downloadControl:downloadGoButton."""
+        from tablebuilder.http_table import download_table
+
+        csv_data = b"x,y\n1,2\n"
+
+        direct_response = MagicMock()
+        direct_response.headers = {"Content-Type": "application/octet-stream"}
+        direct_response.content = csv_data
+
+        session = MagicMock()
+        session.jsf_post.return_value = direct_response
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = os.path.join(tmpdir, "out.csv")
+            download_table(session, output_path)
+
+        call_data = session.jsf_post.call_args[0][1]
+        assert "downloadControl:downloadGoButton" in call_data
