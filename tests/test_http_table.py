@@ -811,3 +811,185 @@ class TestDownloadTable:
 
         call_data = session.jsf_post.call_args[0][1]
         assert "downloadControl:downloadGoButton" in call_data
+
+
+# ── http_fetch_table tests ────────────────────────────────────────────
+
+
+SAMPLE_CATALOGUE_TREE = {
+    "nodeList": [
+        {
+            "key": "root_key",
+            "data": {"type": "FOLDER", "name": "Census"},
+            "children": [
+                {
+                    "key": "db_key",
+                    "data": {"type": "DATABASE", "name": "Census 2021"},
+                    "children": [],
+                },
+            ],
+        }
+    ]
+}
+
+
+class TestHTTPFetchTable:
+    """Tests for http_fetch_table which runs the complete pipeline."""
+
+    # Patch paths: catalogue functions are imported locally inside http_fetch_table,
+    # so we patch at their source (http_catalogue). Table functions like
+    # select_all_categories, add_to_axis, etc. are module-level in http_table.
+    _CAT = "tablebuilder.http_catalogue"
+    _TBL = "tablebuilder.http_table"
+
+    def test_full_flow_calls_all_steps(self):
+        """http_fetch_table runs the complete pipeline in order."""
+        from tablebuilder.http_table import http_fetch_table
+        from tablebuilder.models import TableRequest
+
+        session = MagicMock()
+        request = TableRequest(
+            dataset="Census 2021",
+            rows=["SEXP Sex"],
+            cols=["AGEP Age"],
+        )
+
+        # Track call order across all mocked functions
+        call_order = []
+
+        with patch(f"{self._CAT}.find_database") as mock_find_db, \
+             patch(f"{self._CAT}.open_database") as mock_open_db, \
+             patch(f"{self._CAT}.get_schema") as mock_get_schema, \
+             patch(f"{self._CAT}.find_variable") as mock_find_var, \
+             patch(f"{self._TBL}.select_all_categories") as mock_select, \
+             patch(f"{self._TBL}.add_to_axis") as mock_add_axis, \
+             patch(f"{self._TBL}.retrieve_data") as mock_retrieve, \
+             patch(f"{self._TBL}.select_csv_format") as mock_csv, \
+             patch(f"{self._TBL}.download_table") as mock_download:
+
+            # Track ordering via side_effect
+            session.rest_get.return_value = SAMPLE_CATALOGUE_TREE
+            mock_find_db.side_effect = lambda *a, **kw: (call_order.append("find_database"), (["root_key", "db_key"], SAMPLE_CATALOGUE_TREE["nodeList"][0]["children"][0]))[1]
+            mock_open_db.side_effect = lambda *a, **kw: call_order.append("open_database")
+            mock_get_schema.side_effect = lambda *a, **kw: (call_order.append("get_schema"), SAMPLE_SCHEMA)[1]
+            mock_find_var.side_effect = lambda schema, name: (call_order.append(f"find_variable:{name}"), SAMPLE_SCHEMA.get(name))[1]
+            mock_select.side_effect = lambda *a, **kw: call_order.append("select_all_categories")
+            mock_add_axis.side_effect = lambda *a, **kw: call_order.append("add_to_axis")
+            mock_retrieve.side_effect = lambda *a, **kw: call_order.append("retrieve_data")
+            mock_csv.side_effect = lambda *a, **kw: call_order.append("select_csv_format")
+            mock_download.side_effect = lambda *a, **kw: call_order.append("download_table")
+
+            http_fetch_table(session, request, "/tmp/test_output.csv")
+
+            assert call_order == [
+                "find_database",
+                "open_database",
+                "get_schema",
+                "find_variable:SEXP Sex",
+                "select_all_categories",
+                "add_to_axis",
+                "find_variable:AGEP Age",
+                "select_all_categories",
+                "add_to_axis",
+                "retrieve_data",
+                "select_csv_format",
+                "download_table",
+            ]
+
+    def test_raises_navigation_error_when_database_not_found(self):
+        """Raises NavigationError when the database is not in the catalogue."""
+        from tablebuilder.http_table import http_fetch_table
+        from tablebuilder.models import TableRequest
+        from tablebuilder.navigator import NavigationError
+
+        session = MagicMock()
+        request = TableRequest(dataset="Nonexistent Dataset", rows=["SEXP Sex"])
+
+        with patch(f"{self._CAT}.find_database") as mock_find_db:
+            session.rest_get.return_value = {"nodeList": []}
+            mock_find_db.return_value = None
+
+            with pytest.raises(NavigationError, match="Database not found"):
+                http_fetch_table(session, request, "/tmp/out.csv")
+
+    def test_raises_table_build_error_when_variable_not_found(self):
+        """Raises TableBuildError when a variable is not in the schema."""
+        from tablebuilder.http_table import http_fetch_table
+        from tablebuilder.models import TableRequest
+        from tablebuilder.table_builder import TableBuildError
+
+        session = MagicMock()
+        request = TableRequest(dataset="Census 2021", rows=["NONEXISTENT Var"])
+
+        with patch(f"{self._CAT}.find_database") as mock_find_db, \
+             patch(f"{self._CAT}.open_database"), \
+             patch(f"{self._CAT}.get_schema") as mock_get_schema, \
+             patch(f"{self._CAT}.find_variable") as mock_find_var:
+
+            session.rest_get.return_value = SAMPLE_CATALOGUE_TREE
+            mock_find_db.return_value = (["root_key", "db_key"], SAMPLE_CATALOGUE_TREE["nodeList"][0]["children"][0])
+            mock_get_schema.return_value = SAMPLE_SCHEMA
+            mock_find_var.return_value = None
+
+            with pytest.raises(TableBuildError, match="Variable not found"):
+                http_fetch_table(session, request, "/tmp/out.csv")
+
+    def test_passes_correct_axis_for_each_variable(self):
+        """Each variable is added to its correct axis (row, col, wafer)."""
+        from tablebuilder.http_table import http_fetch_table
+        from tablebuilder.models import TableRequest
+
+        session = MagicMock()
+        request = TableRequest(
+            dataset="Census 2021",
+            rows=["SEXP Sex"],
+            cols=["AGEP Age"],
+            wafers=["STATE State"],
+        )
+
+        with patch(f"{self._CAT}.find_database") as mock_find_db, \
+             patch(f"{self._CAT}.open_database"), \
+             patch(f"{self._CAT}.get_schema") as mock_get_schema, \
+             patch(f"{self._CAT}.find_variable") as mock_find_var, \
+             patch(f"{self._TBL}.select_all_categories"), \
+             patch(f"{self._TBL}.add_to_axis") as mock_add_axis, \
+             patch(f"{self._TBL}.retrieve_data"), \
+             patch(f"{self._TBL}.select_csv_format"), \
+             patch(f"{self._TBL}.download_table"):
+
+            session.rest_get.return_value = SAMPLE_CATALOGUE_TREE
+            mock_find_db.return_value = (["root_key", "db_key"], SAMPLE_CATALOGUE_TREE["nodeList"][0]["children"][0])
+            mock_get_schema.return_value = SAMPLE_SCHEMA
+            mock_find_var.side_effect = lambda schema, name: SAMPLE_SCHEMA.get(name)
+
+            http_fetch_table(session, request, "/tmp/out.csv")
+
+            axis_calls = [c[0][1] for c in mock_add_axis.call_args_list]
+            assert axis_calls == ["row", "col", "wafer"]
+
+    def test_downloads_to_specified_output_path(self):
+        """download_table is called with the correct output path."""
+        from tablebuilder.http_table import http_fetch_table
+        from tablebuilder.models import TableRequest
+
+        session = MagicMock()
+        request = TableRequest(dataset="Census 2021", rows=["SEXP Sex"])
+
+        with patch(f"{self._CAT}.find_database") as mock_find_db, \
+             patch(f"{self._CAT}.open_database"), \
+             patch(f"{self._CAT}.get_schema") as mock_get_schema, \
+             patch(f"{self._CAT}.find_variable") as mock_find_var, \
+             patch(f"{self._TBL}.select_all_categories"), \
+             patch(f"{self._TBL}.add_to_axis"), \
+             patch(f"{self._TBL}.retrieve_data"), \
+             patch(f"{self._TBL}.select_csv_format"), \
+             patch(f"{self._TBL}.download_table") as mock_download:
+
+            session.rest_get.return_value = SAMPLE_CATALOGUE_TREE
+            mock_find_db.return_value = (["root_key", "db_key"], SAMPLE_CATALOGUE_TREE["nodeList"][0]["children"][0])
+            mock_get_schema.return_value = SAMPLE_SCHEMA
+            mock_find_var.side_effect = lambda schema, name: SAMPLE_SCHEMA.get(name)
+
+            http_fetch_table(session, request, "/tmp/my_output.csv")
+
+            mock_download.assert_called_once_with(session, "/tmp/my_output.csv")

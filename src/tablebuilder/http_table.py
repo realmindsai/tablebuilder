@@ -325,6 +325,60 @@ def _save_content(content: bytes, output_path: str) -> None:
             f.write(content)
 
 
+def http_fetch_table(
+    session: TableBuilderHTTPSession, request, output_path: str
+) -> None:
+    """Fetch a table via HTTP — the full pipeline.
+
+    Composes all HTTP catalogue and table operations into a single
+    end-to-end flow: find the database, open it, get the schema, select
+    categories for each variable, assign axes, retrieve data, and download.
+
+    Args:
+        session: An authenticated TableBuilderHTTPSession.
+        request: A TableRequest describing the table to fetch.
+        output_path: Filesystem path where the CSV should be saved.
+
+    Raises:
+        NavigationError: If the database cannot be found in the catalogue.
+        TableBuildError: If a requested variable is not found in the schema.
+    """
+    from tablebuilder.http_catalogue import find_database, find_variable, get_schema, open_database
+
+    # 1. Get catalogue and find database
+    tree = session.rest_get("/rest/catalogue/databases/tree")
+    result = find_database(tree, request.dataset)
+    if not result:
+        from tablebuilder.navigator import NavigationError
+
+        raise NavigationError(f"Database not found: {request.dataset}")
+    path, db_node = result
+    logger.info("Found database: %s", db_node["data"]["name"])
+
+    # 2. Open database
+    open_database(session, path)
+
+    # 3. Get schema
+    schema = get_schema(session)
+
+    # 4. For each variable, find it, select categories, add to axis
+    for var_name, axis in request.variable_axes().items():
+        var_info = find_variable(schema, var_name)
+        if not var_info:
+            from tablebuilder.table_builder import TableBuildError
+
+            raise TableBuildError(f"Variable not found in schema: {var_name}")
+        logger.info("Adding %s to %s", var_name, axis.value)
+        select_all_categories(session, schema, var_info)
+        add_to_axis(session, axis.value)
+
+    # 5. Retrieve and download
+    retrieve_data(session)
+    select_csv_format(session)
+    download_table(session, output_path)
+    logger.info("Downloaded table to %s", output_path)
+
+
 def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
     """Download the cross-tabulation result as a CSV file.
 
