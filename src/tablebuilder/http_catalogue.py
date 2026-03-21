@@ -26,8 +26,11 @@ def find_database(
         A tuple of (path_of_keys, node_dict) if found, or None.
     """
     fragment_lower = name_fragment.lower()
+    # Split fragment into words for scoring
+    fragment_words = set(fragment_lower.split())
+    matches: list[tuple[int, list[str], dict]] = []
 
-    def _walk(nodes: list[dict], path: list[str]) -> tuple[list[str], dict] | None:
+    def _walk(nodes: list[dict], path: list[str]) -> None:
         for node in nodes:
             key = node.get("key", "")
             current_path = path + [key]
@@ -37,17 +40,23 @@ def find_database(
                 data.get("type") == "DATABASE"
                 and fragment_lower in data.get("name", "").lower()
             ):
-                return current_path, node
+                # Score: count how many query words appear in the name
+                name_lower = data.get("name", "").lower()
+                score = sum(1 for w in fragment_words if w in name_lower)
+                matches.append((score, current_path, node))
 
             children = node.get("children", [])
             if children:
-                result = _walk(children, current_path)
-                if result is not None:
-                    return result
+                _walk(children, current_path)
 
+    _walk(tree.get("nodeList", []), [])
+
+    if not matches:
         return None
 
-    return _walk(tree.get("nodeList", []), [])
+    # Sort by score descending, pick best match
+    matches.sort(key=lambda m: m[0], reverse=True)
+    return matches[0][1], matches[0][2]
 
 
 def open_database(
@@ -118,14 +127,14 @@ def get_schema(session: TableBuilderHTTPSession) -> dict:
             )
 
             if is_field:
-                levels = [
+                levels = data.get("levels", []) or [
                     child.get("data", {}).get("name", "")
                     for child in children
                 ]
                 schema[name] = {
                     "key": key,
                     "group": group_path,
-                    "child_count": len(children),
+                    "child_count": data.get("childCount", len(children)),
                     "levels": levels,
                 }
             else:
@@ -154,20 +163,36 @@ def find_variable(schema: dict, name: str) -> dict | None:
     Returns:
         The variable info dict, or None if not found.
     """
+    import re
+
     # 1. Exact match
     if name in schema:
         return schema[name]
 
-    # 2. Code prefix / label word match (split schema key on space)
+    # 2. Code match — extract codes from parentheses like "Sex Male/Female (SEXP)"
+    #    and from "CODE Label" format like "SEXP Sex"
+    name_upper = name.split()[0] if name.split() else name
     for var_name, info in schema.items():
+        # Match code in parentheses: "Something (CODE)"
+        paren_match = re.search(r'\((\w+)\)', var_name)
+        if paren_match and paren_match.group(1).upper() == name_upper.upper():
+            return info
+        # Match "CODE Label" format
         parts = var_name.split()
-        if name in parts:
+        if parts and parts[0].upper() == name_upper.upper():
             return info
 
     # 3. Case-insensitive substring match
     name_lower = name.lower()
     for var_name, info in schema.items():
         if name_lower in var_name.lower():
+            return info
+
+    # 4. Word-level match — all words in name appear in var_name
+    name_words = set(name_lower.split())
+    for var_name, info in schema.items():
+        var_lower = var_name.lower()
+        if all(w in var_lower for w in name_words):
             return info
 
     return None
