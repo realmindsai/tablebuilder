@@ -1,0 +1,2760 @@
+{
+  "database_id": "2021PersonsEN",
+  "variable_count": 239,
+  "variables": {
+    "Australia (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MTQ4MzlfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2414839_FLD",
+      "icon": "FIELD",
+      "child_count": 1,
+      "levels": [
+        "Select a level below:",
+        "Australia (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Main Statistical Area Structure (Main ASGS) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mjg2MTNfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428613_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SA4 (EN)",
+        "SA3 (EN)",
+        "SA2 (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Greater Capital City Statistical Areas (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mjg2MTFfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428611_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "GCCSA (EN)",
+        "SA4 (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Indigenous Structure (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mjg2MTJfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428612_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "IREG (EN)",
+        "IARE (EN)",
+        "ILOC (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Section of State/Urban Centres and Localities (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1MzBfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2437530_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SOS (EN)",
+        "SOSR (EN)",
+        "UCL (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Significant Urban Areas (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1MzFfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2437531_FLD",
+      "icon": "FIELD",
+      "child_count": 111,
+      "levels": [
+        "Select a level below:",
+        "Significant Urban Areas (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Remoteness Areas (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0NDg2MjdfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2448627_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "RA (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Remoteness Areas (National) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0NDg2MjZfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2448626_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "Remoteness Areas (National) (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Local Government Areas (2021 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMzJfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428332_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "LGA (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Local Government Areas (2022 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1MjlfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2437529_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "LGA (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Local Government Areas (2025 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0ODc4NzBfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2487870_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "LGA (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Suburbs and Localities (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMzdfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428337_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SAL (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Postal Areas (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMzVfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428335_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "POA (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Commonwealth Electoral Divisions (2021 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMjlfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428329_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "CED (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Commonwealth Electoral Divisions (2024 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0ODE3NDlfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2481749_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "CED (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Commonwealth Electoral Divisions (2025 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0ODc4NjhfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2487868_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "CED (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "State Electoral Divisions (2021 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMzZfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428336_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SED (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "State Electoral Divisions (2022 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1MzJfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2437532_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SED (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "State Electoral Divisions (2024 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Nzc1NDhfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2477548_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SED (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "State Electoral Divisions (2025 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0ODc4NzJfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2487872_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SED (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Australian Drainage Divisions (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMjhfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428328_FLD",
+      "icon": "FIELD",
+      "child_count": 15,
+      "levels": [
+        "Select a level below:",
+        "Australian Drainage Divisions (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Natural Resource Management Regions (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMzRfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428334_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "NRMR (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Empowered Communities (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzNTJfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428352_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "Empowered Communities (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Aged Care Planning Regions (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0NDgwNjVfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2448065_FLD",
+      "icon": "FIELD",
+      "child_count": 82,
+      "levels": [
+        "Select a level below:",
+        "Aged Care Planning Regions (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Primary Health Networks (2017 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzNTNfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428353_FLD",
+      "icon": "FIELD",
+      "child_count": 40,
+      "levels": [
+        "Select a level below:",
+        "Primary Health Networks (2017 Boundaries) (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "Primary Health Networks (2023 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Nzc1NDlfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2477549_FLD",
+      "icon": "FIELD",
+      "child_count": 40,
+      "levels": [
+        "Select a level below:",
+        "Primary Health Networks (2023 Boundaries) (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Main Statistical Area Structure (Main ASGS) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzOTlfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428399_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SA4 (EN)",
+        "SA3 (EN)",
+        "SA2 (EN)",
+        "SA1 (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Greater Capital City Statistical Areas (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MzA5NzVfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2430975_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "GCCSA (EN)",
+        "SA4 (EN)",
+        "SA3 (EN)",
+        "SA2 (EN)",
+        "SA1 (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Indigenous Structure (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MzE0MDNfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2431403_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "IREG (EN)",
+        "IARE (EN)",
+        "ILOC (EN)",
+        "SA1 (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Section of State/UCLs (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1NDNfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2437543_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SOS (EN)",
+        "SOSR (EN)",
+        "UCL (EN)",
+        "SA1 (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Significant Urban Areas (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1NDRfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2437544_FLD",
+      "icon": "FIELD",
+      "child_count": 111,
+      "levels": [
+        "Select a level below:",
+        "SUA (EN)",
+        "SA2 (EN)",
+        "SA1 (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Remoteness Areas (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0NTAwMDBfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2450000_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "RA (EN)",
+        "SA1 (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Remoteness Areas (National) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0NDk5OTlfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2449999_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "RAN (EN)",
+        "SA1 (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Local Government Areas (2021 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MzA5NzZfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2430976_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "LGA (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Local Government Areas (2022 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0NTA1MzVfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2450535_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "LGA (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Local Government Areas (2025 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0ODc4NzFfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2487871_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "LGA (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Suburbs and Localities (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MzI0MzZfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2432436_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SAL (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Postal Areas (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mjg0MDBfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428400_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "POA (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Commonwealth Electoral Divisions (2021 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MzA5NzRfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2430974_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "CED (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Commonwealth Electoral Divisions (2024 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0ODE3NTBfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2481750_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "CED (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by Commonwealth Electoral Divisions (2025 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0ODc4NjlfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2487869_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "CED (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by State Electoral Divisions (2021 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mjg0MDFfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2428401_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SED (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by State Electoral Divisions (2022 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1NDVfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2437545_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SED (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by State Electoral Divisions (2024 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Nzc1NTBfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2477550_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SED (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "MB by State Electoral Divisions (2025 Boundaries) (EN)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0ODc4NzNfRkxE",
+      "decoded": "SXV4__20250910_PersonsEN__Mesh Block Records__2487873_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "STATE (EN)",
+        "SED (EN)",
+        "MB (EN)"
+      ],
+      "group": "Geographical Areas (Enumeration)"
+    },
+    "AGEP Age": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTUzM19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409533_FLD",
+      "icon": "FIELD",
+      "child_count": 116,
+      "levels": [
+        "Select a level below:",
+        "AGEP Age"
+      ],
+      "group": "Age and Sex"
+    },
+    "AGE5P Age in Five Year Groups": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTUzMl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409532_FLD",
+      "icon": "FIELD",
+      "child_count": 21,
+      "levels": [
+        "Select a level below:",
+        "AGE5P Age in Five Year Groups",
+        "AGEP Age in Single Years"
+      ],
+      "group": "Age and Sex"
+    },
+    "AGE10P Age in Ten Year Groups": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTUzMV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409531_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "AGE10P Age in Ten Year Groups",
+        "AGEP Age in Single Years"
+      ],
+      "group": "Age and Sex"
+    },
+    "IFAGEP Imputation Flag for Age": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYwNl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409606_FLD",
+      "icon": "FIELD",
+      "child_count": 2,
+      "levels": [
+        "Select a level below:",
+        "IFAGEP Imputation Flag for Age"
+      ],
+      "group": "Age and Sex"
+    },
+    "IFSEXP Imputation Flag for Sex": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYwOV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409609_FLD",
+      "icon": "FIELD",
+      "child_count": 2,
+      "levels": [
+        "Select a level below:",
+        "IFSEXP Imputation Flag for Sex"
+      ],
+      "group": "Age and Sex"
+    },
+    "SEXP Sex": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyMF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409620_FLD",
+      "icon": "FIELD",
+      "child_count": 2,
+      "levels": [
+        "Select a level below:",
+        "SEXP Sex"
+      ],
+      "group": "Age and Sex"
+    },
+    "INGDWTD Indigenous Household Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTU2X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409556_FLD",
+      "icon": "FIELD",
+      "child_count": 3,
+      "levels": [
+        "Select a level below:",
+        "INGDWTD Indigenous Household Indicator"
+      ],
+      "group": "Aboriginal and Torres Strait Islander Peoples"
+    },
+    "INGF Aboriginal and Torres Strait Islander Family Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU4NF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409584_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "INGF Aboriginal and Torres Strait Islander Family Indicator"
+      ],
+      "group": "Aboriginal and Torres Strait Islander Peoples"
+    },
+    "INGP Indigenous Status": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYxMF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409610_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "INGP Indigenous Status"
+      ],
+      "group": "Aboriginal and Torres Strait Islander Peoples"
+    },
+    "LNGP Whether Reported Using an Aboriginal and/or Torres Strait Islander Language at Home": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI4Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415282_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "LNGP Whether Reported Using an Aboriginal and/or Torres Strait Islander Language at Home"
+      ],
+      "group": "Aboriginal and Torres Strait Islander Peoples"
+    },
+    "ANCP Ancestry Multi Response": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19tdWx0aV9yZXNwb25zZV8yNDE1Njk4X18yNDE1Njk4X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__multi_response_2415698__2415698_FLD",
+      "icon": "FIELD",
+      "child_count": 13,
+      "levels": [
+        "Select a level below:",
+        "1-digit level ANCP Ancestry Multi Response",
+        "2-digit level ANCP Ancestry Multi Response",
+        "4-digit level ANCP Ancestry Multi Response"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "ANC1P Ancestry 1st Response": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE0OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405149_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "1-digit level ANC1P Ancestry 1st Response",
+        "2-digit level ANC1P Ancestry 1st Response",
+        "4-digit level ANC1P Ancestry 1st Response"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "ANC2P Ancestry 2nd Response": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE1MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405151_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "1-digit level ANC2P Ancestry 2nd Response",
+        "2-digit level ANC2P Ancestry 2nd Response",
+        "4-digit level ANC2P Ancestry 2nd Response"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "BPFP Country of Birth of Mother": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE1Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405152_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "1-digit level BPFP Country of Birth of Mother",
+        "2-digit level BPFP Country of Birth of Mother",
+        "4-digit level BPFP Country of Birth of Mother"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "BPLP Country of Birth of Person": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE1M19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405153_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "1-digit level BPLP Country of Birth of Person",
+        "2-digit level BPLP Country of Birth of Person",
+        "4-digit level BPLP Country of Birth of Person"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "BPMP Country of Birth of Father": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE1NF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405154_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "1-digit level BPMP Country of Birth of Father",
+        "2-digit level BPMP Country of Birth of Father",
+        "4-digit level BPMP Country of Birth of Father"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "BPPP Country of Birth of Parents": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTUzNV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409535_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "BPPP Country of Birth of Parents"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "CITP Australian Citizenship": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTUzOF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409538_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "CITP Australian Citizenship"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "ENGLP Proficiency in Spoken English": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE1NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405155_FLD",
+      "icon": "FIELD",
+      "child_count": 8,
+      "levels": [
+        "Select a level below:",
+        "ENGLP Proficiency in Spoken English"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "LANP Language Used at Home": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQzNDE2NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2434165_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "1-digit level LANP Language Used at Home",
+        "2-digit level LANP Language Used at Home",
+        "4-digit level LANP Language Used at Home"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "RELP Religious Affiliation": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYxNV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409615_FLD",
+      "icon": "FIELD",
+      "child_count": 10,
+      "levels": [
+        "Select a level below:",
+        "1-digit level RELP Religious Affiliation",
+        "3-digit level RELP Religious Affiliation",
+        "4-digit level RELP Religious Affiliation"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "YARP Year of Arrival in Australia": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE2NF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405164_FLD",
+      "icon": "FIELD",
+      "child_count": 120,
+      "levels": [
+        "Select a level below:",
+        "YARP Year of Arrival in Australia"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "YARRP Year of Arrival in Australia (ranges)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE2NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405165_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "YARRP Year of Arrival in Australia (ranges)"
+      ],
+      "group": "Cultural Diversity"
+    },
+    "HEAP Level of Highest Educational Attainment": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI4NF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415284_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "1-digit level HEAP Level of Highest Educational Attainment",
+        "2-digit level HEAP Level of Highest Educational Attainment",
+        "3-digit level HEAP Level of Highest Educational Attainment"
+      ],
+      "group": "Education and Qualifications"
+    },
+    "HSCP Highest Year of School Completed": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYwNV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409605_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "HSCP Highest Year of School Completed"
+      ],
+      "group": "Education and Qualifications"
+    },
+    "QALFP Non-School Qualification: Field of Study": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI4NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415285_FLD",
+      "icon": "FIELD",
+      "child_count": 16,
+      "levels": [
+        "Select a level below:",
+        "2-digit level QALFP Non-School Qualification: Field of Study",
+        "4-digit level QALFP Non-School Qualification: Field of Study",
+        "6-digit level QALFP Non-School Qualification: Field of Study"
+      ],
+      "group": "Education and Qualifications"
+    },
+    "QALLP Non-School Qualification: Level of Education": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI4Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415286_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "1-digit level QALLP Non-School Qualification: Level of Education",
+        "2-digit level QALLP Non-School Qualification: Level of Education",
+        "3-digit level QALLP Non-School Qualification: Level of Education"
+      ],
+      "group": "Education and Qualifications"
+    },
+    "STUP Full-Time/Part-Time Student Status": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyM19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409623_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "STUP Full-Time/Part-Time Student Status"
+      ],
+      "group": "Education and Qualifications"
+    },
+    "TYPP Type of Educational Institution Attending": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE2Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405162_FLD",
+      "icon": "FIELD",
+      "child_count": 16,
+      "levels": [
+        "Select a level below:",
+        "TYPP Type of Educational Institution Attending"
+      ],
+      "group": "Education and Qualifications"
+    },
+    "TYSTAP Educational Institution: Attendee Status": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE2M19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405163_FLD",
+      "icon": "FIELD",
+      "child_count": 30,
+      "levels": [
+        "Select a level below:",
+        "TYSTAP Educational Institution: Attendee Status"
+      ],
+      "group": "Education and Qualifications"
+    },
+    "CDPP Community Development Program Participation": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI4MF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415280_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "CDPP Community Development Program Participation"
+      ],
+      "group": "Employment and Income"
+    },
+    "EETP Engagement in Employment, Education and Training": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI4M19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415283_FLD",
+      "icon": "FIELD",
+      "child_count": 7,
+      "levels": [
+        "Select a level below:",
+        "1-digit level EETP Engagement in Employment, Education and Training",
+        "2-digit level EETP Engagement in Employment, Education and Training"
+      ],
+      "group": "Employment and Income"
+    },
+    "EMPP Number of Employees": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI4N19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415287_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "EMPP Number of Employees"
+      ],
+      "group": "Employment and Income"
+    },
+    "GNGP Public/Private Sector": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI4OF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415288_FLD",
+      "icon": "FIELD",
+      "child_count": 7,
+      "levels": [
+        "Select a level below:",
+        "GNGP Public/Private Sector"
+      ],
+      "group": "Employment and Income"
+    },
+    "HRSP Hours Worked": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI4OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415289_FLD",
+      "icon": "FIELD",
+      "child_count": 103,
+      "levels": [
+        "Select a level below:",
+        "HRSP Hours Worked"
+      ],
+      "group": "Employment and Income"
+    },
+    "HRWRP Hours Worked (ranges)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjM0Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416346_FLD",
+      "icon": "FIELD",
+      "child_count": 14,
+      "levels": [
+        "Select a level below:",
+        "HRWRP Hours Worked (ranges)"
+      ],
+      "group": "Employment and Income"
+    },
+    "INCP Total Personal Income (weekly)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE1N19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405157_FLD",
+      "icon": "FIELD",
+      "child_count": 19,
+      "levels": [
+        "Select a level below:",
+        "INCP Total Personal Income (weekly)"
+      ],
+      "group": "Employment and Income"
+    },
+    "INCAP Total Personal Income (administrative data) (weekly)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzU1OF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447558_FLD",
+      "icon": "FIELD",
+      "child_count": 26,
+      "levels": [
+        "Select a level below:",
+        "2-digit level INCAP Total Personal Income (administrative data) (weekly)",
+        "4-digit level INCAP Total Personal Income (administrative data) (weekly)"
+      ],
+      "group": "Employment and Income"
+    },
+    "ISAP Main Source of Personal Income (administrative data)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzU2MF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447560_FLD",
+      "icon": "FIELD",
+      "child_count": 10,
+      "levels": [
+        "Select a level below:",
+        "ISAP Main Source of Personal Income (administrative data)"
+      ],
+      "group": "Employment and Income"
+    },
+    "IGAP Main Type of Personal Government Benefit Payment (administrative data)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzU1OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447559_FLD",
+      "icon": "FIELD",
+      "child_count": 22,
+      "levels": [
+        "Select a level below:",
+        "IGAP Main Type of Personal Government Benefit Payment (administrative data)"
+      ],
+      "group": "Employment and Income"
+    },
+    "INDP Industry of Employment": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI5MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415291_FLD",
+      "icon": "FIELD",
+      "child_count": 23,
+      "levels": [
+        "Select a level below:",
+        "1-digit level INDP Industry of Employment",
+        "2-digit level INDP Industry of Employment",
+        "3-digit level INDP Industry of Employment",
+        "4-digit level INDP Industry of Employment"
+      ],
+      "group": "Employment and Income"
+    },
+    "LFHRP Labour Force Status and Hours Worked Not Stated": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI5Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415292_FLD",
+      "icon": "FIELD",
+      "child_count": 10,
+      "levels": [
+        "Select a level below:",
+        "LFHRP Labour Force Status and Hours Worked Not Stated"
+      ],
+      "group": "Employment and Income"
+    },
+    "LFSF Labour Force Status of Parents/Partners in Families": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQxNTMwMV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2415301_FLD",
+      "icon": "FIELD",
+      "child_count": 29,
+      "levels": [
+        "Select a level below:",
+        "LFSF Labour Force Status of Parents/Partners in Families"
+      ],
+      "group": "Employment and Income"
+    },
+    "LFSP Labour Force Status": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI5M19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415293_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "LFSP Labour Force Status"
+      ],
+      "group": "Employment and Income"
+    },
+    "OCCP Occupation": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjIzNF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416234_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "1-digit level OCCP Occupation",
+        "2-digit level OCCP Occupation",
+        "3-digit level OCCP Occupation",
+        "4-digit level OCCP Occupation",
+        "6-digit level OCCP Occupation"
+      ],
+      "group": "Employment and Income"
+    },
+    "OCSKP Occupation Skill Level": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI5Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415296_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "OCSKP Occupation Skill Level"
+      ],
+      "group": "Employment and Income"
+    },
+    "OCCEV1P Occupation Experimental Update Version 1": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQyOTY2OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2429669_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "1-digit level OCCEV1P Occupation Experimental Update Version 1",
+        "2-digit level OCCEV1P Occupation Experimental Update Version 1",
+        "3-digit level OCCEV1P Occupation Experimental Update Version 1",
+        "4-digit level OCCEV1P Occupation Experimental Update Version 1",
+        "6-digit level OCCEV1P Occupation Experimental Update Version 1"
+      ],
+      "group": "Employment and Income"
+    },
+    "OCSKEV1P Occupation Skill Level Experimental Update Version 1": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQyOTY3MF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2429670_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "OCSKEV1P Occupation Skill Level Experimental Update Version 1"
+      ],
+      "group": "Employment and Income"
+    },
+    "SIEMP Status in Employment": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI5N19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415297_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "SIEMP Status in Employment"
+      ],
+      "group": "Employment and Income"
+    },
+    "ADFP Australian Defence Force Service": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNDk5MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2414991_FLD",
+      "icon": "FIELD",
+      "child_count": 7,
+      "levels": [
+        "Select a level below:",
+        "ADFP Australian Defence Force Service"
+      ],
+      "group": "Australian Defence Force Service"
+    },
+    "ADCP Australian Defence Force Service, detailed": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNDk5Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2414992_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "ADCP Australian Defence Force Service, detailed"
+      ],
+      "group": "Australian Defence Force Service"
+    },
+    "CHCAREP Unpaid Child Care": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTUzN19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409537_FLD",
+      "icon": "FIELD",
+      "child_count": 7,
+      "levels": [
+        "Select a level below:",
+        "CHCAREP Unpaid Child Care"
+      ],
+      "group": "Unpaid Work and Care"
+    },
+    "DOMP Unpaid Domestic Work: Number of Hours": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYwMV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409601_FLD",
+      "icon": "FIELD",
+      "child_count": 8,
+      "levels": [
+        "Select a level below:",
+        "DOMP Unpaid Domestic Work: Number of Hours"
+      ],
+      "group": "Unpaid Work and Care"
+    },
+    "UNCAREP Unpaid Assistance to a Person with a Disability, Health Condition, or due to Old Age": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTY5OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415699_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "UNCAREP Unpaid Assistance to a Person with a Disability, Health Condition, or due to Old Age"
+      ],
+      "group": "Unpaid Work and Care"
+    },
+    "VOLWP Voluntary Work for an Organisation or Group": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyOF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409628_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "VOLWP Voluntary Work for an Organisation or Group"
+      ],
+      "group": "Unpaid Work and Care"
+    },
+    "ASSNP Core Activity Need for Assistance": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTUzNF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409534_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "ASSNP Core Activity Need for Assistance"
+      ],
+      "group": "Need for Assistance"
+    },
+    "CLTHP Count of Selected Long-term Health Conditions": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE3OF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405178_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "CLTHP Count of Selected Long-term Health Conditions"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "LTHP Type of Long-term Health Condition": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19tdWx0aV9yZXNwb25zZV8yNDE0OTkzX18yNDE0OTkzX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__multi_response_2414993__2414993_FLD",
+      "icon": "FIELD",
+      "child_count": 14,
+      "levels": [
+        "Select a level below:",
+        "LTHP Type of Long-term Health Condition"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HARTP Whether has Arthritis": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjIzNV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416235_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HARTP Whether has Arthritis"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HASTP Whether has Asthma": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjIzNl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416236_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HASTP Whether has Asthma"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HCANP Whether has Cancer (including remission)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNDk5Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2414996_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HCANP Whether has Cancer (including remission)"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HDEMP Whether has Dementia (including Alzheimer's)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjIzOF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416238_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HDEMP Whether has Dementia (including Alzheimer's)"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HDIAP Whether has Diabetes (excluding Gestational Diabetes)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjIzOV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416239_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HDIAP Whether has Diabetes (excluding Gestational Diabetes)"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HHEDP Whether has Heart Disease (including Heart Attack or Angina)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjI0MF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416240_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HHEDP Whether has Heart Disease (including Heart Attack or Angina)"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HKIDP Whether has Kidney Disease": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjI0MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416241_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HKIDP Whether has Kidney Disease"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HLUNP Whether has Lung Condition (including COPD and Emphysema)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjI0Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416242_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HLUNP Whether has Lung Condition (including COPD and Emphysema)"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HLTHP Whether has One or more Long-term Health Condition(s)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ1MDMzNl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2450336_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HLTHP Whether has One or more Long-term Health Condition(s)"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HMHCP Whether has Mental Health Condition (including Depression or Anxiety)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAwMl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415002_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HMHCP Whether has Mental Health Condition (including Depression or Anxiety)"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HSTRP Whether has had a Stroke": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAwM19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415003_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HSTRP Whether has had a Stroke"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "HOLHP Whether has Other Long-term Health Condition(s)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNjI0NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2416245_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "HOLHP Whether has Other Long-term Health Condition(s)"
+      ],
+      "group": "Health > Long-term Health Conditions"
+    },
+    "COARASP Whether has Arthritis and Asthma": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAwNl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415006_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COARASP Whether has Arthritis and Asthma"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "COARDBP Whether has Arthritis and Diabetes": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAwN19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415007_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COARDBP Whether has Arthritis and Diabetes"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "COARMHP Whether has Arthritis and Mental Health Condition": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAwOF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415008_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COARMHP Whether has Arthritis and Mental Health Condition"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "COARHDP Whether has Arthritis and Heart Disease": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAwOV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415009_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COARHDP Whether has Arthritis and Heart Disease"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "COASHDP Whether has Asthma and Heart Disease": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAxMF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415010_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COASHDP Whether has Asthma and Heart Disease"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "COASLCP Whether has Asthma and Lung Condition": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAxMV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415011_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COASLCP Whether has Asthma and Lung Condition"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "COCNHDP Whether has Cancer and Heart Disease": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAxMl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415012_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COCNHDP Whether has Cancer and Heart Disease"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "CODBHDP Whether has Diabetes and Heart Disease": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAxM19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415013_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "CODBHDP Whether has Diabetes and Heart Disease"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "CODBKDP Whether has Diabetes and Kidney Disease": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAxNF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415014_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "CODBKDP Whether has Diabetes and Kidney Disease"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "COHDKDP Whether has Heart Disease and Kidney Disease": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAxNV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415015_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COHDKDP Whether has Heart Disease and Kidney Disease"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "COHDMHP Whether has Heart Disease and Mental Health Condition": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAxNl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415016_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COHDMHP Whether has Heart Disease and Mental Health Condition"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "COLCMHP Whether has Lung Condition and Mental Health Condition": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTAxN19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415017_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "COLCMHP Whether has Lung Condition and Mental Health Condition"
+      ],
+      "group": "Health > Health Comorbidities"
+    },
+    "MV1D Household One Year Mobility Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDE1MzAzX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2415303_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "MV1D Household One Year Mobility Indicator"
+      ],
+      "group": "Usual Address and Internal Migration"
+    },
+    "MV5D Household Five Year Mobility Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDE1MzA0X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2415304_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "MV5D Household Five Year Mobility Indicator"
+      ],
+      "group": "Usual Address and Internal Migration"
+    },
+    "UAICP Usual Address Indicator Census Night": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyNl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409626_FLD",
+      "icon": "FIELD",
+      "child_count": 3,
+      "levels": [
+        "Select a level below:",
+        "UAICP Usual Address Indicator Census Night"
+      ],
+      "group": "Usual Address and Internal Migration"
+    },
+    "UAI1P Usual Address One Year Ago Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI1N19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415257_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "UAI1P Usual Address One Year Ago Indicator"
+      ],
+      "group": "Usual Address and Internal Migration"
+    },
+    "UAI5P Usual Address Five Years Ago Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQxNTI1OF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2415258_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "UAI5P Usual Address Five Years Ago Indicator"
+      ],
+      "group": "Usual Address and Internal Migration"
+    },
+    "CTGP Child Type (including grandchildren)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTU5OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409599_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "CTGP Child Type (including grandchildren)"
+      ],
+      "group": "Relationships and Children"
+    },
+    "CTPP Child Type": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYwMF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409600_FLD",
+      "icon": "FIELD",
+      "child_count": 8,
+      "levels": [
+        "Select a level below:",
+        "CTPP Child Type"
+      ],
+      "group": "Relationships and Children"
+    },
+    "FPIP Parent Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYwNF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409604_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "FPIP Parent Indicator"
+      ],
+      "group": "Relationships and Children"
+    },
+    "IFMSTP Imputation Flag for Registered Marital Status": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYwN19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409607_FLD",
+      "icon": "FIELD",
+      "child_count": 3,
+      "levels": [
+        "Select a level below:",
+        "IFMSTP Imputation Flag for Registered Marital Status"
+      ],
+      "group": "Relationships and Children"
+    },
+    "MDCP Social Marital Status": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYxM19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409613_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "MDCP Social Marital Status"
+      ],
+      "group": "Relationships and Children"
+    },
+    "MSTP Registered Marital Status": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYxNF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409614_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "MSTP Registered Marital Status"
+      ],
+      "group": "Relationships and Children"
+    },
+    "RLCP Relationship as Reported for Couples": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYxNl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409616_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "RLCP Relationship as Reported for Couples"
+      ],
+      "group": "Relationships and Children"
+    },
+    "RLGP Relationship in Household (including grandchildren)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYxN19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409617_FLD",
+      "icon": "FIELD",
+      "child_count": 31,
+      "levels": [
+        "Select a level below:",
+        "RLGP Relationship in Household (including grandchildren)"
+      ],
+      "group": "Relationships and Children"
+    },
+    "RLHP Relationship in Household": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwNTE2MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2405161_FLD",
+      "icon": "FIELD",
+      "child_count": 34,
+      "levels": [
+        "Select a level below:",
+        "RLHP Relationship in Household"
+      ],
+      "group": "Relationships and Children"
+    },
+    "RPIP Family/Household Reference Person Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYxOV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409619_FLD",
+      "icon": "FIELD",
+      "child_count": 7,
+      "levels": [
+        "Select a level below:",
+        "RPIP Family/Household Reference Person Indicator"
+      ],
+      "group": "Relationships and Children"
+    },
+    "SLPP Sex of Lone Parent": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyMV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409621_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "SLPP Sex of Lone Parent"
+      ],
+      "group": "Relationships and Children"
+    },
+    "SPIP Spouse/Partner Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyMl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409622_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "SPIP Spouse/Partner Indicator"
+      ],
+      "group": "Relationships and Children"
+    },
+    "TISP Number of Children Ever Born": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyNF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409624_FLD",
+      "icon": "FIELD",
+      "child_count": 34,
+      "levels": [
+        "Select a level below:",
+        "TISP Number of Children Ever Born"
+      ],
+      "group": "Relationships and Children"
+    },
+    "TISRP Number of Children Ever Born (ranges)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyNV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409625_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "TISRP Number of Children Ever Born (ranges)"
+      ],
+      "group": "Relationships and Children"
+    },
+    "FBLF Family Blending": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU3NF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409574_FLD",
+      "icon": "FIELD",
+      "child_count": 8,
+      "levels": [
+        "Select a level below:",
+        "FBLF Family Blending"
+      ],
+      "group": "Family Characteristics > Family Characteristics and Composition"
+    },
+    "FMCF Family Composition": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU3OF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409578_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "1-digit level FMCF Family Composition",
+        "2-digit level FMCF Family Composition",
+        "3-digit level FMCF Family Composition",
+        "4-digit level FMCF Family Composition"
+      ],
+      "group": "Family Characteristics > Family Characteristics and Composition"
+    },
+    "FMGF Grandparent Families": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU3OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409579_FLD",
+      "icon": "FIELD",
+      "child_count": 3,
+      "levels": [
+        "Select a level below:",
+        "1-digit level FMGF Grandparent Families",
+        "2-digit level FMGF Grandparent Families"
+      ],
+      "group": "Family Characteristics > Family Characteristics and Composition"
+    },
+    "FRLF Relationship Between Families": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU4MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409581_FLD",
+      "icon": "FIELD",
+      "child_count": 8,
+      "levels": [
+        "Select a level below:",
+        "FRLF Relationship Between Families"
+      ],
+      "group": "Family Characteristics > Family Characteristics and Composition"
+    },
+    "HCFMD Family Household Composition (Dwelling)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDI1MzgxX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2425381_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "1-digit level HCFMD Family Household Composition (Dwelling)",
+        "2-digit level HCFMD Family Household Composition (Dwelling)"
+      ],
+      "group": "Family Characteristics > Family Characteristics and Composition"
+    },
+    "HCFMF Family Household Composition (Family)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU4Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409582_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "1-digit level HCFMF Family Household Composition (Family)",
+        "2-digit level HCFMF Family Household Composition (Family)"
+      ],
+      "group": "Family Characteristics > Family Characteristics and Composition"
+    },
+    "SPLF Location of Spouse": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU4NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409585_FLD",
+      "icon": "FIELD",
+      "child_count": 3,
+      "levels": [
+        "Select a level below:",
+        "SPLF Location of Spouse"
+      ],
+      "group": "Family Characteristics > Family Characteristics and Composition"
+    },
+    "SSCF Same-Sex Couple Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU4Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409586_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "SSCF Same-Sex Couple Indicator"
+      ],
+      "group": "Family Characteristics > Family Characteristics and Composition"
+    },
+    "CACF Count of All Children in Family": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU2NF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409564_FLD",
+      "icon": "FIELD",
+      "child_count": 7,
+      "levels": [
+        "Select a level below:",
+        "CACF Count of All Children in Family"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "CDCAF Count of Dependent Children Under 15 in Family Temporarily Absent": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQxNTY5Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2415692_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "CDCAF Count of Dependent Children Under 15 in Family Temporarily Absent"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "CDCF Count of Dependent Children in Family": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU2Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409566_FLD",
+      "icon": "FIELD",
+      "child_count": 15,
+      "levels": [
+        "Select a level below:",
+        "CDCF Count of Dependent Children in Family"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "CDCUF Count of Dependent Children Under 15 in Family": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQxNTY5M19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2415693_FLD",
+      "icon": "FIELD",
+      "child_count": 15,
+      "levels": [
+        "Select a level below:",
+        "CDCUF Count of Dependent Children Under 15 in Family"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "CDSAF Count of Dependent Students (15-24 years) in Family Temporarily Absent": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQxNTY5NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2415695_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "CDSAF Count of Dependent Students (15-24 years) in Family Temporarily Absent"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "CDSF Count of Dependent Students (15-24 years) in Family": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQxNTY5NF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2415694_FLD",
+      "icon": "FIELD",
+      "child_count": 15,
+      "levels": [
+        "Select a level below:",
+        "CDSF Count of Dependent Students (15-24 years) in Family"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "CPAF Count of Persons Temporarily Absent from Family": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQzNTI5OF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2435298_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "CPAF Count of Persons Temporarily Absent from Family"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "CPRF Count of Persons in Family": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU3M19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409573_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "CPRF Count of Persons in Family"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "CNDAF Count of Non-Dependent Children in Family Temporarily Absent": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQxNTY5Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2415696_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "CNDAF Count of Non-Dependent Children in Family Temporarily Absent"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "CNDCF Count of Non-Dependent Children in Family": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU3MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409571_FLD",
+      "icon": "FIELD",
+      "child_count": 15,
+      "levels": [
+        "Select a level below:",
+        "CNDCF Count of Non-Dependent Children in Family"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "FNOF Family Number": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU4MF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409580_FLD",
+      "icon": "FIELD",
+      "child_count": 4,
+      "levels": [
+        "Select a level below:",
+        "FNOF Family Number"
+      ],
+      "group": "Family Characteristics > Family Counts"
+    },
+    "FIDF Family Income Derivation Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU3NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409575_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "FIDF Family Income Derivation Indicator"
+      ],
+      "group": "Family Characteristics > Family Income"
+    },
+    "FINASF Total Family Income as Stated (weekly)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU3Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409576_FLD",
+      "icon": "FIELD",
+      "child_count": 24,
+      "levels": [
+        "Select a level below:",
+        "FINASF Total Family Income as Stated (weekly)"
+      ],
+      "group": "Family Characteristics > Family Income"
+    },
+    "FINF Total Family Income (weekly)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19GYW1pbHkgUmVjb3Jkc19fMjQwOTU3N19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Family Records__2409577_FLD",
+      "icon": "FIELD",
+      "child_count": 25,
+      "levels": [
+        "Select a level below:",
+        "FINF Total Family Income (weekly)"
+      ],
+      "group": "Family Characteristics > Family Income"
+    },
+    "BEDD Number of Bedrooms in Private Dwelling": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA1MTQwX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2405140_FLD",
+      "icon": "FIELD",
+      "child_count": 33,
+      "levels": [
+        "Select a level below:",
+        "BEDD Number of Bedrooms in Private Dwelling"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "BEDRD Number of Bedrooms in Private Dwelling (ranges)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA1MTQxX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2405141_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "BEDRD Number of Bedrooms in Private Dwelling (ranges)"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "CPAD Count of Persons Temporarily Absent from Household": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDUwMzM0X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2450334_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "CPAD Count of Persons Temporarily Absent from Household"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "DLOD Dwelling Location": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTQ2X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409546_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "DLOD Dwelling Location"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "DWTD Dwelling Type": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTQ3X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409547_FLD",
+      "icon": "FIELD",
+      "child_count": 6,
+      "levels": [
+        "Select a level below:",
+        "DWTD Dwelling Type"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "HHCD Household Composition": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTUwX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409550_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "1-digit level HHCD Household Composition",
+        "2-digit level HHCD Household Composition",
+        "3-digit level HHCD Household Composition"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "HOSD Housing Suitability": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTU0X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409554_FLD",
+      "icon": "FIELD",
+      "child_count": 12,
+      "levels": [
+        "Select a level below:",
+        "HOSD Housing Suitability"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "IFNMFD Imputation Flag for Number of Males and Females in Dwelling": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTU1X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409555_FLD",
+      "icon": "FIELD",
+      "child_count": 3,
+      "levels": [
+        "Select a level below:",
+        "IFNMFD Imputation Flag for Number of Males and Females in Dwelling"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "LLDD Landlord Type": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA1MTQzX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2405143_FLD",
+      "icon": "FIELD",
+      "child_count": 10,
+      "levels": [
+        "Select a level below:",
+        "LLDD Landlord Type"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "NPDD Type of Non-Private Dwelling": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTU5X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409559_FLD",
+      "icon": "FIELD",
+      "child_count": 22,
+      "levels": [
+        "Select a level below:",
+        "NPDD Type of Non-Private Dwelling"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "NPRD Number of Persons Usually Resident in Dwelling": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTYwX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409560_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "NPRD Number of Persons Usually Resident in Dwelling"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "RLNP Residential Status in a Non-Private Dwelling": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYxOF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2409618_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "RLNP Residential Status in a Non-Private Dwelling"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "STRD Dwelling Structure": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA1MTQ2X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2405146_FLD",
+      "icon": "FIELD",
+      "child_count": 14,
+      "levels": [
+        "Select a level below:",
+        "STRD Dwelling Structure"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "TEND Tenure Type": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA1MTQ3X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2405147_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "TEND Tenure Type"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "TENLLD Tenure and Landlord Type": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA1MTQ4X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2405148_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "TENLLD Tenure and Landlord Type"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "VEHD Number of Motor Vehicles": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTYyX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409562_FLD",
+      "icon": "FIELD",
+      "child_count": 33,
+      "levels": [
+        "Select a level below:",
+        "VEHD Number of Motor Vehicles"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "VEHRD Number of Motor Vehicles (ranges)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTYzX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409563_FLD",
+      "icon": "FIELD",
+      "child_count": 7,
+      "levels": [
+        "Select a level below:",
+        "VEHRD Number of Motor Vehicles (ranges)"
+      ],
+      "group": "Dwelling and Household Characteristics"
+    },
+    "HIDD Household Income Derivation Indicator": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTUxX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409551_FLD",
+      "icon": "FIELD",
+      "child_count": 9,
+      "levels": [
+        "Select a level below:",
+        "HIDD Household Income Derivation Indicator"
+      ],
+      "group": "Household Income and Housing Costs"
+    },
+    "HIED Equivalised Total Household Income (weekly)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA1OTY2X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2405966_FLD",
+      "icon": "FIELD",
+      "child_count": 19,
+      "levels": [
+        "Select a level below:",
+        "HIED Equivalised Total Household Income (weekly)"
+      ],
+      "group": "Household Income and Housing Costs"
+    },
+    "HINASD Total Household Income as Stated (weekly)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTUyX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409552_FLD",
+      "icon": "FIELD",
+      "child_count": 24,
+      "levels": [
+        "Select a level below:",
+        "HINASD Total Household Income as Stated (weekly)"
+      ],
+      "group": "Household Income and Housing Costs"
+    },
+    "HIND Total Household Income (weekly)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA5NTUzX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2409553_FLD",
+      "icon": "FIELD",
+      "child_count": 25,
+      "levels": [
+        "Select a level below:",
+        "HIND Total Household Income (weekly)"
+      ],
+      "group": "Household Income and Housing Costs"
+    },
+    "MRERD Mortgage Repayments (monthly) Ranges": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA1MTQ0X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2405144_FLD",
+      "icon": "FIELD",
+      "child_count": 23,
+      "levels": [
+        "Select a level below:",
+        "MRERD Mortgage Repayments (monthly) Ranges"
+      ],
+      "group": "Household Income and Housing Costs"
+    },
+    "RNTRD Rent (weekly) Ranges": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDA1MTQ1X0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2405145_FLD",
+      "icon": "FIELD",
+      "child_count": 27,
+      "levels": [
+        "Select a level below:",
+        "RNTRD Rent (weekly) Ranges"
+      ],
+      "group": "Household Income and Housing Costs"
+    },
+    "MTWP Method of Travel to Work": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQyOTY3MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2429671_FLD",
+      "icon": "FIELD",
+      "child_count": 8,
+      "levels": [
+        "Select a level below:",
+        "1-digit level  MTWP Method of Travel to Work",
+        "2-digit level  MTWP Method of Travel to Work",
+        "3-digit level  MTWP Method of Travel to Work"
+      ],
+      "group": "Distance and Method of Travel to Work"
+    },
+    "IRSAD Deciles at SA1 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYwNF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447604_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at SA1 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA1 Level (Area)"
+    },
+    "IRSAD Quartiles at SA1 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ4MTc4OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2481789_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Quartiles at SA1 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA1 Level (Area)"
+    },
+    "IRSD Deciles at SA1 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYwNV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447605_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at SA1 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA1 Level (Area)"
+    },
+    "IER Deciles at SA1 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYwNl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447606_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at SA1 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA1 Level (Area)"
+    },
+    "IEO Deciles at SA1 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYwN19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447607_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at SA1 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA1 Level (Area)"
+    },
+    "IRSAD Deciles at SA2 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYwOF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447608_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at SA2 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA2 Level (Area)"
+    },
+    "IRSAD Quartiles at SA2 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ4MTc5MF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2481790_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Quartiles at SA2 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA2 Level (Area)"
+    },
+    "IRSD Deciles at SA2 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYwOV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447609_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at SA2 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA2 Level (Area)"
+    },
+    "IER Deciles at SA2 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxMF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447610_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at SA2 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA2 Level (Area)"
+    },
+    "IEO Deciles at SA2 Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxMV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447611_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at SA2 Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SA2 Level (Area)"
+    },
+    "IRSAD Deciles at LGA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxMl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447612_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at LGA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at LGA Level (Area)"
+    },
+    "IRSAD Quartiles at LGA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ4MTc4N19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2481787_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Quartiles at LGA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at LGA Level (Area)"
+    },
+    "IRSD Deciles at LGA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxM19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447613_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at LGA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at LGA Level (Area)"
+    },
+    "IER Deciles at LGA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxNF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447614_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at LGA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at LGA Level (Area)"
+    },
+    "IEO Deciles at LGA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxNV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447615_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at LGA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at LGA Level (Area)"
+    },
+    "IRSAD Deciles at POA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxNl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447616_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at POA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at POA Level (Area)"
+    },
+    "IRSAD Quartiles at POA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ4MTc4OF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2481788_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Quartiles at POA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at POA Level (Area)"
+    },
+    "IRSD Deciles at POA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxN19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447617_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at POA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at POA Level (Area)"
+    },
+    "IER Deciles at POA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxOF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447618_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at POA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at POA Level (Area)"
+    },
+    "IEO Deciles at POA Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYxOV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447619_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at POA Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at POA Level (Area)"
+    },
+    "IRSAD Deciles at SAL Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYyMF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447620_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at SAL Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SAL Level (Area)"
+    },
+    "IRSAD Quartiles at SAL Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ4MTc5MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2481791_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Quartiles at SAL Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SAL Level (Area)"
+    },
+    "IRSD Deciles at SAL Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYyMV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447621_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at SAL Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SAL Level (Area)"
+    },
+    "IER Deciles at SAL Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYyMl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447622_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at SAL Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SAL Level (Area)"
+    },
+    "IEO Deciles at SAL Level (Area)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzYyM19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447623_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at SAL Level (Area)"
+      ],
+      "group": "SEIFA Quantiles (Area-based) WARNING: Area quantiles must be used with same geography type > Quantiles at SAL Level (Area)"
+    },
+    "IRSAD Deciles at SA1 Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY2NF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447664_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at SA1 Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SA1 Level (Population)"
+    },
+    "IRSD Deciles at SA1 Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY2NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447665_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at SA1 Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SA1 Level (Population)"
+    },
+    "IER Deciles at SA1 Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY2Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447666_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at SA1 Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SA1 Level (Population)"
+    },
+    "IEO Deciles at SA1 Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY2N19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447667_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at SA1 Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SA1 Level (Population)"
+    },
+    "IRSAD Deciles at SA2 Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY2OF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447668_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at SA2 Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SA2 Level (Population)"
+    },
+    "IRSD Deciles at SA2 Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY2OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447669_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at SA2 Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SA2 Level (Population)"
+    },
+    "IER Deciles at SA2 Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3MF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447670_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at SA2 Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SA2 Level (Population)"
+    },
+    "IEO Deciles at SA2 Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447671_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at SA2 Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SA2 Level (Population)"
+    },
+    "IRSAD Deciles at LGA Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447672_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at LGA Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at LGA Level (Population)"
+    },
+    "IRSD Deciles at LGA Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3M19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447673_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at LGA Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at LGA Level (Population)"
+    },
+    "IER Deciles at LGA Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3NF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447674_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at LGA Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at LGA Level (Population)"
+    },
+    "IEO Deciles at LGA Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3NV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447675_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at LGA Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at LGA Level (Population)"
+    },
+    "IRSAD Deciles at POA Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3Nl9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447676_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at POA Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at POA Level (Population)"
+    },
+    "IRSD Deciles at POA Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3N19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447677_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at POA Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at POA Level (Population)"
+    },
+    "IER Deciles at POA Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3OF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447678_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at POA Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at POA Level (Population)"
+    },
+    "IEO Deciles at POA Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY3OV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447679_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at POA Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at POA Level (Population)"
+    },
+    "IRSAD Deciles at SAL Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY4MF9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447680_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles at SAL Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SAL Level (Population)"
+    },
+    "IRSD Deciles at SAL Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY4MV9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447681_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSD Deciles at SAL Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SAL Level (Population)"
+    },
+    "IER Deciles at SAL Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY4Ml9GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447682_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IER Deciles at SAL Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SAL Level (Population)"
+    },
+    "IEO Deciles at SAL Level (Pop)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQ0NzY4M19GTEQ",
+      "decoded": "SXV4__20250910_PersonsEN__Person Records__2447683_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IEO Deciles at SAL Level (Pop)"
+      ],
+      "group": "SEIFA Quantiles (Population-based) WARNING: Population quantiles must be used with same geography type > Quantiles at SAL Level (Population)"
+    },
+    "IRSAD Deciles (Household)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDgwNTAwX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2480500_FLD",
+      "icon": "FIELD",
+      "child_count": 11,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Deciles (Household)"
+      ],
+      "group": "IHAD Quantiles (Household-based)"
+    },
+    "IRSAD Quartiles (Household)": {
+      "key": "U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19Ed2VsbGluZyBSZWNvcmRzX18yNDgwNTAxX0ZMRA",
+      "decoded": "SXV4__20250910_PersonsEN__Dwelling Records__2480501_FLD",
+      "icon": "FIELD",
+      "child_count": 5,
+      "levels": [
+        "Select a level below:",
+        "IRSAD Quartiles (Household)"
+      ],
+      "group": "IHAD Quantiles (Household-based)"
+    }
+  }
+}

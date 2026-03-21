@@ -54,13 +54,48 @@ The ABS TableBuilder frontend is a Java Server Faces (JSF) app with RichFaces AJ
 - **Login requires:** `loginForm:_idcl=loginForm:login2` to identify the button click
 - **Session cookies:** `JSESSIONID` (primary), `AWSALB` (load balancer)
 
+### Additional Discoveries (2026-03-21 afternoon)
+
+**Schema tree is fully inline for 2021 Census:**
+- `GET /rest/catalogue/tableSchema/tree` returns ALL 239 variables with children inline — zero expand calls needed
+- Variables identified by `iconType: "FIELD"` and `draggable: true` (NOT `leaf: true` which is `None`)
+- Cached in `output/schema_cache_2021PersonsEN.json`
+- 2021 Census variable keys use numeric IDs: `SXV4__20250910_PersonsEN__Person Records__2409620_FLD` (not mnemonics like `SEXP`)
+
+**New endpoint discovered:** `/rest/catalogue/saveTable/tree` — user's saved tables
+
+**Search protocol captured:**
+- POST to `tableView.xhtml` with `searchPattern=<name>` + `searchButton` RichFaces AJAX
+- Server responds with tree updates, React tree re-renders with search results
+
+**Tree expand with `returnNode` (new!):**
+- POST to `/rest/catalogue/tableSchema/tree` with both `expandedNodes` AND `returnNode`
+- `returnNode` includes node path, `data: true`, `state: true`, `expanded: true`
+- This tells the server to expand AND return specific node data in one call
+
+**`dropToTable` protocol captured (causes `internalerror`):**
+```
+POST /jsf/tableView/tableView.xhtml
+buttonForm_SUBMIT=1
+javax.faces.ViewState=<viewstate>
+id=<variable_key_base64>
+dim=row
+comp=0
+org.richfaces.ajax.component=buttonForm:j_id_58
+(+ standard RichFaces partial AJAX headers)
+```
+This causes `/logout?internalerror=true`. Likely because server-side state requires checkboxes to be "checked" before the axis assignment — but checkbox clicks are DOM-only (no HTTP call).
+
+**Checkbox selection is client-side only:**
+- Clicking a checkbox in the JSF tree fires no HTTP request
+- The checked state is stored in DOM and included in the form POST when the axis button is submitted
+- This means we need to know what form field names the checkbox values map to
+
 ### What Still Needs Investigation
 
-1. **`dropToTable(id, dim, comp)` exact protocol** — We know the JS function signature but haven't captured a live call yet. Need to intercept the exact AJAX POST when adding a variable to an axis.
-2. **`/webapi/downloadTable` servlet** — How does it know which table to download? Cookie-based? Query params? Need to capture a live download request.
-3. **`/rest/table` endpoint** — Returns 500 on empty POST, 400 on wrong payload. The right payload format is unknown. May be how the frontend fetches rendered table data.
-4. **Checkbox selection protocol** — When clicking a checkbox in the tree, what AJAX call fires? Is it the `tableSchemaTreeOnSelect` function, or something else?
-5. **Auto-retrieve vs manual retrieve** — Some tables auto-populate data. What triggers this? The `autoRetrieveScripts` form with a `showProgressIfAutoRetrievingData()` function suggests a polling mechanism.
+1. **Checkbox form field names** — What field names carry the checkbox state in the `buttonForm` POST? Run `capture_existing_flow_v2.py` on totoro (has headed Chromium, faster network) to capture the full form submit including checkbox data.
+2. **`/webapi/downloadTable` servlet** — Protocol still unknown. Need to capture a complete retrieve + download sequence.
+3. **Whether the JSF form submit (`buttonForm:addR`) sends checkbox state** or whether the checkbox state is tracked server-side via the `treeForm:j_id_6m` AJAX callback.
 
 ---
 
