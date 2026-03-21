@@ -80,13 +80,20 @@ def open_database(
     logger.info("Selecting database node with path: %s", path)
     session.rest_post("/rest/catalogue/databases/tree", {"currentNode": path})
 
-    # Step 2: Fire the doubleClickDatabase AJAX action
+    # Step 2a: Fire selectedDatabase to tell JSF which node is active
+    logger.info("Firing selectedDatabase AJAX to notify JSF")
+    session.richfaces_ajax(
+        catalogue_url,
+        form_id="j_id_3f",
+        component_id="j_id_3n",
+    )
+
+    # Step 2b: Fire the doubleClickDatabase AJAX action
     logger.info("Firing doubleClickDatabase AJAX action")
     session.richfaces_ajax(
         catalogue_url,
         form_id="j_id_3f",
         component_id="j_id_3i",
-        extra_params={"doubleClickDatabase": "doubleClickDatabase"},
     )
 
     # Step 3: GET the tableView page and update ViewState
@@ -94,7 +101,7 @@ def open_database(
     resp = session._session.get(tableview_url)
     new_vs = extract_viewstate(resp.text)
     if new_vs:
-        session._viewstate = new_vs
+        session.viewstate = new_vs
         logger.debug("ViewState updated from tableView page")
 
 
