@@ -23,6 +23,11 @@
         .filmstrip img { height: 150px; border: 1px solid var(--pico-muted-border-color); border-radius: 4px; cursor: pointer; }
         .filmstrip img:hover { border-color: var(--pico-primary); }
         nav ul { list-style: none; display: flex; gap: 1rem; }
+        .two-panel { display: grid; grid-template-columns: 1fr 350px; gap: 1rem; max-width: 1200px; margin: 0 auto; }
+        .two-panel .chat-container { max-width: none; margin: 0; }
+        .cart-panel { position: sticky; top: 1rem; max-height: calc(100vh - 6rem); overflow-y: auto; }
+        .cart-panel h3 { margin-bottom: 0.5rem; }
+        @media (max-width: 768px) { .two-panel { grid-template-columns: 1fr; } .cart-panel { position: static; max-height: none; } }
     </style>
 </head>
 <body>
