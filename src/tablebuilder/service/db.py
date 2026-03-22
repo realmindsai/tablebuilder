@@ -1,6 +1,7 @@
 # ABOUTME: SQLite database for the TableBuilder service layer.
 # ABOUTME: Manages users, jobs, job_events, and chat_sessions tables.
 
+import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -337,3 +338,52 @@ class ServiceDB:
         ).fetchall()
         conn.close()
         return [dict(r) for r in rows]
+
+    # -- Proposals --
+
+    def get_proposals(self, session_id: str) -> list[dict]:
+        conn = self._connect()
+        row = conn.execute(
+            "SELECT proposals_json FROM chat_sessions WHERE id = ?",
+            (session_id,),
+        ).fetchone()
+        conn.close()
+        if row is None or not row["proposals_json"]:
+            return []
+        return json.loads(row["proposals_json"])
+
+    def add_proposal(self, session_id: str, proposal: dict) -> None:
+        proposals = self.get_proposals(session_id)
+        proposals.append(proposal)
+        conn = self._connect()
+        conn.execute(
+            "UPDATE chat_sessions SET proposals_json = ?, updated_at = ? WHERE id = ?",
+            (json.dumps(proposals), _now(), session_id),
+        )
+        conn.commit()
+        conn.close()
+
+    def update_proposal_status(
+        self, session_id: str, proposal_id: str, status: str,
+    ) -> None:
+        proposals = self.get_proposals(session_id)
+        for p in proposals:
+            if p["id"] == proposal_id:
+                p["status"] = status
+                break
+        conn = self._connect()
+        conn.execute(
+            "UPDATE chat_sessions SET proposals_json = ?, updated_at = ? WHERE id = ?",
+            (json.dumps(proposals), _now(), session_id),
+        )
+        conn.commit()
+        conn.close()
+
+    def update_research_question(self, session_id: str, question: str) -> None:
+        conn = self._connect()
+        conn.execute(
+            "UPDATE chat_sessions SET research_question = ?, updated_at = ? WHERE id = ?",
+            (question, _now(), session_id),
+        )
+        conn.commit()
+        conn.close()

@@ -257,3 +257,56 @@ class TestServiceDBSessionEvents:
         )
         events = db.get_session_events(session_id)
         assert events[0]["metadata_json"] == '{"query": "income", "limit": 10}'
+
+
+class TestServiceDBProposals:
+    def test_get_proposals_empty(self, db):
+        """New session has empty proposals list."""
+        user_id = db.create_user(api_key_hash="h", abs_credentials_encrypted="c")
+        session_id = db.create_chat_session(user_id=user_id, messages_json="[]")
+        proposals = db.get_proposals(session_id)
+        assert proposals == []
+
+    def test_add_proposal(self, db):
+        """Add a proposal and retrieve it."""
+        user_id = db.create_user(api_key_hash="h", abs_credentials_encrypted="c")
+        session_id = db.create_chat_session(user_id=user_id, messages_json="[]")
+        proposal = {
+            "id": "p1",
+            "dataset": "Census 2021",
+            "rows": ["SEXP Sex"],
+            "cols": [],
+            "wafers": [],
+            "match_confidence": 85,
+            "clarity_confidence": 70,
+            "rationale": "Good match for sex demographics",
+            "status": "checked",
+            "job_id": None,
+        }
+        db.add_proposal(session_id, proposal)
+        proposals = db.get_proposals(session_id)
+        assert len(proposals) == 1
+        assert proposals[0]["dataset"] == "Census 2021"
+        assert proposals[0]["status"] == "checked"
+
+    def test_update_proposal_status(self, db):
+        """Toggle a proposal's checked status."""
+        user_id = db.create_user(api_key_hash="h", abs_credentials_encrypted="c")
+        session_id = db.create_chat_session(user_id=user_id, messages_json="[]")
+        proposal = {
+            "id": "p1", "dataset": "D", "rows": ["R"], "cols": [], "wafers": [],
+            "match_confidence": 80, "clarity_confidence": 70,
+            "rationale": "test", "status": "checked", "job_id": None,
+        }
+        db.add_proposal(session_id, proposal)
+        db.update_proposal_status(session_id, "p1", "unchecked")
+        proposals = db.get_proposals(session_id)
+        assert proposals[0]["status"] == "unchecked"
+
+    def test_update_research_question(self, db):
+        """Update the session's research question summary."""
+        user_id = db.create_user(api_key_hash="h", abs_credentials_encrypted="c")
+        session_id = db.create_chat_session(user_id=user_id, messages_json="[]")
+        db.update_research_question(session_id, "Income by region in Victoria")
+        session = db.get_chat_session(session_id)
+        assert session["research_question"] == "Income by region in Victoria"
