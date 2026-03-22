@@ -30,6 +30,8 @@ The system prompt defines a character, not a workflow:
 
 No prohibition lists. The persona IS the guardrail. A senior data scientist in a consultation doesn't give recipes, write poetry, or discuss the weather — not because there's a rule against it, but because that's not who they are. If the conversation drifts, the character gently steers it back.
 
+**Trade-off acknowledged**: Persona-based guardrails are softer than rule-based ones. Under adversarial prompting, Claude can break character. This is acceptable because: (a) the target users are researchers, not adversaries, (b) all tools are data-scoped — there's nothing destructive Claude can call, and (c) the worst case is an off-topic chat, not a security breach. Job queueing still requires explicit researcher confirmation via the cart UI.
+
 ## Tool Set
 
 Claude gets 6 tools in two categories. It decides when and how to use them.
@@ -40,7 +42,7 @@ Claude gets 6 tools in two categories. It decides when and how to use them.
 |------|-------|--------|---------|
 | `search_dictionary` | `query: str, limit: int` | Ranked results: dataset, variable code, label, categories, summary | FTS5 search across 96 datasets, 28k+ variables. Already exists. |
 | `get_dataset_variables` | `dataset_name: str` | Full variable tree: groups, variables, category counts, samples | Explore a specific dataset's structure. Already exists. |
-| `compare_datasets` | `dataset_names: list[str]` | Side-by-side: which variables each has, overlap, gaps | Help when a research question could be answered by multiple datasets. New tool. |
+| `compare_datasets` | `dataset_names: list[str]` | Side-by-side: which variables each has, overlap, gaps | Help when a research question could be answered by multiple datasets. New tool — implemented as a new function in `dictionary_db.py` that queries multiple datasets and diffs their variable sets. |
 
 ### Display Tools
 
@@ -50,7 +52,7 @@ Display tools produce structured payloads that the UI renders. Claude gets a tex
 |------|-------|------------------|--------------|---------|
 | `propose_table_request` | `dataset, rows, cols, wafers, match_confidence, clarity_confidence, rationale` | "Proposal #N stored, showing to researcher" | Card added to shopping cart | Propose a data pull with confidence scores |
 | `present_choices` | `question, options: [{label, description}], allow_multiple: bool` | "Choices presented, waiting for selection" | Clickable buttons or radio/checkbox list | Structured multiple choice question |
-| `show_session_summary` | (no input — reads session events) | Full event log as source material | Claude writes a polished research brief from the data | Generate exportable summary |
+| `show_session_summary` | (no input) | Formatted event log from `session_events` table + current proposals list | Claude writes a polished research brief from the data | Generate exportable summary |
 
 ### Design decisions
 
@@ -63,8 +65,8 @@ Display tools produce structured payloads that the UI renders. Claude gets a tex
 
 Two-axis scoring on every proposal:
 
-- **Dataset match (0-100)**: How well do the variables in this dataset cover what the researcher is asking about? Mechanical — based on search results and variable coverage.
-- **Question clarity (0-100)**: Has the researcher been specific enough that we're confident this data will answer their question? Conversational — based on how much the researcher has specified.
+- **Dataset match (0-100)**: How well do the variables in this dataset cover what the researcher is asking about? This is Claude's judgment based on search results — not a computed formula. Scores are not reproducible or auditable, which is acceptable for a conversational tool.
+- **Question clarity (0-100)**: Has the researcher been specific enough that we're confident this data will answer their question? Also Claude's judgment — based on how much the researcher has specified (geographic level, time period, variable specificity, etc.).
 
 Claude's instruction: if clarity is below 70, ask a follow-up before proposing. This naturally drives the conversation toward specificity.
 
@@ -103,10 +105,11 @@ Every `propose_table_request` call adds a card:
 
 - Proposals land **checked by default** — Claude proposed it because it thinks it's useful
 - Researcher can **uncheck** — card stays (greyed out), can be re-enabled
+- Toggling a checkbox sends an HTMX request to `POST /web/cart/toggle/{proposal_id}` which updates `proposals_json` server-side and logs a `proposal_toggled` event. Cart state is **server-canonical** — survives page refresh.
 - Cards collapse to one-line summaries when the cart gets long, expand on click
 - Cart scrolls independently from chat
-- **"Fetch Selected"** queues all checked proposals as jobs in one batch
-- Cart state (checked/unchecked) is visible to Claude as context — it can react to researcher's selections
+- **"Fetch Selected"** sends `POST /web/cart/fetch` with the session_id. Server reads `proposals_json`, queues a job for each checked proposal, logs `jobs_queued` event, returns updated cart via HTMX swap.
+- Cart state is injected into Claude's context as a system-message addendum before each resolve call: a compact summary of current proposals and their checked/unchecked status. This lets Claude react to selections.
 
 ## Session Model
 
@@ -203,21 +206,66 @@ Researcher  ←→  Web UI (HTMX)  ←→  Routes  ←→  ChatResolver  ←→ 
 When Claude calls a display tool:
 1. Tool executor stores the data (proposal in session, etc.)
 2. Returns text confirmation to Claude ("Proposal #1 stored")
-3. Also flags a **display payload** sent to the UI
+3. Also collects a **display payload** in a list on the resolver instance
 
 Claude doesn't render HTML. The UI gets structured objects to render.
+
+The `resolve()` method returns a richer response:
+```python
+{
+    "text": "Claude's natural language response",
+    "display_payloads": [
+        {"type": "proposal", "data": {...}},
+        {"type": "choices", "data": {...}},
+    ]
+}
+```
+
+The routes layer renders Claude's text as a chat bubble, then uses **HTMX out-of-band swaps** (`hx-swap-oob="beforeend:#cart"`) to inject proposal cards into the cart panel and choice buttons inline in the chat. This is the only clean way to update two separate DOM regions from one HTMX response.
+
+### Conversation history serialization
+
+The resolver stores the **full Anthropic message objects** (including `ToolUseBlock` and `ToolResultBlock`) in `messages_json`. The simplified dict format used by the current resolver loses tool-use context across turns and breaks multi-round tool-use sessions. The routes layer extracts just the text content for display purposes.
+
+## Schema Migration
+
+### `chat_sessions` table changes
+
+| Column | Change |
+|--------|--------|
+| `resolved_request_json` | Deprecated — replaced by `proposals_json`. Kept for backwards compat with old sessions. |
+| `proposals_json` | **New** — JSON array of proposal objects: `{id, dataset, rows, cols, wafers, match_confidence, clarity_confidence, rationale, status, job_id}`. Status is one of: `proposed`, `checked`, `unchecked`, `confirmed`. |
+| `research_question` | **New** — text, Claude's evolving summary of the research intent. |
+
+The existing `job_id` column stays. For new sessions, job linkage is tracked via proposal objects. `link_chat_to_job()` is preserved for API consumers.
+
+### New `session_events` table
+
+```sql
+CREATE TABLE IF NOT EXISTS session_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL REFERENCES chat_sessions(id),
+    timestamp TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    message TEXT NOT NULL,
+    detail TEXT,
+    metadata_json TEXT
+);
+```
+
+New DB methods: `add_session_event()`, `get_session_events()`, `update_proposal()`, `get_proposals()`. These follow the same pattern as `add_event()` / `get_events()` for job events.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `chat_resolver.py` | New system prompt, 3 new tools, display payload collection |
-| `routes_chat.py` | Handle display payloads, multi-proposal confirm, cart state |
-| `routes_web.py` | Render proposals as cards, choices as buttons, cart panel |
-| `db.py` | Add `session_events` table, `proposals_json` + `research_question` columns on `chat_sessions` |
+| `chat_resolver.py` | New system prompt, 3 new tools, display payload collection, richer return type |
+| `dictionary_db.py` | New `compare_datasets()` function |
+| `routes_chat.py` | Handle display payloads, updated response format |
+| `routes_web.py` | Cart endpoints (`toggle`, `fetch`), two-panel rendering, OOB swaps |
+| `db.py` | Schema migration: `session_events` table, `proposals_json` + `research_question` columns, new CRUD methods |
+| `templates/base.html` | Flex/grid layout wrapper for two-panel pages |
 | `templates/chat.html` | Two-panel layout, cart component, choice buttons, summary renderer |
-
-No new Python files. Everything extends what exists.
 
 ## End State
 
