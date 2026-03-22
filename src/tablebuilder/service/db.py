@@ -309,3 +309,31 @@ class ServiceDB:
         )
         conn.commit()
         conn.close()
+
+    # -- Session Events --
+
+    def add_session_event(
+        self,
+        session_id: str,
+        event_type: str,
+        message: str,
+        detail: str = "",
+        metadata_json: str = "",
+    ) -> None:
+        conn = self._connect()
+        conn.execute(
+            "INSERT INTO session_events (session_id, timestamp, event_type, message, detail, metadata_json) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (session_id, _now(), event_type, message, detail, metadata_json),
+        )
+        conn.commit()
+        conn.close()
+
+    def get_session_events(self, session_id: str) -> list[dict]:
+        conn = self._connect()
+        rows = conn.execute(
+            "SELECT * FROM session_events WHERE session_id = ? ORDER BY timestamp, id",
+            (session_id,),
+        ).fetchall()
+        conn.close()
+        return [dict(r) for r in rows]

@@ -222,3 +222,38 @@ class TestServiceDBChatSessions:
         db.link_chat_to_job(session_id, job_id)
         session = db.get_chat_session(session_id)
         assert session["job_id"] == job_id
+
+
+class TestServiceDBSessionEvents:
+    def test_add_session_event(self, db):
+        """Add a session event and retrieve it."""
+        user_id = db.create_user(api_key_hash="h", abs_credentials_encrypted="c")
+        session_id = db.create_chat_session(user_id=user_id, messages_json="[]")
+        db.add_session_event(
+            session_id, event_type="user_message", message="Hello",
+        )
+        events = db.get_session_events(session_id)
+        assert len(events) == 1
+        assert events[0]["event_type"] == "user_message"
+        assert events[0]["message"] == "Hello"
+
+    def test_session_events_ordered_by_timestamp(self, db):
+        """Session events are returned in chronological order."""
+        user_id = db.create_user(api_key_hash="h", abs_credentials_encrypted="c")
+        session_id = db.create_chat_session(user_id=user_id, messages_json="[]")
+        db.add_session_event(session_id, event_type="user_message", message="First")
+        db.add_session_event(session_id, event_type="tool_call", message="search")
+        events = db.get_session_events(session_id)
+        assert events[0]["message"] == "First"
+        assert events[1]["message"] == "search"
+
+    def test_session_event_with_metadata(self, db):
+        """Session events can store JSON metadata."""
+        user_id = db.create_user(api_key_hash="h", abs_credentials_encrypted="c")
+        session_id = db.create_chat_session(user_id=user_id, messages_json="[]")
+        db.add_session_event(
+            session_id, event_type="tool_call", message="search_dictionary",
+            metadata_json='{"query": "income", "limit": 10}',
+        )
+        events = db.get_session_events(session_id)
+        assert events[0]["metadata_json"] == '{"query": "income", "limit": 10}'
