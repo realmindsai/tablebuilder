@@ -318,6 +318,35 @@ def get_dataset(db_path: Path, name: str) -> dict | None:
         conn.close()
 
 
+def compare_datasets(db_path: Path, dataset_names: list[str]) -> list[dict | None]:
+    """Compare multiple datasets side-by-side.
+
+    Returns a list (one per input name) of dicts with name, geographies,
+    and variables. Returns None for datasets that don't exist.
+    """
+    results = []
+    for name in dataset_names:
+        ds = get_dataset(db_path, name)
+        if ds is None:
+            results.append(None)
+            continue
+        variables = []
+        for group in ds.get("groups", []):
+            for var in group.get("variables", []):
+                variables.append({
+                    "code": var.get("code", ""),
+                    "label": var["label"],
+                    "group": group["path"],
+                    "category_count": len(var.get("categories", [])),
+                })
+        results.append({
+            "name": ds["name"],
+            "geographies": ds.get("geographies", []),
+            "variables": variables,
+        })
+    return results
+
+
 def get_variables_by_code(db_path: Path, code: str) -> list[dict]:
     """Look up variables by their code across all datasets.
 

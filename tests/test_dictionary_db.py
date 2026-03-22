@@ -8,7 +8,7 @@ from pathlib import Path
 
 from tablebuilder.dictionary_db import (
     build_db, _generate_dataset_summary, _generate_variable_summary,
-    search, get_dataset, get_variables_by_code,
+    search, get_dataset, get_variables_by_code, compare_datasets,
 )
 
 
@@ -436,3 +436,35 @@ class TestGetVariablesByCode:
         build_db(sample_cache, db_path)
         results = get_variables_by_code(db_path, "ZZZZZ")
         assert results == []
+
+
+class TestCompareDatasets:
+    def test_compare_two_datasets(self, sample_cache, tmp_path):
+        """compare_datasets returns variable overlap and differences."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        result = compare_datasets(
+            db_path, ["Test Survey, 2021", "Business Data (BLADE), 2020"]
+        )
+        assert len(result) == 2
+        assert result[0]["name"] == "Test Survey, 2021"
+        assert result[1]["name"] == "Business Data (BLADE), 2020"
+        assert "variables" in result[0]
+        assert any(v["label"] == "Sex" for v in result[0]["variables"])
+
+    def test_compare_nonexistent_dataset(self, sample_cache, tmp_path):
+        """compare_datasets returns None entry for missing dataset."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        result = compare_datasets(db_path, ["Test Survey, 2021", "Nonexistent"])
+        assert len(result) == 2
+        assert result[0]["name"] == "Test Survey, 2021"
+        assert result[1] is None
+
+    def test_compare_single_dataset(self, sample_cache, tmp_path):
+        """compare_datasets works with a single dataset."""
+        db_path = tmp_path / "test.db"
+        build_db(sample_cache, db_path)
+        result = compare_datasets(db_path, ["Test Survey, 2021"])
+        assert len(result) == 1
+        assert result[0]["name"] == "Test Survey, 2021"
