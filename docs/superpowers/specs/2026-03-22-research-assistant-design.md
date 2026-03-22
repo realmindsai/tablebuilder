@@ -105,7 +105,7 @@ Every `propose_table_request` call adds a card:
 
 - Proposals land **checked by default** — Claude proposed it because it thinks it's useful
 - Researcher can **uncheck** — card stays (greyed out), can be re-enabled
-- Toggling a checkbox sends an HTMX request to `POST /web/cart/toggle/{proposal_id}` which updates `proposals_json` server-side and logs a `proposal_toggled` event. Cart state is **server-canonical** — survives page refresh.
+- Toggling a checkbox sends an HTMX request to `POST /web/cart/toggle/{proposal_id}` which updates `proposals_json` server-side and logs a `proposal_toggled` event. Returns the updated cart card HTML fragment (HTMX swaps the individual card). Cart state is **server-canonical** — survives page refresh.
 - Cards collapse to one-line summaries when the cart gets long, expand on click
 - Cart scrolls independently from chat
 - **"Fetch Selected"** sends `POST /web/cart/fetch` with the session_id. Server reads `proposals_json`, queues a job for each checked proposal, logs `jobs_queued` event, returns updated cart via HTMX swap.
@@ -225,7 +225,7 @@ The routes layer renders Claude's text as a chat bubble, then uses **HTMX out-of
 
 ### Conversation history serialization
 
-The resolver stores the **full Anthropic message objects** (including `ToolUseBlock` and `ToolResultBlock`) in `messages_json`. The simplified dict format used by the current resolver loses tool-use context across turns and breaks multi-round tool-use sessions. The routes layer extracts just the text content for display purposes.
+The resolver stores the **full Anthropic message objects** (including `ToolUseBlock` and `ToolResultBlock`) in `messages_json`. These are serialized via `.model_dump()` before storing and passed back to the Anthropic API as plain dicts on subsequent turns — the API accepts both SDK objects and raw dicts. The simplified dict format used by the current resolver loses tool-use context across turns and breaks multi-round tool-use sessions. The routes layer extracts just the text content for display purposes.
 
 ## Schema Migration
 
