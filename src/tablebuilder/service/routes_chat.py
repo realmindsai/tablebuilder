@@ -32,36 +32,56 @@ async def chat(
         if session is None or session["user_id"] != user["id"]:
             raise HTTPException(status_code=404, detail="Chat session not found")
         history = json.loads(session["messages_json"])
+        session_id = session["id"]
     else:
         session_id = db.create_chat_session(
             user_id=user["id"], messages_json="[]"
         )
-        session = db.get_chat_session(session_id)
         history = []
 
-    result = resolver.resolve(body.message, conversation_history=history)
+    # Build cart context for Claude
+    proposals = db.get_proposals(session_id)
+    cart_context = ""
+    if proposals:
+        lines = []
+        for p in proposals:
+            status = "CHECKED" if p["status"] == "checked" else "unchecked"
+            lines.append(f"- [{status}] {p['dataset']}: rows={p.get('rows', [])}")
+        cart_context = "\n".join(lines)
 
-    history.append({"role": "user", "content": body.message})
-    history.append({"role": "assistant", "content": json.dumps(result)})
+    # Log user message event
+    db.add_session_event(session_id, "user_message", body.message)
 
-    resolved_json = None
-    if "dataset" in result and "rows" in result:
-        resolved_json = json.dumps({
-            "dataset": result["dataset"],
-            "rows": result["rows"],
-            "cols": result.get("cols", []),
-            "wafers": result.get("wafers", []),
-        })
-
-    db.update_chat_session(
-        session["id"],
-        messages_json=json.dumps(history),
-        resolved_request_json=resolved_json,
+    result = resolver.resolve(
+        body.message,
+        conversation_history=history,
+        session_id=session_id,
+        db=db,
+        cart_context=cart_context,
     )
 
+    # Persist any proposals from display payloads
+    for payload in result.get("display_payloads", []):
+        if payload["type"] == "proposal":
+            db.add_proposal(session_id, payload["data"])
+            db.add_session_event(
+                session_id, "proposal_created",
+                f"Proposed: {payload['data']['dataset']}",
+                metadata_json=json.dumps(payload["data"]),
+            )
+
+    # Log assistant response
+    db.add_session_event(session_id, "assistant_message", result.get("text", ""))
+
+    # Persist conversation history (full Anthropic message format)
+    db.update_chat_session(session_id, json.dumps(result.get("messages", [])))
+
     return {
-        "session_id": session["id"],
-        "response": result,
+        "session_id": session_id,
+        "response": {
+            "text": result.get("text", ""),
+            "display_payloads": result.get("display_payloads", []),
+        },
     }
 
 
@@ -74,19 +94,32 @@ async def confirm_chat(
     if session is None or session["user_id"] != user["id"]:
         raise HTTPException(status_code=404, detail="Chat session not found")
 
-    if not session["resolved_request_json"]:
-        raise HTTPException(
-            status_code=400, detail="No resolved request to confirm"
-        )
+    proposals = db.get_proposals(body.session_id)
+    checked = [p for p in proposals if p.get("status") == "checked"]
+    if not checked:
+        raise HTTPException(status_code=400, detail="No checked proposals to confirm")
 
-    request_data = json.loads(session["resolved_request_json"])
-    request_json = json.dumps(request_data)
+    jobs = []
+    for proposal in checked:
+        request_json = json.dumps({
+            "dataset": proposal["dataset"],
+            "rows": proposal.get("rows", []),
+            "cols": proposal.get("cols", []),
+            "wafers": proposal.get("wafers", []),
+        })
+        job_id = db.create_job(user_id=user["id"], request_json=request_json)
+        db.update_proposal_status(body.session_id, proposal["id"], "confirmed")
+        proposal["job_id"] = job_id
+        jobs.append({"job_id": job_id, "dataset": proposal["dataset"]})
 
-    job_id = db.create_job(user_id=user["id"], request_json=request_json)
-    db.link_chat_to_job(session["id"], job_id)
+    db.add_session_event(
+        body.session_id, "jobs_queued",
+        f"Queued {len(jobs)} job(s)",
+        metadata_json=json.dumps(jobs),
+    )
 
     return {
-        "job_id": job_id,
+        "session_id": body.session_id,
+        "jobs": jobs,
         "status": "queued",
-        "poll_url": f"/api/jobs/{job_id}",
     }

@@ -42,11 +42,9 @@ class TestChatRoutes:
     @patch("tablebuilder.service.chat_resolver.ChatResolver.resolve")
     def test_chat_creates_session(self, mock_resolve, registered_client):
         mock_resolve.return_value = {
-            "dataset": "Census 2021",
-            "rows": ["SEXP Sex"],
-            "cols": [],
-            "wafers": [],
-            "confirmation": "Shall I fetch this?",
+            "text": "I found Census 2021 with variable SEXP Sex. Shall I fetch this?",
+            "display_payloads": [],
+            "messages": [],
         }
         client, api_key = registered_client
         resp = client.post(
@@ -59,31 +57,86 @@ class TestChatRoutes:
         assert "session_id" in body
 
     @patch("tablebuilder.service.chat_resolver.ChatResolver.resolve")
+    def test_chat_returns_text_and_payloads(self, mock_resolve, registered_client):
+        """Chat endpoint returns text and display_payloads from resolver."""
+        mock_resolve.return_value = {
+            "text": "I found some data for you.",
+            "display_payloads": [
+                {"type": "proposal", "data": {"id": "p1", "dataset": "Census 2021"}},
+            ],
+            "messages": [
+                {"role": "user", "content": "test"},
+                {"role": "assistant", "content": [{"type": "text", "text": "I found some data for you."}]},
+            ],
+        }
+        client, api_key = registered_client
+        resp = client.post(
+            "/api/chat",
+            json={"message": "test"},
+            headers={"Authorization": f"Bearer {api_key}"},
+        )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert "text" in body["response"]
+        assert "display_payloads" in body["response"]
+
+    @patch("tablebuilder.service.chat_resolver.ChatResolver.resolve")
     def test_chat_confirm_creates_job(self, mock_resolve, registered_client):
         mock_resolve.return_value = {
-            "dataset": "Census 2021",
-            "rows": ["SEXP Sex"],
-            "cols": [],
-            "wafers": [],
-            "confirmation": "Shall I fetch this?",
+            "text": "Here's a dataset for you.",
+            "display_payloads": [
+                {"type": "proposal", "data": {
+                    "id": "p1", "dataset": "Census 2021", "rows": ["SEXP Sex"],
+                    "cols": [], "wafers": [], "match_confidence": 85,
+                    "clarity_confidence": 75, "rationale": "test",
+                    "status": "checked", "job_id": None,
+                }},
+            ],
+            "messages": [],
         }
         client, api_key = registered_client
         headers = {"Authorization": f"Bearer {api_key}"}
 
-        resp = client.post(
-            "/api/chat",
-            json={"message": "population by sex"},
-            headers=headers,
-        )
+        # Chat first (this persists the proposal via the updated route)
+        resp = client.post("/api/chat", json={"message": "test"}, headers=headers)
         session_id = resp.json()["session_id"]
 
-        resp = client.post(
-            "/api/chat/confirm",
-            json={"session_id": session_id},
-            headers=headers,
-        )
+        # Confirm
+        resp = client.post("/api/chat/confirm", json={"session_id": session_id}, headers=headers)
         assert resp.status_code == 200
-        assert "job_id" in resp.json()
+        body = resp.json()
+        assert "jobs" in body
+        assert len(body["jobs"]) == 1
+
+    @patch("tablebuilder.service.chat_resolver.ChatResolver.resolve")
+    def test_confirm_queues_checked_proposals(self, mock_resolve, registered_client):
+        """Confirm creates jobs for all checked proposals."""
+        mock_resolve.return_value = {
+            "text": "Here are two datasets for you.",
+            "display_payloads": [
+                {"type": "proposal", "data": {
+                    "id": "p1", "dataset": "Census 2021", "rows": ["SEXP Sex"],
+                    "cols": [], "wafers": [], "match_confidence": 85,
+                    "clarity_confidence": 75, "rationale": "test",
+                    "status": "checked", "job_id": None,
+                }},
+                {"type": "proposal", "data": {
+                    "id": "p2", "dataset": "Census 2021", "rows": ["AGEP Age"],
+                    "cols": [], "wafers": [], "match_confidence": 80,
+                    "clarity_confidence": 75, "rationale": "test",
+                    "status": "checked", "job_id": None,
+                }},
+            ],
+            "messages": [],
+        }
+        client, api_key = registered_client
+        headers = {"Authorization": f"Bearer {api_key}"}
+        resp = client.post("/api/chat", json={"message": "test"}, headers=headers)
+        session_id = resp.json()["session_id"]
+        resp = client.post("/api/chat/confirm", json={"session_id": session_id}, headers=headers)
+        assert resp.status_code == 200
+        body = resp.json()
+        assert len(body["jobs"]) == 2
 
     def test_chat_without_auth(self, app_env):
         client = TestClient(app_env)
