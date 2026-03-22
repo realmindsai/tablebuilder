@@ -29,9 +29,11 @@ class TestChatResolver:
         result = resolver.resolve("population by sex from 2021 census")
         assert "dataset" in result or "confirmation" in result
 
-    def test_build_system_prompt(self):
-        """System prompt mentions TableBuilder and dictionary."""
+    def test_build_system_prompt_has_persona(self):
+        """System prompt establishes the data scientist persona."""
         resolver = ChatResolver(anthropic_api_key="test-key")
         prompt = resolver._build_system_prompt()
-        assert "TableBuilder" in prompt
-        assert "dictionary" in prompt.lower()
+        assert "senior" in prompt.lower() or "research data scientist" in prompt.lower()
+        assert "ABS" in prompt or "Australian Bureau of Statistics" in prompt
+        assert "respond with ONLY a JSON" not in prompt
+        assert "respond with ONLY:" not in prompt
