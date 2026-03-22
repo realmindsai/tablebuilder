@@ -49,9 +49,21 @@ CREATE TABLE IF NOT EXISTS chat_sessions (
     user_id TEXT NOT NULL REFERENCES users(id),
     messages_json TEXT NOT NULL,
     resolved_request_json TEXT,
+    proposals_json TEXT DEFAULT '[]',
+    research_question TEXT DEFAULT '',
     job_id TEXT REFERENCES jobs(id),
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS session_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL REFERENCES chat_sessions(id),
+    timestamp TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    message TEXT NOT NULL,
+    detail TEXT,
+    metadata_json TEXT
 );
 """
 
@@ -78,6 +90,15 @@ class ServiceDB:
         conn = self._connect()
         conn.execute("PRAGMA journal_mode=WAL")
         conn.executescript(_SCHEMA_SQL)
+        # Migrate existing chat_sessions table with new columns
+        for col, definition in [
+            ("proposals_json", "TEXT DEFAULT '[]'"),
+            ("research_question", "TEXT DEFAULT ''"),
+        ]:
+            try:
+                conn.execute(f"ALTER TABLE chat_sessions ADD COLUMN {col} {definition}")
+            except sqlite3.OperationalError:
+                pass  # column already exists
         conn.commit()
         conn.close()
 

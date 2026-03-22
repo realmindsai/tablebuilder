@@ -38,6 +38,16 @@ class TestServiceDBSchema:
         conn.close()
         assert mode == "wal"
 
+    def test_session_events_table_exists(self, db):
+        """session_events table exists after initialization."""
+        conn = sqlite3.connect(db.db_path)
+        tables = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+        ).fetchall()
+        table_names = [t[0] for t in tables]
+        conn.close()
+        assert "session_events" in table_names
+
 
 class TestServiceDBUsers:
     def test_create_user(self, db):
