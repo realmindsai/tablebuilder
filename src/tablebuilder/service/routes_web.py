@@ -144,6 +144,9 @@ async def web_chat(
         cart_inner = _render_cart_contents(all_proposals, session_id)
         html += f'<div id="cart-items" hx-swap-oob="innerHTML:#cart-items">{cart_inner}</div>'
 
+    # Ensure HTMX processes OOB-swapped cart content
+    html += '<script>setTimeout(function(){htmx.process(document.getElementById("cart-items"))},100);</script>'
+
     return HTMLResponse(html)
 
 
