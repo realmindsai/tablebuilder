@@ -5,7 +5,7 @@ import json
 
 import anthropic
 
-from tablebuilder.dictionary_db import DEFAULT_DB_PATH, search, get_dataset
+from tablebuilder.dictionary_db import DEFAULT_DB_PATH, search, get_dataset, compare_datasets
 from tablebuilder.logging_config import get_logger
 
 logger = get_logger("tablebuilder.service.chat_resolver")
@@ -34,36 +34,72 @@ Stay focused on data. You're a data scientist in a consultation — if the conve
 TOOLS = [
     {
         "name": "search_dictionary",
-        "description": "Search the ABS data dictionary for datasets and variables matching a query. Returns ranked results with dataset name, variable code, label, and categories.",
+        "description": "Search the ABS data dictionary for datasets and variables matching a query. Returns ranked results with dataset name, variable code, label, and categories. Use this proactively when the researcher mentions any data topic.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "Search query (e.g., 'population remoteness area')",
-                },
-                "limit": {
-                    "type": "integer",
-                    "description": "Max results (default 10)",
-                    "default": 10,
-                },
+                "query": {"type": "string", "description": "Search query (e.g., 'population remoteness area')"},
+                "limit": {"type": "integer", "description": "Max results (default 10)", "default": 10},
             },
             "required": ["query"],
         },
     },
     {
         "name": "get_dataset_variables",
-        "description": "Get the full variable tree for a specific dataset by exact name.",
+        "description": "Get the full variable tree for a specific dataset by exact name. Use to explore what variables and categories are available.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "dataset_name": {
-                    "type": "string",
-                    "description": "Exact dataset name",
-                },
+                "dataset_name": {"type": "string", "description": "Exact dataset name from search results"},
             },
             "required": ["dataset_name"],
         },
+    },
+    {
+        "name": "compare_datasets",
+        "description": "Compare 2-3 datasets side-by-side to see variable overlap and differences. Use when the researcher's question could be answered by multiple datasets.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "dataset_names": {"type": "array", "items": {"type": "string"}, "description": "List of exact dataset names to compare"},
+            },
+            "required": ["dataset_names"],
+        },
+    },
+    {
+        "name": "propose_table_request",
+        "description": "Propose a data table for the researcher's cart. This adds a card to their shopping cart with the dataset, variables, and your confidence assessment. The researcher can accept or reject it.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "dataset": {"type": "string", "description": "Exact dataset name"},
+                "rows": {"type": "array", "items": {"type": "string"}, "description": "Variable labels for row axis"},
+                "cols": {"type": "array", "items": {"type": "string"}, "description": "Variable labels for column axis"},
+                "wafers": {"type": "array", "items": {"type": "string"}, "description": "Variable labels for wafer (layer) axis"},
+                "match_confidence": {"type": "integer", "description": "0-100: how well this dataset covers the research question"},
+                "clarity_confidence": {"type": "integer", "description": "0-100: how clearly the researcher has specified what they need"},
+                "rationale": {"type": "string", "description": "Brief explanation of why this dataset and these variables"},
+            },
+            "required": ["dataset", "rows", "match_confidence", "clarity_confidence", "rationale"],
+        },
+    },
+    {
+        "name": "present_choices",
+        "description": "Show the researcher a structured multiple-choice question. Use this when a selection from a fixed set of options would be clearer than an open question.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "question": {"type": "string", "description": "The question to ask"},
+                "options": {"type": "array", "items": {"type": "object", "properties": {"label": {"type": "string"}, "description": {"type": "string"}}, "required": ["label"]}, "description": "List of options to present"},
+                "allow_multiple": {"type": "boolean", "description": "Whether multiple selections are allowed", "default": False},
+            },
+            "required": ["question", "options"],
+        },
+    },
+    {
+        "name": "show_session_summary",
+        "description": "Generate a summary of this research session — datasets explored, variables selected, proposals made, and jobs queued.",
+        "input_schema": {"type": "object", "properties": {}},
     },
 ]
 
@@ -74,6 +110,9 @@ class ChatResolver:
     def __init__(self, anthropic_api_key: str):
         self.api_key = anthropic_api_key
         self._client = None
+        self._display_payloads: list = []
+        self._session_id: str | None = None
+        self._db = None
 
     @property
     def client(self):
@@ -121,11 +160,7 @@ class ChatResolver:
         if tool_name == "search_dictionary":
             if not DEFAULT_DB_PATH.exists():
                 return json.dumps([])
-            results = search(
-                DEFAULT_DB_PATH,
-                tool_input["query"],
-                limit=tool_input.get("limit", 10),
-            )
+            results = search(DEFAULT_DB_PATH, tool_input["query"], limit=tool_input.get("limit", 10))
             return json.dumps(results)
 
         elif tool_name == "get_dataset_variables":
@@ -134,25 +169,57 @@ class ChatResolver:
             result = get_dataset(DEFAULT_DB_PATH, tool_input["dataset_name"])
             if result is None:
                 return json.dumps(None)
-            # Truncate to avoid token overflow — return group names and
-            # variable labels only, without full category lists
-            summary = {
-                "name": result["name"],
-                "geographies": result.get("geographies", []),
-                "groups": [],
-            }
+            summary = {"name": result["name"], "geographies": result.get("geographies", []), "groups": []}
             for group in result.get("groups", []):
                 g = {"path": group["path"], "variables": []}
                 for var in group.get("variables", []):
                     cats = var.get("categories", [])
-                    g["variables"].append({
-                        "code": var.get("code", ""),
-                        "label": var["label"],
-                        "category_count": len(cats),
-                        "sample_categories": cats[:5],
-                    })
+                    g["variables"].append({"code": var.get("code", ""), "label": var["label"], "category_count": len(cats), "sample_categories": cats[:5]})
                 summary["groups"].append(g)
             return json.dumps(summary)
+
+        elif tool_name == "compare_datasets":
+            if not DEFAULT_DB_PATH.exists():
+                return json.dumps([])
+            result = compare_datasets(DEFAULT_DB_PATH, tool_input["dataset_names"])
+            return json.dumps(result)
+
+        elif tool_name == "propose_table_request":
+            proposal_id = f"p{len(self._display_payloads) + 1}"
+            proposal = {
+                "id": proposal_id,
+                "dataset": tool_input["dataset"],
+                "rows": tool_input.get("rows", []),
+                "cols": tool_input.get("cols", []),
+                "wafers": tool_input.get("wafers", []),
+                "match_confidence": tool_input["match_confidence"],
+                "clarity_confidence": tool_input["clarity_confidence"],
+                "rationale": tool_input["rationale"],
+                "status": "checked",
+                "job_id": None,
+            }
+            self._display_payloads.append({"type": "proposal", "data": proposal})
+            return f"Proposal #{proposal_id} stored and shown to researcher."
+
+        elif tool_name == "present_choices":
+            choices = {
+                "question": tool_input["question"],
+                "options": tool_input["options"],
+                "allow_multiple": tool_input.get("allow_multiple", False),
+            }
+            self._display_payloads.append({"type": "choices", "data": choices})
+            return "Choices presented, waiting for researcher's selection."
+
+        elif tool_name == "show_session_summary":
+            events = []
+            if self._db and self._session_id:
+                events = self._db.get_session_events(self._session_id)
+                proposals = self._db.get_proposals(self._session_id)
+            else:
+                proposals = []
+            summary_data = {"events": events, "proposals": proposals}
+            self._display_payloads.append({"type": "summary", "data": summary_data})
+            return json.dumps(summary_data)
 
         return json.dumps({"error": f"Unknown tool: {tool_name}"})
 
