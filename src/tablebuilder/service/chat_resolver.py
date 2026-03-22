@@ -123,38 +123,6 @@ class ChatResolver:
     def _build_system_prompt(self) -> str:
         return SYSTEM_PROMPT
 
-    @staticmethod
-    def _extract_json(text: str) -> dict | None:
-        """Extract a JSON object from text, handling markdown code blocks."""
-        # Try direct parse first
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            pass
-        # Try extracting from ```json ... ``` code blocks
-        import re
-        match = re.search(r'```(?:json)?\s*\n?({.*?})\s*\n?```', text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(1))
-            except json.JSONDecodeError:
-                pass
-        # Try finding the first { ... } block
-        brace_start = text.find('{')
-        if brace_start >= 0:
-            depth = 0
-            for i in range(brace_start, len(text)):
-                if text[i] == '{':
-                    depth += 1
-                elif text[i] == '}':
-                    depth -= 1
-                    if depth == 0:
-                        try:
-                            return json.loads(text[brace_start:i + 1])
-                        except json.JSONDecodeError:
-                            break
-        return None
-
     def _handle_tool_call(self, tool_name: str, tool_input: dict) -> str:
         """Execute a tool call and return the result as a string."""
         if tool_name == "search_dictionary":
@@ -224,43 +192,63 @@ class ChatResolver:
         return json.dumps({"error": f"Unknown tool: {tool_name}"})
 
     def resolve(
-        self, user_message: str, conversation_history: list[dict] | None = None
+        self,
+        user_message: str,
+        conversation_history: list[dict] | None = None,
+        session_id: str | None = None,
+        db=None,
+        cart_context: str = "",
     ) -> dict:
-        """Resolve a natural language query. Returns a dict with either
-        dataset/rows/cols/wafers/confirmation or clarification."""
+        """Resolve a natural language query.
+
+        Returns a dict with:
+            text: Claude's natural language response
+            display_payloads: list of display objects for the UI
+            messages: the full conversation history (for persistence)
+        """
+        self._display_payloads = []
+        self._session_id = session_id
+        self._db = db
+
         messages = list(conversation_history or [])
         messages.append({"role": "user", "content": user_message})
+
+        system_prompt = self._build_system_prompt()
+        if cart_context:
+            system_prompt += f"\n\nCurrent data cart:\n{cart_context}"
 
         for round_num in range(10):
             try:
                 response = self.client.messages.create(
                     model="claude-sonnet-4-20250514",
                     max_tokens=2048,
-                    system=self._build_system_prompt(),
+                    system=system_prompt,
                     tools=TOOLS,
                     messages=messages,
                 )
             except Exception as e:
                 logger.error("Claude API error: %s", e)
-                return {"clarification": f"Sorry, I encountered an error: {e}"}
+                return {"text": f"Sorry, I encountered an error: {e}", "display_payloads": [], "messages": messages}
 
-            logger.info("Round %d: stop_reason=%s, content_types=%s",
-                        round_num + 1, response.stop_reason,
-                        [b.type for b in response.content])
+            logger.info("Round %d: stop_reason=%s, content_types=%s", round_num + 1, response.stop_reason, [b.type for b in response.content])
+
+            # Serialize response content for history
+            content_dicts = []
+            for block in response.content:
+                if block.type == "text":
+                    content_dicts.append({"type": "text", "text": block.text})
+                elif block.type == "tool_use":
+                    content_dicts.append({"type": "tool_use", "id": block.id, "name": block.name, "input": block.input})
 
             tool_use_blocks = [b for b in response.content if b.type == "tool_use"]
             if tool_use_blocks:
-                messages.append({"role": "assistant", "content": response.content})
+                messages.append({"role": "assistant", "content": content_dicts})
                 tool_results = []
                 for block in tool_use_blocks:
-                    logger.info("Tool call: %s(%s)", block.name, json.dumps(block.input)[:100])
+                    logger.info("Tool call: %s(%s)", block.name, json.dumps(block.input)[:200])
                     result = self._handle_tool_call(block.name, block.input)
                     logger.info("Tool result: %s chars", len(result))
-                    tool_results.append({
-                        "type": "tool_result",
-                        "tool_use_id": block.id,
-                        "content": result,
-                    })
+                    tool_results.append({"type": "tool_result", "tool_use_id": block.id, "content": result})
                 messages.append({"role": "user", "content": tool_results})
                 continue
 
@@ -268,9 +256,7 @@ class ChatResolver:
             if text_blocks:
                 text = text_blocks[0].text
                 logger.info("Text response: %s", text[:200])
-                parsed = self._extract_json(text)
-                if parsed is not None:
-                    return parsed
-                return {"clarification": text}
+                messages.append({"role": "assistant", "content": content_dicts})
+                return {"text": text, "display_payloads": self._display_payloads, "messages": messages}
 
-        return {"clarification": "I wasn't able to resolve your request. Could you be more specific?"}
+        return {"text": "I wasn't able to fully process your request. Could you be more specific?", "display_payloads": self._display_payloads, "messages": messages}

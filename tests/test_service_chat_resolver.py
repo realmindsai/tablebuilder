@@ -11,23 +11,37 @@ from tablebuilder.service.chat_resolver import ChatResolver
 class TestChatResolver:
     @patch("tablebuilder.service.chat_resolver.anthropic.Anthropic")
     def test_resolve_returns_interpretation(self, mock_anthropic_class):
-        """Resolver returns an interpretation dict with dataset and variables."""
+        """Resolver returns a response dict with text key."""
         mock_client = MagicMock()
         mock_anthropic_class.return_value = mock_client
-
         mock_response = MagicMock()
         mock_response.stop_reason = "end_turn"
         mock_response.content = [
-            MagicMock(
-                type="text",
-                text='{"dataset": "Census 2021", "rows": ["SEXP Sex"], "cols": [], "wafers": [], "confirmation": "I found Census 2021 with variable SEXP Sex. Shall I fetch this?"}',
-            )
+            MagicMock(type="text", text="I found Census 2021 with variable SEXP Sex.")
         ]
         mock_client.messages.create.return_value = mock_response
 
         resolver = ChatResolver(anthropic_api_key="test-key")
         result = resolver.resolve("population by sex from 2021 census")
-        assert "dataset" in result or "confirmation" in result
+        assert "text" in result
+
+    @patch("tablebuilder.service.chat_resolver.anthropic.Anthropic")
+    def test_resolve_returns_text_and_payloads(self, mock_anthropic_class):
+        """Resolver returns dict with 'text' and 'display_payloads' keys."""
+        mock_client = MagicMock()
+        mock_anthropic_class.return_value = mock_client
+        mock_response = MagicMock()
+        mock_response.stop_reason = "end_turn"
+        mock_text = MagicMock(type="text", text="I found some interesting data for you.")
+        mock_response.content = [mock_text]
+        mock_client.messages.create.return_value = mock_response
+
+        resolver = ChatResolver(anthropic_api_key="test-key")
+        result = resolver.resolve("population by sex")
+        assert "text" in result
+        assert "display_payloads" in result
+        assert isinstance(result["display_payloads"], list)
+        assert result["text"] == "I found some interesting data for you."
 
     def test_build_system_prompt_has_persona(self):
         """System prompt establishes the data scientist persona."""
