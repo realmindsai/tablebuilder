@@ -90,36 +90,60 @@ async def web_chat(
     else:
         session_id = db.create_chat_session(user_id=user["id"], messages_json="[]")
 
-    result = resolver.resolve(message, conversation_history=history)
+    # Build cart context
+    proposals = db.get_proposals(session_id)
+    cart_context = ""
+    if proposals:
+        lines = []
+        for p in proposals:
+            status = "CHECKED" if p["status"] == "checked" else "unchecked"
+            lines.append(f"- [{status}] {p['dataset']}: rows={p.get('rows', [])}")
+        cart_context = "\n".join(lines)
 
-    history.append({"role": "user", "content": message})
-    history.append({"role": "assistant", "content": json.dumps(result)})
+    db.add_session_event(session_id, "user_message", message)
 
-    resolved_json = None
-    if "dataset" in result and "rows" in result:
-        resolved_json = json.dumps({
-            "dataset": result["dataset"],
-            "rows": result["rows"],
-            "cols": result.get("cols", []),
-            "wafers": result.get("wafers", []),
-        })
+    result = resolver.resolve(
+        message,
+        conversation_history=history,
+        session_id=session_id,
+        db=db,
+        cart_context=cart_context,
+    )
 
-    db.update_chat_session(session_id, json.dumps(history), resolved_json)
+    # Persist proposals
+    for payload in result.get("display_payloads", []):
+        if payload["type"] == "proposal":
+            db.add_proposal(session_id, payload["data"])
+            db.add_session_event(
+                session_id, "proposal_created",
+                f"Proposed: {payload['data']['dataset']}",
+                metadata_json=json.dumps(payload["data"]),
+            )
 
+    text = result.get("text", "")
+    db.add_session_event(session_id, "assistant_message", text)
+    db.update_chat_session(session_id, json.dumps(result.get("messages", [])))
+
+    # Build response HTML
     html = f'<div class="chat-message user"><div class="chat-bubble">{message}</div></div>'
 
-    if "confirmation" in result:
-        html += f"""<div class="chat-message assistant"><div class="chat-bubble">
-            {result['confirmation']}
-            <form hx-post="/web/confirm" hx-target="#chat-messages" hx-swap="beforeend">
-                <input type="hidden" name="session_id" value="{session_id}">
-                <button type="submit">Fetch this data</button>
-            </form>
-        </div></div>"""
-    elif "clarification" in result:
-        html += f'<div class="chat-message assistant"><div class="chat-bubble">{result["clarification"]}</div></div>'
+    # Render choice buttons inline if present
+    for payload in result.get("display_payloads", []):
+        if payload["type"] == "choices":
+            choices_html = _render_choices(payload["data"], session_id)
+            text += choices_html
 
+    html += f'<div class="chat-message assistant"><div class="chat-bubble">{text}</div></div>'
+
+    # Set session_id for subsequent messages
     html += f'<script>document.getElementById("session_id").value = "{session_id}";</script>'
+
+    # OOB swap for cart if proposals changed
+    all_proposals = db.get_proposals(session_id)
+    if all_proposals:
+        cart_inner = _render_cart_contents(all_proposals, session_id)
+        html += f'<div id="cart-items" hx-swap-oob="innerHTML:#cart-items">{cart_inner}</div>'
+
     return HTMLResponse(html)
 
 
@@ -151,6 +175,94 @@ async def web_confirm(request: Request, session_id: str = Form(...)):
             Status: queued
         </div>
     </div></div>""")
+
+
+@router.post("/web/cart/toggle/{proposal_id}", response_class=HTMLResponse)
+async def web_cart_toggle(
+    proposal_id: str,
+    request: Request,
+    session_id: str = Form(...),
+):
+    api_key = _get_valid_api_key(request)
+    if not api_key:
+        return HTMLResponse("<p>Please register first.</p>", status_code=401)
+
+    db = request.app.state.db
+    key_hash = hash_api_key(api_key)
+    user = db.get_user_by_api_key_hash(key_hash)
+    if not user:
+        return HTMLResponse("<p>Session expired.</p>", status_code=401)
+
+    session = db.get_chat_session(session_id)
+    if not session or session["user_id"] != user["id"]:
+        return HTMLResponse("<p>Session not found.</p>", status_code=404)
+
+    proposals = db.get_proposals(session_id)
+    target = None
+    for p in proposals:
+        if p["id"] == proposal_id:
+            target = p
+            break
+
+    if target is None:
+        return HTMLResponse("<p>Proposal not found.</p>", status_code=404)
+
+    new_status = "unchecked" if target["status"] == "checked" else "checked"
+    db.update_proposal_status(session_id, proposal_id, new_status)
+    db.add_session_event(
+        session_id, "proposal_toggled",
+        f"{proposal_id} -> {new_status}",
+    )
+
+    target["status"] = new_status
+    return HTMLResponse(_render_cart_card(target, session_id))
+
+
+@router.post("/web/cart/fetch", response_class=HTMLResponse)
+async def web_cart_fetch(
+    request: Request,
+    session_id: str = Form(...),
+):
+    api_key = _get_valid_api_key(request)
+    if not api_key:
+        return HTMLResponse("<p>Please register first.</p>", status_code=401)
+
+    db = request.app.state.db
+    key_hash = hash_api_key(api_key)
+    user = db.get_user_by_api_key_hash(key_hash)
+    if not user:
+        return HTMLResponse("<p>Session expired.</p>", status_code=401)
+
+    session = db.get_chat_session(session_id)
+    if not session or session["user_id"] != user["id"]:
+        return HTMLResponse("<p>Session not found.</p>", status_code=404)
+
+    proposals = db.get_proposals(session_id)
+    checked = [p for p in proposals if p.get("status") == "checked"]
+    if not checked:
+        return HTMLResponse("<p>No proposals selected.</p>", status_code=400)
+
+    job_ids = []
+    for proposal in checked:
+        request_json = json.dumps({
+            "dataset": proposal["dataset"],
+            "rows": proposal.get("rows", []),
+            "cols": proposal.get("cols", []),
+            "wafers": proposal.get("wafers", []),
+        })
+        job_id = db.create_job(user_id=user["id"], request_json=request_json)
+        db.update_proposal_status(session_id, proposal["id"], "confirmed")
+        job_ids.append(job_id)
+
+    db.add_session_event(
+        session_id, "jobs_queued",
+        f"Queued {len(job_ids)} job(s)",
+        metadata_json=json.dumps(job_ids),
+    )
+
+    proposals = db.get_proposals(session_id)
+    cart_html = _render_cart_contents(proposals, session_id)
+    return HTMLResponse(cart_html)
 
 
 @router.get("/web/job-status/{job_id}", response_class=HTMLResponse)
@@ -263,3 +375,77 @@ async def serve_screenshot(job_id: str, filename: str, request: Request):
     if not path.exists():
         return Response(status_code=404)
     return FileResponse(path, media_type="image/png")
+
+
+def _render_cart_card(proposal: dict, session_id: str) -> str:
+    """Render a single proposal card HTML."""
+    p = proposal
+    checked = p["status"] == "checked"
+    confirmed = p["status"] == "confirmed"
+    opacity = "1" if checked or confirmed else "0.5"
+    check_mark = "checked" if checked else ""
+    disabled = "disabled" if confirmed else ""
+    status_label = ""
+    if confirmed:
+        job_id = p.get("job_id", "")
+        status_label = f' <a href="/jobs/{job_id}">Queued</a>'
+
+    rows = ", ".join(p.get("rows", []))
+    cols = ", ".join(p.get("cols", []))
+    wafers = ", ".join(p.get("wafers", []))
+    axes = f"Rows: {rows}" if rows else ""
+    if cols:
+        axes += f" | Cols: {cols}"
+    if wafers:
+        axes += f" | Wafers: {wafers}"
+
+    return f"""<div id="cart-card-{p['id']}" style="opacity: {opacity}; padding: 0.5rem; border: 1px solid var(--pico-muted-border-color); border-radius: 0.5rem; margin-bottom: 0.5rem;">
+        <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <input type="checkbox" {check_mark} {disabled}
+                hx-post="/web/cart/toggle/{p['id']}"
+                hx-target="#cart-card-{p['id']}"
+                hx-swap="outerHTML"
+                hx-include="[name='session_id']"
+                name="session_id" value="{session_id}">
+            <strong>{p['dataset']}</strong>{status_label}
+        </label>
+        <small style="display: block; margin-left: 1.5rem;">{axes}</small>
+        <small style="display: block; margin-left: 1.5rem;">Match: {p.get('match_confidence', '?')}% | Clarity: {p.get('clarity_confidence', '?')}%</small>
+        <small style="display: block; margin-left: 1.5rem; color: var(--pico-muted-color);">{p.get('rationale', '')}</small>
+    </div>"""
+
+
+def _render_cart_contents(proposals: list[dict], session_id: str) -> str:
+    """Render the inner content of the cart (no wrapper div)."""
+    if not proposals:
+        return '<p style="color: var(--pico-muted-color);">No proposals yet. Start chatting to discover datasets.</p>'
+
+    cards = "".join(_render_cart_card(p, session_id) for p in proposals)
+    has_checked = any(p["status"] == "checked" for p in proposals)
+    fetch_btn = ""
+    if has_checked:
+        fetch_btn = f"""<form hx-post="/web/cart/fetch" hx-target="#cart-items" hx-swap="innerHTML">
+            <input type="hidden" name="session_id" value="{session_id}">
+            <button type="submit" style="width: 100%;">Fetch Selected</button>
+        </form>"""
+
+    return f'{cards}{fetch_btn}'
+
+
+def _render_choices(choices_data: dict, session_id: str) -> str:
+    """Render multiple-choice buttons for inline chat display."""
+    options = choices_data["options"]
+    buttons = ""
+    for opt in options:
+        label = opt["label"]
+        desc = opt.get("description", "")
+        title_attr = f' title="{desc}"' if desc else ""
+        buttons += f"""<button type="submit" name="message" value="{label}"{title_attr}
+            style="margin: 0.25rem;" class="outline">{label}</button>"""
+
+    return f"""<div style="margin-top: 0.5rem;">
+        <form hx-post="/web/chat" hx-target="#chat-messages" hx-swap="beforeend">
+            <input type="hidden" name="session_id" value="{session_id}">
+            {buttons}
+        </form>
+    </div>"""
