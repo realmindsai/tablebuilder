@@ -79,7 +79,7 @@ class Worker(threading.Thread):
             from tablebuilder.http_catalogue import find_database, open_database, get_schema, find_variable
             from tablebuilder.http_table import (
                 select_all_categories, add_to_axis, retrieve_data,
-                select_csv_format, _playwright_download,
+                select_csv_format, download_table,
             )
 
             jl.log_progress("Logging in...")
@@ -113,7 +113,7 @@ class Worker(threading.Thread):
             select_csv_format(session)
 
             jl.log_progress("Downloading CSV...")
-            _playwright_download(session, str(result_path))
+            download_table(session, str(result_path))
 
             session._session.close()
             jl.log_progress("Complete!")
