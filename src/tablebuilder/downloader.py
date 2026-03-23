@@ -94,7 +94,7 @@ def _find_download_button(page: Page):
 def queue_and_download(
     page: Page,
     output_path: str,
-    timeout: int = 600,
+    timeout: int = 1200,
     knowledge=None,
 ) -> None:
     """Retrieve table data and download as CSV.

@@ -432,49 +432,11 @@ def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
         "downloadTableModeForm_SUBMIT": "1",
     })
 
-    # Navigate to saved tables page
-    resp = session._session.get(OPEN_TABLE_URL)
-    from tablebuilder.http_session import extract_viewstate
-    new_vs = extract_viewstate(resp.text)
-    if new_vs:
-        session.viewstate = new_vs
-
-    # Poll for the download to be ready (up to 15 minutes for survey data)
-    for attempt in range(180):
-        jobs_tree = session.rest_get(MANAGE_TABLES_PATH)
-        # Walk the tree to find a completed job with our table name
-        def find_ready_job(nodes, target_name):
-            for node in nodes:
-                data = node.get("data", {})
-                job_id = data.get("jobId")
-                name = data.get("name", "")
-                status = data.get("status", "")
-                if job_id and (target_name in name or status == "COMPLETED"):
-                    return data
-                children = node.get("children", [])
-                result = find_ready_job(children, target_name)
-                if result:
-                    return result
-            return None
-
-        job = find_ready_job(jobs_tree.get("nodeList", []), table_name)
-        if job and job.get("jobId"):
-            job_id = job["jobId"]
-            logger.info("Found job %s (status: %s), downloading", job_id, job.get("status", "?"))
-            download_url = f"{DOWNLOAD_TABLE_URL}?jobId={job_id}"
-            resp = session._session.get(download_url)
-            content_type = resp.headers.get("Content-Type", "")
-            if "octet-stream" in content_type or "zip" in content_type or len(resp.content) > 100:
-                _save_content(resp.content, output_path)
-                logger.info("Table saved to %s", output_path)
-                return
-            else:
-                logger.debug("Job %s not ready yet (got %s)", job_id, content_type)
-
-        logger.debug("Polling for download... attempt %d", attempt + 1)
-        time.sleep(5)
-
-    raise RuntimeError("Download timed out after 15 minutes of polling.")
+    # Direct HTTP download failed — table is too large and needs to be queued.
+    # The JSF queue dialog doesn't work via pure HTTP POST (needs browser JS state).
+    # Fall back to Playwright for the queue-and-download flow.
+    logger.info("Falling back to Playwright for queue download")
+    _playwright_download(session, output_path)
 
 
 def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> None:
