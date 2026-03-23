@@ -535,6 +535,87 @@ def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> 
         browser.close()
 
 
+def playwright_build_and_download(config, request, output_path: str) -> None:
+    """Build and download a table entirely in a single Playwright session.
+
+    Used when HTTP direct download fails (large tables). Logs in via Playwright,
+    uses HTTP REST calls within the same session to build the table (fast),
+    then uses the browser to queue and download.
+    """
+    from playwright.sync_api import sync_playwright
+    import time as _time
+    from tablebuilder.http_catalogue import find_database, open_database, get_schema, find_variable
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+
+        # Login via Playwright
+        page.goto(f"{BASE_URL}/jsf/login.xhtml", wait_until="networkidle")
+        page.fill("#loginForm\\:username2", config.user_id)
+        page.fill("#loginForm\\:password2", config.password)
+        page.click("#loginForm\\:login2")
+        page.wait_for_load_state("networkidle", timeout=15000)
+        if "terms.xhtml" in page.url:
+            page.click("#termsForm\\:termsButton")
+            page.wait_for_load_state("networkidle", timeout=10000)
+        logger.info("Playwright logged in for full build+download")
+
+        # Extract cookies from Playwright and create an HTTP session
+        pw_cookies = page.context.cookies()
+        import requests
+        http_session = requests.Session()
+        for c in pw_cookies:
+            http_session.cookies.set(c["name"], c["value"], domain=c.get("domain", ""))
+
+        # Create a lightweight session wrapper that shares Playwright's cookies
+        session = TableBuilderHTTPSession(config)
+        session._session = http_session
+
+        # Get ViewState from the catalogue page
+        from tablebuilder.http_session import extract_viewstate
+        resp = http_session.get(f"{BASE_URL}/jsf/dataCatalogueExplorer.xhtml")
+        vs = extract_viewstate(resp.text)
+        if vs:
+            session._viewstate = vs
+
+        # Build table via HTTP REST (fast) using Playwright's session cookies
+        tree = session.rest_get("/rest/catalogue/databases/tree")
+        result = find_database(tree, request.dataset)
+        if not result:
+            browser.close()
+            raise RuntimeError(f"Database not found: {request.dataset}")
+        path, db_node = result
+        open_database(session, path)
+        schema = get_schema(session)
+
+        for var_name, axis in request.variable_axes().items():
+            var_info = find_variable(schema, var_name)
+            if not var_info:
+                browser.close()
+                raise RuntimeError(f"Variable not found: {var_name}")
+            select_all_categories(session, schema, var_info)
+            add_to_axis(session, axis.value)
+
+        retrieve_data(session)
+        select_csv_format(session)
+        logger.info("Table built via HTTP in Playwright session")
+
+        # Now navigate Playwright to tableView — same session, should have the table
+        page.goto(f"{BASE_URL}/jsf/tableView.xhtml", wait_until="networkidle", timeout=30000)
+        page.wait_for_timeout(3000)
+
+        if "dataCatalogueExplorer" in page.url:
+            browser.close()
+            raise RuntimeError("Playwright redirected to catalogue despite building table via HTTP")
+
+        # Use the existing Playwright downloader
+        from tablebuilder.downloader import queue_and_download
+        queue_and_download(page, output_path)
+        browser.close()
+        logger.info("Large table downloaded to %s", output_path)
+
+
 def _playwright_queue_and_download(
     session: TableBuilderHTTPSession, output_path: str, table_name: str,
 ) -> None:

@@ -113,7 +113,14 @@ class Worker(threading.Thread):
             select_csv_format(session)
 
             jl.log_progress("Downloading CSV...")
-            download_table(session, str(result_path))
+            try:
+                download_table(session, str(result_path))
+            except RuntimeError as dl_err:
+                # Large table — direct HTTP download failed.
+                # Rebuild entire table in a single Playwright session.
+                jl.log_progress("Large table — rebuilding in browser...")
+                from tablebuilder.http_table import playwright_build_and_download
+                playwright_build_and_download(config, request, str(result_path))
 
             session._session.close()
             jl.log_progress("Complete!")
