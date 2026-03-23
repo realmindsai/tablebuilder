@@ -384,22 +384,40 @@ def http_fetch_table(
 def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
     """Download the cross-tabulation result as a CSV file.
 
-    ABS TableBuilder has two separate state systems:
-    - REST API: builds tables server-side, stateless
-    - JSF pages: JavaScript SPA with its own component tree
-
-    They share authentication but NOT table state. Tables built via REST
-    are invisible to the JSF page. The download/queue forms only exist
-    in the browser after JavaScript renders them.
-
-    Therefore, we try HTTP direct download first (works for simple tables
-    where the server returns binary). For anything else, we fall back to
-    a full Playwright session that rebuilds the table from scratch.
+    After building via REST/AJAX, do a regular JSF form submit (NOT AJAX)
+    to get the full HTML page with download forms and a valid ViewState.
+    Then POST the download form. For large tables, POST the queue form
+    and poll saved tables.
     """
-    logger.info("Attempting HTTP direct download")
+    import re
+    import time
+    from tablebuilder.http_session import extract_viewstate
 
-    # Try direct download — works for simple tables
-    resp = session._session.post(
+    # Step 1: POST a regular form submit to get the full page with all forms.
+    # The retrieve button (pageForm:retB) triggers a full page render.
+    logger.info("Triggering full page render via form submit")
+    page_resp = session._session.post(
+        TABLEVIEW_URL,
+        data={
+            "pageForm:retB": "",
+            "pageForm_SUBMIT": "1",
+            "javax.faces.ViewState": session.viewstate,
+        },
+        allow_redirects=True,
+    )
+    page_html = page_resp.text
+    page_vs = extract_viewstate(page_html)
+    logger.info("Page response: %d bytes, ViewState: %s, has downloadControl: %s",
+                len(page_html), bool(page_vs), "downloadControl" in page_html)
+
+    if page_vs:
+        session.viewstate = page_vs
+    if "downloadControl" not in page_html:
+        raise RuntimeError("Full page render did not include download forms")
+
+    # Step 2: Try direct download
+    logger.info("Attempting direct download with full-page ViewState")
+    dl_resp = session._session.post(
         TABLEVIEW_URL,
         data={
             "downloadControl:downloadGoButton": "Download table",
@@ -409,19 +427,76 @@ def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
         allow_redirects=True,
     )
 
-    content_type = resp.headers.get("Content-Type", "")
+    content_type = dl_resp.headers.get("Content-Type", "")
     if "octet-stream" in content_type or "zip" in content_type:
-        logger.info("HTTP direct download succeeded")
-        _save_content(resp.content, output_path)
+        logger.info("Direct download succeeded")
+        _save_content(dl_resp.content, output_path)
         return
 
-    # HTTP download failed — table too large or JSF state invalid.
-    # Must rebuild and download entirely in Playwright.
-    logger.info("HTTP download returned %s — need full Playwright session", content_type)
-    raise RuntimeError(
-        "Table requires Playwright for download (JSF SPA). "
-        "The worker will retry with playwright_build_and_download."
+    # Step 3: Direct download returned HTML — table too large, queue it
+    logger.info("Direct download returned %s — queuing table", content_type)
+
+    # Update ViewState from the download response
+    dl_vs = extract_viewstate(dl_resp.text)
+    if dl_vs:
+        session.viewstate = dl_vs
+
+    table_name = f"tb_{int(time.time())}"
+    logger.info("Queuing as '%s'", table_name)
+
+    # Queue via RichFaces AJAX — the queue button's onclick handler fires
+    # RichFaces.ajax() with incId=1, not a regular form submit.
+    queue_resp = session._session.post(
+        TABLEVIEW_URL,
+        data={
+            "downloadTableModeForm:downloadTableNameTxt": table_name,
+            "downloadTableModeForm:queueTableButton": "Queue table",
+            "downloadTableModeForm_SUBMIT": "1",
+            "javax.faces.ViewState": session.viewstate,
+            "AJAX:EVENTS_COUNT": "1",
+            "org.richfaces.ajax.component": "downloadTableModeForm:queueTableButton",
+        },
+        headers={
+            "Faces-Request": "partial/ajax",
+            "incId": "1",
+        },
     )
+    logger.info("Queue AJAX: status=%d, len=%d", queue_resp.status_code, len(queue_resp.content))
+
+    # Check for error in the XML response
+    if "errorMsg" in queue_resp.text or "failed" in queue_resp.text.lower():
+        error_match = re.search(r'<span[^>]*>([^<]*failed[^<]*)</span>', queue_resp.text, re.IGNORECASE)
+        error_text = error_match.group(1) if error_match else queue_resp.text[:200]
+        raise RuntimeError(f"Queue submission failed: {error_text}")
+
+    # Update ViewState from queue response
+    queue_vs = extract_viewstate(queue_resp.text)
+    if queue_vs:
+        session.viewstate = queue_vs
+
+    # Step 4: Poll saved tables page for our queued table
+    SAVED_TABLES_URL = f"{BASE_URL}/jsf/tableView/openTable.xhtml"
+    for attempt in range(240):  # up to 20 minutes
+        saved_resp = session._session.get(SAVED_TABLES_URL)
+        saved_html = saved_resp.text
+
+        if table_name in saved_html and "Completed" in saved_html:
+            job_ids = re.findall(r'downloadTable\?jobId=(\d+)', saved_html)
+            if job_ids:
+                job_id = job_ids[-1]
+                logger.info("Table '%s' completed, jobId=%s", table_name, job_id)
+                dl_resp = session._session.get(f"{DOWNLOAD_TABLE_URL}?jobId={job_id}")
+                _save_content(dl_resp.content, output_path)
+                logger.info("Saved to %s", output_path)
+                return
+
+        if attempt % 12 == 0:
+            found = table_name in saved_html
+            logger.info("Polling for '%s'... attempt %d (%s)", table_name, attempt + 1,
+                        "queued" if found else "not found")
+        time.sleep(5)
+
+    raise RuntimeError(f"Table '{table_name}' did not complete within 20 minutes.")
 
 
 def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> None:
