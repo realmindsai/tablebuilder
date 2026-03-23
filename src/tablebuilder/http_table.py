@@ -384,18 +384,21 @@ def http_fetch_table(
 def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
     """Download the cross-tabulation result as a CSV file.
 
-    Tries direct download first by submitting the downloadGoButton.
-    If the response is not binary (application/octet-stream), falls back
-    to the queue flow: navigate to saved tables, find the latest job,
-    and download via the download servlet.
+    ABS TableBuilder has two separate state systems:
+    - REST API: builds tables server-side, stateless
+    - JSF pages: JavaScript SPA with its own component tree
 
-    Args:
-        session: An authenticated TableBuilderHTTPSession.
-        output_path: Filesystem path where the CSV should be saved.
+    They share authentication but NOT table state. Tables built via REST
+    are invisible to the JSF page. The download/queue forms only exist
+    in the browser after JavaScript renders them.
+
+    Therefore, we try HTTP direct download first (works for simple tables
+    where the server returns binary). For anything else, we fall back to
+    a full Playwright session that rebuilds the table from scratch.
     """
-    logger.info("Attempting direct table download")
+    logger.info("Attempting HTTP direct download")
 
-    # Try direct download via the Go button (regular form submit, not AJAX)
+    # Try direct download — works for simple tables
     resp = session._session.post(
         TABLEVIEW_URL,
         data={
@@ -408,37 +411,17 @@ def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
 
     content_type = resp.headers.get("Content-Type", "")
     if "octet-stream" in content_type or "zip" in content_type:
-        logger.info("Direct download succeeded, saving to %s", output_path)
+        logger.info("HTTP direct download succeeded")
         _save_content(resp.content, output_path)
-        # Update ViewState if the response has one
-        from tablebuilder.http_session import extract_viewstate
-        new_vs = extract_viewstate(resp.text if hasattr(resp, 'text') else "")
-        if new_vs:
-            session.viewstate = new_vs
         return
 
-    # Fall back to queue flow
-    logger.info("Direct download returned %s, falling back to queue flow", content_type)
-
-    # Queue the table via the downloadTableMode dialog
-    import time
-    table_name = f"tb_{int(time.time())}"
-    logger.info("Queuing table as '%s'", table_name)
-
-    # Open queue dialog and submit
-    session.jsf_post(TABLEVIEW_URL, {
-        "downloadTableModeForm:downloadTableNameTxt": table_name,
-        "downloadTableModeForm:queueTableButton": "Queue",
-        "downloadTableModeForm_SUBMIT": "1",
-    })
-
-    # Direct HTTP download failed — table is too large and needs to be queued.
-    # Use Playwright to login, navigate to tableView, queue the table, and
-    # poll saved tables until it completes.
-    import time as _time
-    table_name = f"tb_{int(_time.time())}"
-    logger.info("Direct download unavailable — queuing as '%s' via Playwright", table_name)
-    _playwright_queue_and_download(session, output_path, table_name)
+    # HTTP download failed — table too large or JSF state invalid.
+    # Must rebuild and download entirely in Playwright.
+    logger.info("HTTP download returned %s — need full Playwright session", content_type)
+    raise RuntimeError(
+        "Table requires Playwright for download (JSF SPA). "
+        "The worker will retry with playwright_build_and_download."
+    )
 
 
 def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> None:
@@ -533,6 +516,45 @@ def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> 
         from tablebuilder.downloader import queue_and_download
         queue_and_download(page, output_path)
         browser.close()
+
+
+def _playwright_full_fetch(config, request, output_path: str, jl=None) -> None:
+    """Fetch a table entirely via Playwright — login, build, download.
+
+    Used when HTTP direct download fails. Does everything in a single
+    Playwright browser session using the existing table_builder and
+    downloader modules from the CLI.
+    """
+    from playwright.sync_api import sync_playwright
+    from tablebuilder.browser import TableBuilderSession
+    from tablebuilder.table_builder import add_variables_and_build
+    from tablebuilder.downloader import queue_and_download
+    from tablebuilder.knowledge import KnowledgeBase
+
+    knowledge = KnowledgeBase()
+
+    with TableBuilderSession(config, headless=True, knowledge=knowledge) as tb_session:
+        page = tb_session.page
+
+        # Navigate to the dataset
+        if jl:
+            jl.log_progress("Browser: finding dataset...")
+        from tablebuilder.navigator import Navigator
+        nav = Navigator(page, knowledge=knowledge)
+        nav.open_dataset(request.dataset)
+
+        # Build the table
+        if jl:
+            jl.log_progress("Browser: adding variables...")
+        add_variables_and_build(page, request, knowledge=knowledge)
+
+        # Download
+        if jl:
+            jl.log_progress("Browser: downloading...")
+        queue_and_download(page, output_path, knowledge=knowledge)
+
+    knowledge.save()
+    logger.info("Playwright full fetch completed: %s", output_path)
 
 
 def playwright_build_and_download(config, request, output_path: str) -> None:
