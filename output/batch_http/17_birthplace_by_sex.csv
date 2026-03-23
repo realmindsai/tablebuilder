@@ -1,0 +1,32 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"1-digit level BPLP Country of Birth of Person by SEXP Sex"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+"SEXP Sex","Male","Female","Total",
+"1-digit level BPLP Country of Birth of Person",
+"Oceania and Antarctica",8782281,8926358,17708639,
+"North-West Europe",732728,727099,1459833,
+"Southern and Eastern Europe",313319,344884,658197,
+"North Africa and the Middle East",234786,220068,454856,
+"South-East Asia",439502,611929,1051437,
+"North-East Asia",370491,484312,854800,
+"Southern and Central Asia",620401,529758,1150155,
+"Americas",158980,180645,339618,
+"Sub-Saharan Africa",182562,189586,372151,
+"Supplementary codes",7007,7437,14447,
+"Not stated",703103,655553,1358658,
+"Overseas visitor",33295,28570,61860,
+"Total",12578447,12906202,25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

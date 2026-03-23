@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "run_count": 7,
+  "last_run": "2026-03-22T21:07:28.066845",
+  "selectors": {
+    "LOGIN_USERNAME": {
+      "working_selector": "#loginForm\\:username2",
+      "last_success": "2026-03-07T20:18:46.164577",
+      "success_count": 12,
+      "failed_selectors": []
+    },
+    "LOGIN_PASSWORD": {
+      "working_selector": "#loginForm\\:password2",
+      "last_success": "2026-03-07T20:18:46.176035",
+      "success_count": 12,
+      "failed_selectors": []
+    },
+    "LOGIN_BUTTON": {
+      "working_selector": "#loginForm\\:login2",
+      "last_success": "2026-03-07T20:18:46.214170",
+      "success_count": 12,
+      "failed_selectors": []
+    },
+    "TREE_NODE": {
+      "working_selector": ".treeNodeElement",
+      "last_success": "2026-03-07T20:19:30.826426",
+      "success_count": 118,
+      "failed_selectors": [
+        ".treeNodeElement",
+        ".tree-node",
+        "[role=\"treeitem\"]"
+      ]
+    },
+    "FORMAT_DROPDOWN": {
+      "working_selector": "#downloadControl\\:downloadType",
+      "last_success": "2026-03-05T16:10:31.439887",
+      "success_count": 1,
+      "failed_selectors": []
+    },
+    "QUEUE_BUTTON": {
+      "working_selector": "#pageForm\\:retB",
+      "last_success": "2026-03-05T16:10:31.954921",
+      "success_count": 1,
+      "failed_selectors": []
+    },
+    "QUEUE_DIALOG": {
+      "working_selector": "#downloadTableModePanel_container",
+      "last_success": "2026-03-05T16:10:34.990774",
+      "success_count": 1,
+      "failed_selectors": []
+    },
+    "QUEUE_NAME_INPUT": {
+      "working_selector": "#downloadTableModeForm\\:downloadTableNameTxt",
+      "last_success": "2026-03-05T16:10:34.996407",
+      "success_count": 1,
+      "failed_selectors": []
+    },
+    "QUEUE_SUBMIT": {
+      "working_selector": "#downloadTableModeForm\\:queueTableButton",
+      "last_success": "2026-03-05T16:10:35.002137",
+      "success_count": 1,
+      "failed_selectors": []
+    }
+  },
+  "timings": {
+    "login": {
+      "avg_duration": 1.827337082694558,
+      "last_duration": 0.9514880180358887,
+      "sample_count": 17
+    },
+    "queue_and_download": {
+      "avg_duration": 7.5678300857543945,
+      "last_duration": 7.5678300857543945,
+      "sample_count": 1
+    }
+  },
+  "dataset_quirks": []
+}

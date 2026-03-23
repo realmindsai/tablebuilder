@@ -1,0 +1,38 @@
+=== LOGIN ===
+  >> GET /jsf/login.xhtml [document]
+  >> GET /jsf/javax.faces.resource/jsf.js?ln=javax.faces [script]
+  >> POST /jsf/login.xhtml [document]
+    BODY: loginForm:username2=1207475&loginForm:password2=svqELk2VRkgBZRLTN2LHx59Ec3cyVFHj96bXLJZ4&loginForm_SUBMIT=1&javax.faces.ViewState=QjUxNTgwNDg4RDMzODc2RjAwMDAwMDAx&r=&loginForm:_idcl=loginForm:login2
+  >> GET /jsf/dataCatalogueExplorer.xhtml [document]
+  >> GET /jsf/javax.faces.resource/jsf.js?ln=javax.faces [script]
+  >> GET /info/frontpage_en.html [document]
+  >> GET /rest/catalogue/databases/tree?nocache=1774067298582 [fetch]
+  >> GET /rest/catalogue/databaseTables/tree?nocache=1774067298582 [fetch]
+  URL: https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml
+
+=== OPEN DATABASE (REST API) ===
+  >> POST /rest/catalogue/databases/tree [fetch]
+    BODY: {"currentNode":["cm9vdA","MjAyMUNlbnN1cw","Y2Vuc3VzMjAyMVRCUHJv","MjAyMVBlcnNvbnNFTg"]}
+  >> POST /jsf/dataCatalogueExplorer.xhtml [xhr]
+    BODY: j_id_3f_SUBMIT=1&javax.faces.ViewState=MTFBMkU0N0I2NjIyQ0ZFQzAwMDAwMDAz&org.richfaces.ajax.component=j_id_3i&j_id_3i=j_id_3i&rfExt=null&AJAX:EVENTS_COUNT=1&javax.faces.partial.event=undefined&javax.faces.source=j_id_3i&javax.faces.partial.ajax=true&javax.faces.partial.execute=@component&javax.faces.partial.render=@component&j_id_3f=j_id_3f
+  >> GET /jsf/tableView/tableView.xhtml [document]
+  >> GET /jsf/javax.faces.resource/jsf.js?ln=javax.faces [script]
+  >> GET /rest/catalogue/tableSchema/tree?nocache=1774067300385 [fetch]
+  >> GET /rest/catalogue/saveTable/tree?nocache=1774067300392 [fetch]
+  >> GET /recordview/065D1D664D13F351FD5F454FDE7CD62C.cache.html [document]
+  URL: https://tablebuilder.abs.gov.au/webapi/jsf/tableView/tableView.xhtml
+
+=== BUILD TABLE (SEXP Sex -> Row) ===
+  >> POST /jsf/tableView/tableView.xhtml [xhr]
+    BODY: dummy=&searchPattern=SEXP Sex&searchForm_SUBMIT=1&javax.faces.ViewState=MDlBM0NFOEY4QzkwOEQyNDAwMDAwMDA0&org.richfaces.ajax.component=searchButton&searchButton=searchButton&rfExt=null&AJAX:EVENTS_COUNT=1&javax.faces.partial.event=click&javax.faces.source=searchButton&javax.faces.partial.ajax=true&javax.faces.partial.execute=@component&javax.faces.partial.render=@component&searchForm=searchForm
+  >> GET /rest/catalogue/tableSchema/tree?nocache=1774067309922 [fetch]
+  >> POST /rest/catalogue/tableSchema/tree [fetch]
+    BODY: {"expandedNodes":{"set":{"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19BZ2UgYW5kIFNleF9YR1JQ":{"children":{"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYwOV9GTEQ":{"value":true}}}}},"returnNode":{"node":["U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19BZ2UgYW5kIFNleF9YR1JQ","U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYwOV9GTEQ"],"data":true,"state":true,"expanded":true}}
+  >> POST /jsf/tableView/tableView.xhtml [xhr]
+    BODY: treeForm_SUBMIT=1&javax.faces.ViewState=MDlBM0NFOEY4QzkwOEQyNDAwMDAwMDA0&org.richfaces.ajax.component=treeForm:j_id_6m&treeForm:j_id_6m=treeForm:j_id_6m&rfExt=null&AJAX:EVENTS_COUNT=1&javax.faces.partial.event=undefined&javax.faces.source=treeForm:j_id_6m&javax.faces.partial.ajax=true&javax.faces.partial.execute=@component&javax.faces.partial.render=@component&treeForm=treeForm
+  >> POST /rest/catalogue/tableSchema/tree [fetch]
+    BODY: {"expandedNodes":{"set":{"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19BZ2UgYW5kIFNleF9YR1JQ":{"children":{"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyMF9GTEQ":{"value":true}}}}},"returnNode":{"node":["U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19BZ2UgYW5kIFNleF9YR1JQ","U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyMF9GTEQ"],"data":true,"state":true,"expanded":true}}
+  >> POST /jsf/tableView/tableView.xhtml [xhr]
+    BODY: treeForm_SUBMIT=1&javax.faces.ViewState=MDlBM0NFOEY4QzkwOEQyNDAwMDAwMDA0&org.richfaces.ajax.component=treeForm:j_id_6m&treeForm:j_id_6m=treeForm:j_id_6m&rfExt=null&AJAX:EVENTS_COUNT=1&javax.faces.partial.event=undefined&javax.faces.source=treeForm:j_id_6m&javax.faces.partial.ajax=true&javax.faces.partial.execute=@component&javax.faces.partial.render=@component&treeForm=treeForm
+  >> POST /rest/catalogue/tableSchema/tree [fetch]
+    BODY: {"currentNode":["U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19BZ2UgYW5kIFNleF9YR1JQ","U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyMF9GTEQ"]}

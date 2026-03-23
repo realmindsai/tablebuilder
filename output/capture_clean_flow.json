@@ -1,0 +1,338 @@
+[
+  {
+    "ts": "2026-03-21T13:54:31.702664",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:31.796964",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "status": 200,
+    "ct": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:31.804456",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "type": "script",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:31.876614",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "status": 200,
+    "ct": "application/javascript;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:32.555776",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "type": "document",
+    "post_data": "loginForm%3Ausername2=1207475&loginForm%3Apassword2=svqELk2VRkgBZRLTN2LHx59Ec3cyVFHj96bXLJZ4&loginForm_SUBMIT=1&javax.faces.ViewState=MDUyQUYyN0VGM0Y4RkY1RjAwMDAwMDAx&r=&loginForm%3A_idcl=loginForm%3Alogin2"
+  },
+  {
+    "ts": "2026-03-21T13:54:33.273467",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "status": 302,
+    "ct": "",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:33.273742",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:33.327414",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "status": 200,
+    "ct": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:33.338184",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "type": "script",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:33.338468",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "status": 200,
+    "ct": "application/javascript;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:33.462288",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/info/frontpage_en.html",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:33.462499",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree?nocache=1774061673443",
+    "type": "fetch",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:33.462608",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databaseTables/tree?nocache=1774061673444",
+    "type": "fetch",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:33.475520",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree?nocache=1774061673443",
+    "status": 200,
+    "ct": "application/json;charset=UTF-8",
+    "body": "{\n  \"nodeList\" : [ {\n    \"key\" : \"cm9vdA\",\n    \"data\" : {\n      \"type\" : \"FOLDER\",\n      \"name\" : \"Data\",\n      \"iconType\" : \"folder\"\n    },\n    \"children\" : [ {\n      \"key\" : \"MjAwNkNlbnN1cw\",\n      \"data\" : {\n        \"type\" : \"FOLDER\",\n        \"name\" : \"2006 Census of Population and Housing\",\n        \"iconType\" : \"folder\"\n      },\n      \"children\" : [ {\n        \"key\" : \"Y2Vuc3VzMjAwNlRCQmFzaWM\",\n        \"data\" : {\n          \"type\" : \"FOLDER\",\n          \"name\" : \"Census TableBuilder Basic\",\n          \"iconType\" : \"folder\"\n        },\n        \"children\" : [ {\n          \"key\" : \"Q2hpbGRjYXJl\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Childcare\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RGlzYWJpbGl0eQ\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Disability\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RHdlbGxpbmdz\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Dwellings\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RWR1Y2F0aW9u\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Education\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RXRobmljaXR5\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Ethnicity\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RmFtaWxpZXM\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Families\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"TGFib3VyX0ZvcmNl\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Labour Force\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"TWlncmF0aW9u\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Migration\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"UGVyc29uc19pbl9Ed2VsbGluZ3M\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Persons in Dwellings\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"UGxhY2Vfb2ZfV29yaw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Place of Work\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"UmVsYXRpb25zaGlw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Relationship\",\n            \"iconType\" : \"database\"\n          }\n        } ]\n      }, {\n        \"key\" : \"Y2Vuc3VzMjAwNlRCUHJv\",\n        \"data\" : {\n          \"type\" : \"FOLDER\",\n          \"name\" : \"Census TableBuilder Pro\",\n          \"iconType\" : \"folder\"\n        },\n        \"children\" : [ {\n          \"key\" : \"VEJEd2VsbGluZ3NFbnVt\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Dwellings, Place of Enumeration\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"VEJGYW1pbGllc0VudW0\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Families, Place of Enumeration\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"VEJQZXJzb25zRW51bQ\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Persons, Place of Enumeration\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"VEJQZXJzb25zVVJlcw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Persons, Place of Usual Residence\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"VEJQZXJzb25zUE9mVw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Persons, Place of Work\",\n            \"iconType\" : \"database\"\n          }\n        } ]\n      } ]\n    }, {\n      \"key\" : \"MjAxMUNlbnN1cw\",\n      \"data\" : {\n        \"type\" : \"FOLDER\",\n        \"name\" : \"2011 Census of Population and Housing\",\n        \"iconType\" : \"folder\"\n      },\n      \"children\" : [ {\n        \"key\" : \"Y2Vuc3VzMjAxMVRCQmFzaWM\",\n        \"data\" : {\n          \"type\" : \"FOLDER\",\n          \"name\" : \"Census TableBuilder Basic\",\n          \"iconType\" : \"folder\"\n        },\n        \"child"
+  },
+  {
+    "ts": "2026-03-21T13:54:33.476335",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databaseTables/tree?nocache=1774061673444",
+    "status": 200,
+    "ct": "application/json;charset=UTF-8",
+    "body": "{\n  \"nodeList\" : [ ],\n  \"expandedNodes\" : { },\n  \"emptyMessage\" : \"Select a dataset to see available tables\"\n}"
+  },
+  {
+    "ts": "2026-03-21T13:54:33.486181",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/info/frontpage_en.html",
+    "status": 200,
+    "ct": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:34.007513",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree",
+    "type": "fetch",
+    "post_data": "{\"currentNode\":[\"cm9vdA\",\"MjAyMUNlbnN1cw\",\"Y2Vuc3VzMjAyMVRCUHJv\",\"MjAyMVBlcnNvbnNFTg\"]}"
+  },
+  {
+    "ts": "2026-03-21T13:54:34.194603",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree",
+    "status": 200,
+    "ct": "application/json;charset=UTF-8",
+    "body": "{ }"
+  },
+  {
+    "ts": "2026-03-21T13:54:34.655572",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "type": "xhr",
+    "post_data": "j_id_3f_SUBMIT=1&javax.faces.ViewState=QUE2Q0Q3ODE2NDc0MEE0NjAwMDAwMDAz&org.richfaces.ajax.component=j_id_3i&j_id_3i=j_id_3i&rfExt=null&AJAX%3AEVENTS_COUNT=1&javax.faces.partial.event=undefined&javax.faces.source=j_id_3i&javax.faces.partial.ajax=true&javax.faces.partial.execute=%40component&javax.faces.partial.render=%40component&j_id_3f=j_id_3f"
+  },
+  {
+    "ts": "2026-03-21T13:54:34.983834",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/tableView/tableView.xhtml",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:35.181464",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/tableView/tableView.xhtml",
+    "status": 200,
+    "ct": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:35.193092",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "type": "script",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:35.193317",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "status": 200,
+    "ct": "application/javascript;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:35.203566",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "status": 200,
+    "ct": "text/xml;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:35.278452",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/tableSchema/tree?nocache=1774061675277",
+    "type": "fetch",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:35.284543",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/saveTable/tree?nocache=1774061675283",
+    "type": "fetch",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:35.307010",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/recordview/065D1D664D13F351FD5F454FDE7CD62C.cache.html",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:35.354966",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/recordview/065D1D664D13F351FD5F454FDE7CD62C.cache.html",
+    "status": 200,
+    "ct": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:40.966757",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/saveTable/tree?nocache=1774061675283",
+    "status": 200,
+    "ct": "application/json;charset=UTF-8",
+    "body": "{\n  \"nodeList\" : [ {\n    \"key\" : \"TXkgc2F2ZWQgdGFibGVz\",\n    \"data\" : {\n      \"leaf\" : true,\n      \"type\" : \"FOLDER\",\n      \"name\" : \"My saved tables\",\n      \"iconType\" : \"folder\"\n    }\n  } ],\n  \"expandedNodes\" : {\n    \"TXkgc2F2ZWQgdGFibGVz\" : {\n      \"value\" : true\n    }\n  },\n  \"currentNode\" : {\n    \"key\" : \"TXkgc2F2ZWQgdGFibGVz\"\n  }\n}"
+  },
+  {
+    "ts": "2026-03-21T13:54:40.971147",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/tableSchema/tree?nocache=1774061675277",
+    "status": 200,
+    "ct": "application/json;charset=UTF-8",
+    "body": "{\n  \"nodeList\" : [ {\n    \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19HZW9ncmFwaGljYWwgQXJlYXMgKEVudW1lcmF0aW9uKV9YR1JQ\",\n    \"data\" : {\n      \"type\" : \"schemaTreeNode\",\n      \"name\" : \"Geographical Areas (Enumeration)\",\n      \"iconType\" : \"FIELD_GROUP\"\n    },\n    \"children\" : [ {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MTQ4MzlfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Australia (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 1,\n        \"levels\" : [ \"Select a level below:\", \"Australia (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mjg2MTNfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Main Statistical Area Structure (Main ASGS) (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 9,\n        \"levels\" : [ \"Select a level below:\", \"STATE (EN)\", \"SA4 (EN)\", \"SA3 (EN)\", \"SA2 (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mjg2MTFfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Greater Capital City Statistical Areas (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 9,\n        \"levels\" : [ \"Select a level below:\", \"STATE (EN)\", \"GCCSA (EN)\", \"SA4 (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mjg2MTJfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Indigenous Structure (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 9,\n        \"levels\" : [ \"Select a level below:\", \"STATE (EN)\", \"IREG (EN)\", \"IARE (EN)\", \"ILOC (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1MzBfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Section of State/Urban Centres and Localities (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 9,\n        \"levels\" : [ \"Select a level below:\", \"STATE (EN)\", \"SOS (EN)\", \"SOSR (EN)\", \"UCL (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1MzFfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Significant Urban Areas (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 111,\n        \"levels\" : [ \"Select a level below:\", \"Significant Urban Areas (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0NDg2MjdfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Remoteness Areas (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 9,\n        \"levels\" : [ \"Select a level below:\", \"STATE (EN)\", \"RA (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0NDg2MjZfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Remoteness Areas (National) (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 6,\n        \"levels\" : [ \"Select a level below:\", \"Remoteness Areas (National) (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMzJfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Local Government Areas (2021 Boundaries) (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 9,\n        \"levels\" : [ \"Select a level below:\", \"STATE (EN)\", \"LGA (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0Mzc1MjlfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Local Government Areas (2022 Boundaries) (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 9,\n        \"levels\" : [ \"Select a level below:\", \"STATE (EN)\", \"LGA (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0ODc4NzBfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Local Government Areas (2025 Boundaries) (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 9,\n        \"levels\" : [ \"Select a level below:\", \"STATE (EN)\", \"LGA (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMzdfRkxE\",\n      \"data\" : {\n        \"type\" : \"schemaTreeNode\",\n        \"name\" : \"Suburbs and Localities (EN)\",\n        \"iconType\" : \"FIELD\",\n        \"childCount\" : 9,\n        \"levels\" : [ \"Select a level below:\", \"STATE (EN)\", \"SAL (EN)\" ],\n        \"draggable\" : true\n      }\n    }, {\n      \"key\" : \"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19NZXNoIEJsb2NrIFJlY29yZHNfXzI0MjgzMzVfRkxE\",\n      \"data"
+  },
+  {
+    "ts": "2026-03-21T13:54:43.499032",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/tableSchema/tree",
+    "type": "fetch",
+    "post_data": "{\"currentNode\":[\"U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyMF9GTEQ\"]}"
+  },
+  {
+    "ts": "2026-03-21T13:54:43.601040",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/tableSchema/tree",
+    "status": 200,
+    "ct": "application/json;charset=UTF-8",
+    "body": "{ }"
+  },
+  {
+    "ts": "2026-03-21T13:54:44.053558",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/tableView/tableView.xhtml",
+    "type": "xhr",
+    "post_data": "treeForm_SUBMIT=1&javax.faces.ViewState=MkRCMjZCRTE5MjIzREFFNDAwMDAwMDA0&org.richfaces.ajax.component=treeForm%3Aj_id_6m&treeForm%3Aj_id_6m=treeForm%3Aj_id_6m&rfExt=null&AJAX%3AEVENTS_COUNT=1&javax.faces.partial.event=undefined&javax.faces.source=treeForm%3Aj_id_6m&javax.faces.partial.ajax=true&javax.faces.partial.execute=%40component&javax.faces.partial.render=%40component&treeForm=treeForm"
+  },
+  {
+    "ts": "2026-03-21T13:54:44.088602",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/tableView/tableView.xhtml",
+    "status": 200,
+    "ct": "text/xml;charset=UTF-8",
+    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><partial-response id=\"j_id__v_0\"><changes><update id=\"buttonForm:buttonPanel\"><![CDATA[<div id=\"buttonForm:buttonPanel\" class=\"fl-buttons treeControlButtons\">\n                <div class=\"fl-ai-center\">\n\n                    <span>Add to:</span>\n\n                    <div class=\"dropdownButtonGroup\"><input id=\"buttonForm:addR\" name=\"buttonForm:addR\" onclick=\"return false;\" value=\"Row\" class=\"inactiveButton buttonWithDropdown\" disabled=\"disabled\" title=\"Add selected items to the table row\" type=\"submit\" />\n                        <div class=\"dropdown\">\n                                    <button id=\"disabledAddToRowButton\" class=\"inactiveButton dropdownButton\" disabled=\"disabled\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><img src=\"/webapi/images/glyphicons/svg/glyphicons-602-chevron-down-666.svg\" alt=\"\" />\n                                    </button>\n                            <ul class=\"dropdown-menu\" aria-labelledby=\"disabledAddToRowButton\">\n                                <li><a href=\"#\" id=\"buttonForm:j_id_5l\" name=\"buttonForm:j_id_5l\" onclick=\"RichFaces.ajax(&quot;buttonForm:j_id_5l&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;\" class=\"dropdown-item\" tabindex=\"-1\">Add in selection order</a>\n                                </li>\n                                <li><a href=\"#\" id=\"buttonForm:j_id_5n\" name=\"buttonForm:j_id_5n\" onclick=\"RichFaces.ajax(&quot;buttonForm:j_id_5n&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;\" class=\"dropdown-item\" tabindex=\"-1\">Add in hierarchical order</a>\n                                </li>\n                            </ul>\n                        </div>\n                    </div>\n\n                    <div class=\"dropdownButtonGroup\"><input id=\"buttonForm:addC\" name=\"buttonForm:addC\" onclick=\"return false;\" value=\"Column\" class=\"inactiveButton buttonWithDropdown\" disabled=\"disabled\" title=\"Add selected items to the table column\" type=\"submit\" />\n                        <div class=\"dropdown\">\n                                    <button id=\"disabledAddToColumnButton\" class=\"inactiveButton dropdownButton\" disabled=\"disabled\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><img src=\"/webapi/images/glyphicons/svg/glyphicons-602-chevron-down-666.svg\" alt=\"\" />\n                                    </button>\n                            <ul class=\"dropdown-menu\" aria-labelledby=\"disabledAddToColumnButton\">\n                                <li><a href=\"#\" id=\"buttonForm:j_id_5t\" name=\"buttonForm:j_id_5t\" onclick=\"RichFaces.ajax(&quot;buttonForm:j_id_5t&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;\" class=\"dropdown-item\" tabindex=\"-1\">Add in selection order</a>\n                                </li>\n                                <li><a href=\"#\" id=\"buttonForm:j_id_5v\" name=\"buttonForm:j_id_5v\" onclick=\"RichFaces.ajax(&quot;buttonForm:j_id_5v&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;\" class=\"dropdown-item\" tabindex=\"-1\">Add in hierarchical order</a>\n                                </li>\n                            </ul>\n                        </div>\n                    </div>\n\n                    <div class=\"dropdownButtonGroup\"><input id=\"buttonForm:addL\" name=\"buttonForm:addL\" onclick=\"return false;\" value=\"Wafer\" class=\"inactiveButton buttonWithDropdown\" disabled=\"disabled\" title=\"Add selected items to the table wafer\" type=\"submit\" />\n                        <div class=\"dropdown\">\n                                    <button id=\"disabledAddToWaferButton\" class=\"inactiveButton dropdownButton\" disabled=\"disabled\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><img src=\"/webapi/images/glyphicons/svg/glyphicons-602-chevron-down-666.svg\" alt=\"\" />\n                                    </button>\n                            <ul class=\"dropdown-menu\" aria-labelledby=\"disabledAddToWaferButton\">\n                                <li><a href=\"#\" id=\"buttonForm:j_id_61\" name=\"buttonForm:j_id_61\" onclick=\"RichFaces.ajax(&quot;buttonForm:j_id_61&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;\" class=\"dropdown-item\" tabindex=\"-1\">Add in selection order</a>\n                                </li>\n                                <li><a href=\"#\" id=\"buttonForm:j_id_63\" name=\"buttonForm:j_id_63\" onclick=\"RichFaces.ajax(&quot;buttonForm:j_id_63&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;\" class=\"dropdown-item\" tabindex=\"-1\">Add in hierarchical order</a>\n                                </li>\n                            </ul>\n                        </div>\n                    </div><input id=\"buttonForm:addS\" name=\"buttonForm:addS\" onclick=\"return false;\" value=\"Filter\" class=\"inactiveButton\" disabled=\"disabled\" title=\"Add selected items to the table filter\" type=\"submit\" />\n\n                    <span class=\"linkSeparator\" role=\"none\">|</span><input id=\"buttonForm:remB\" name=\"buttonForm:remB\" onclick=\"retur"
+  },
+  {
+    "ts": "2026-03-21T13:54:46.060410",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/tableView/tableView.xhtml",
+    "type": "xhr",
+    "post_data": "buttonForm_SUBMIT=1&javax.faces.ViewState=MkRCMjZCRTE5MjIzREFFNDAwMDAwMDA0&id=U1hWNF9fMjAyNTA5MTBfUGVyc29uc0VOX19QZXJzb24gUmVjb3Jkc19fMjQwOTYyMF9GTEQ&dim=row&comp=0&org.richfaces.ajax.component=buttonForm%3Aj_id_58&buttonForm%3Aj_id_58=buttonForm%3Aj_id_58&rfExt=null&AJAX%3AEVENTS_COUNT=1&javax.faces.partial.event=undefined&javax.faces.source=buttonForm%3Aj_id_58&javax.faces.partial.ajax=true&javax.faces.partial.execute=%40component&javax.faces.partial.render=%40component&buttonForm=buttonForm"
+  },
+  {
+    "ts": "2026-03-21T13:54:46.152826",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/logout?internalerror=true",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:46.190177",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/logout?internalerror=true",
+    "status": 302,
+    "ct": "",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:46.190391",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml?internalerror=true",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:46.220013",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml?internalerror=true",
+    "status": 200,
+    "ct": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:46.230116",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "type": "script",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T13:54:46.230265",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "status": 200,
+    "ct": "application/javascript;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T13:54:46.237373",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/tableView/tableView.xhtml",
+    "status": 200,
+    "ct": "text/xml;charset=UTF-8",
+    "body": ""
+  }
+]

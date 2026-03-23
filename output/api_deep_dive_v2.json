@@ -1,0 +1,146 @@
+[
+  {
+    "ts": "2026-03-21T10:14:59.868425",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:14:59.965576",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "status": 200,
+    "ct": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:14:59.973315",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "type": "script",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:15:00.067557",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "status": 200,
+    "ct": "application/javascript;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:15:00.796298",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "type": "document",
+    "post_data": "loginForm%3Ausername2=1207475&loginForm%3Apassword2=svqELk2VRkgBZRLTN2LHx59Ec3cyVFHj96bXLJZ4&loginForm_SUBMIT=1&javax.faces.ViewState=MDQwMUY3QkM5NTAwMUY2RjAwMDAwMDAx&r=&loginForm%3A_idcl=loginForm%3Alogin2"
+  },
+  {
+    "ts": "2026-03-21T10:15:01.762266",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "status": 302,
+    "ct": "",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:15:01.762459",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:15:01.841295",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "status": 200,
+    "ct": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:15:01.849122",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "type": "script",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:15:01.849295",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces",
+    "status": 200,
+    "ct": "application/javascript;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:15:01.960029",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/info/frontpage_en.html",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:15:01.960181",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree?nocache=1774048501940",
+    "type": "fetch",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:15:01.960267",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databaseTables/tree?nocache=1774048501941",
+    "type": "fetch",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:15:01.973953",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree?nocache=1774048501940",
+    "status": 200,
+    "ct": "application/json;charset=UTF-8",
+    "body": "{\n  \"nodeList\" : [ {\n    \"key\" : \"cm9vdA\",\n    \"data\" : {\n      \"type\" : \"FOLDER\",\n      \"name\" : \"Data\",\n      \"iconType\" : \"folder\"\n    },\n    \"children\" : [ {\n      \"key\" : \"MjAwNkNlbnN1cw\",\n      \"data\" : {\n        \"type\" : \"FOLDER\",\n        \"name\" : \"2006 Census of Population and Housing\",\n        \"iconType\" : \"folder\"\n      },\n      \"children\" : [ {\n        \"key\" : \"Y2Vuc3VzMjAwNlRCQmFzaWM\",\n        \"data\" : {\n          \"type\" : \"FOLDER\",\n          \"name\" : \"Census TableBuilder Basic\",\n          \"iconType\" : \"folder\"\n        },\n        \"children\" : [ {\n          \"key\" : \"Q2hpbGRjYXJl\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Childcare\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RGlzYWJpbGl0eQ\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Disability\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RHdlbGxpbmdz\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Dwellings\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RWR1Y2F0aW9u\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Education\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RXRobmljaXR5\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Ethnicity\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RmFtaWxpZXM\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Families\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"TGFib3VyX0ZvcmNl\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Labour Force\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"TWlncmF0aW9u\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Migration\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"UGVyc29uc19pbl9Ed2VsbGluZ3M\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Persons in Dwellings\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"UGxhY2Vfb2ZfV29yaw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Place of Work\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"UmVsYXRpb25zaGlw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Censu"
+  },
+  {
+    "ts": "2026-03-21T10:15:01.978215",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databaseTables/tree?nocache=1774048501941",
+    "status": 200,
+    "ct": "application/json;charset=UTF-8",
+    "body": "{\n  \"nodeList\" : [ ],\n  \"expandedNodes\" : { },\n  \"emptyMessage\" : \"Select a dataset to see available tables\"\n}"
+  },
+  {
+    "ts": "2026-03-21T10:15:01.996235",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/info/frontpage_en.html",
+    "status": 200,
+    "ct": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:15:17.539584",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "type": "xhr",
+    "post_data": "j_id_3f_SUBMIT=1&javax.faces.ViewState=QjE2NTBGOUQzNDQ1QjEwRTAwMDAwMDAz&org.richfaces.ajax.component=j_id_3h&j_id_3h=j_id_3h&rfExt=null&AJAX%3AEVENTS_COUNT=1&javax.faces.partial.event=undefined&javax.faces.source=j_id_3h&javax.faces.partial.ajax=true&javax.faces.partial.execute=%40component&javax.faces.partial.render=%40component&j_id_3f=j_id_3f"
+  },
+  {
+    "ts": "2026-03-21T10:15:17.614990",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "status": 200,
+    "ct": "text/xml;charset=UTF-8",
+    "body": ""
+  }
+]

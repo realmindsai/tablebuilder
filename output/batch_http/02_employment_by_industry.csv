@@ -1,0 +1,43 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"1-digit level INDP Industry of Employment"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+
+"1-digit level INDP Industry of Employment",
+"Agriculture, Forestry and Fishing",282227,
+"Mining",214759,
+"Manufacturing",714759,
+"Electricity, Gas, Water and Waste Services",134368,
+"Construction",1067645,
+"Wholesale Trade",311863,
+"Retail Trade",1099617,
+"Accommodation and Food Services",783737,
+"Transport, Postal and Warehousing",546364,
+"Information Media and Telecommunications",166872,
+"Financial and Insurance Services",445121,
+"Rental, Hiring and Real Estate Services",187621,
+"Professional, Scientific and Technical Services",945094,
+"Administrative and Support Services",388432,
+"Public Administration and Safety",797031,
+"Education and Training",1061320,
+"Health Care and Social Assistance",1751717,
+"Arts and Recreation Services",188479,
+"Other Services",435459,
+"Inadequately described",369939,
+"Not stated",156996,
+"Not applicable",13373380,
+"Overseas visitor",61860,
+"Total",25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

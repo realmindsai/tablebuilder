@@ -63,6 +63,21 @@ def create_app(
         from tablebuilder.service.chat_resolver import ChatResolver
         app.state.chat_resolver = ChatResolver(anthropic_api_key=anthropic_api_key)
 
+    # Default ABS credentials for auto-login (from env or ~/.tablebuilder/.env)
+    import os
+    abs_user = os.environ.get("TABLEBUILDER_USER_ID", "")
+    abs_pass = os.environ.get("TABLEBUILDER_PASSWORD", "")
+    if not abs_user:
+        env_file = Path.home() / ".tablebuilder" / ".env"
+        if env_file.exists():
+            for line in env_file.read_text().splitlines():
+                if line.startswith("TABLEBUILDER_USER_ID="):
+                    abs_user = line.split("=", 1)[1].strip()
+                elif line.startswith("TABLEBUILDER_PASSWORD="):
+                    abs_pass = line.split("=", 1)[1].strip()
+    app.state.default_abs_user = abs_user
+    app.state.default_abs_password = abs_pass
+
     # Register routes
     from tablebuilder.service.routes_api import router as api_router
     app.include_router(api_router)

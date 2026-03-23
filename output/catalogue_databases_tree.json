@@ -1,0 +1,2215 @@
+{
+  "nodeList": [
+    {
+      "key": "cm9vdA",
+      "data": {
+        "type": "FOLDER",
+        "name": "Data",
+        "iconType": "folder"
+      },
+      "children": [
+        {
+          "key": "MjAwNkNlbnN1cw",
+          "data": {
+            "type": "FOLDER",
+            "name": "2006 Census of Population and Housing",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "Y2Vuc3VzMjAwNlRCQmFzaWM",
+              "data": {
+                "type": "FOLDER",
+                "name": "Census TableBuilder Basic",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "Q2hpbGRjYXJl",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Childcare",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "RGlzYWJpbGl0eQ",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Disability",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "RHdlbGxpbmdz",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Dwellings",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "RWR1Y2F0aW9u",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Education",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "RXRobmljaXR5",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Ethnicity",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "RmFtaWxpZXM",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Families",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "TGFib3VyX0ZvcmNl",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Labour Force",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "TWlncmF0aW9u",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Migration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "UGVyc29uc19pbl9Ed2VsbGluZ3M",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Persons in Dwellings",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "UGxhY2Vfb2ZfV29yaw",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Place of Work",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "UmVsYXRpb25zaGlw",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Relationship",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "Y2Vuc3VzMjAwNlRCUHJv",
+              "data": {
+                "type": "FOLDER",
+                "name": "Census TableBuilder Pro",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "VEJEd2VsbGluZ3NFbnVt",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Counting Dwellings, Place of Enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "VEJGYW1pbGllc0VudW0",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Counting Families, Place of Enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "VEJQZXJzb25zRW51bQ",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Counting Persons, Place of Enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "VEJQZXJzb25zVVJlcw",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Counting Persons, Place of Usual Residence",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "VEJQZXJzb25zUE9mVw",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2006 Census - Counting Persons, Place of Work",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "MjAxMUNlbnN1cw",
+          "data": {
+            "type": "FOLDER",
+            "name": "2011 Census of Population and Housing",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "Y2Vuc3VzMjAxMVRCQmFzaWM",
+              "data": {
+                "type": "FOLDER",
+                "name": "Census TableBuilder Basic",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "MjAxMUNoaWxkY2FyZQ",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Children and Childcare",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMURpdmVyc2l0eQ",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Cultural and Language Diversity",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMURpc2FiaWxpdHk",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Disability, Carers and Need for Assistance",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMUR3ZWxsaW5ncw",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Dwelling Characteristics",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMUVkdWNhdGlvbg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Education and Qualifications",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMUVtcGxveW1lbnQ",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Employment, Income and Unpaid Work",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMUZhbWlsaWVz",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Family Characteristics",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMUhISW5jb21l",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Household Income and Expenditure",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMVJlbGF0aW9uc2hpcHM",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Persons and Relationships",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMVBlcnNvbnNOUEQ",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Persons in Non-Private Dwellings",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMVBlcnNvbnNQRA",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Persons in Private Dwellings",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMU1pZ3JhdGlvbg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Usual Address and Internal Migration",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "Y2Vuc3VzMjAxMVRCUHJv",
+              "data": {
+                "type": "FOLDER",
+                "name": "Census TableBuilder Pro",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "MjAxMUR3ZWxsaW5nc0VO",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Counting Dwellings, Place of Enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMVBlcnNvbnNQT1c",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Counting Employed Persons, Place of Work",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMUZhbWlsaWVzVVI",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Counting Families, Place of Usual Residence",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMVBlcnNvbnNFTg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Counting Persons, Place of Enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxMVBlcnNvbnNVUg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2011 Census - Counting Persons, Place of Usual Residence",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "MjAxNkNlbnN1cw",
+          "data": {
+            "type": "FOLDER",
+            "name": "2016 Census of Population and Housing",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "Y2Vuc3VzMjAxNlRCQmFzaWM",
+              "data": {
+                "type": "FOLDER",
+                "name": "Census TableBuilder Basic",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "MjAxNkN1bHR1cmU",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Cultural Diversity",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNkVJRQ",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Employment, Income and Education",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNk1pZ3JhdGlvbg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Internal Migration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNkR3ZWxsaW5ncw",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Selected Dwelling Characteristics",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNkZhbWlsaWVz",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Selected Family Characteristics",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "Y2Vuc3VzMjAxNlRCUHJv",
+              "data": {
+                "type": "FOLDER",
+                "name": "Census TableBuilder Pro",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "MjAxNkR3ZWxsaW5nc0VO",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Counting Dwellings, Place of Enumeration (MB)",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNlBPVw",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Counting Employed Persons, Place of Work (POW)",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNkZhbWlsaWVzRU4",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Counting Families, Place of Enumeration (MB)",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNlBlcnNvbnNFTg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Counting Persons, Place of Enumeration (MB)",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNlBlcnNvbnNVUg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Counting Persons, Place of Usual Residence (MB)",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "Y2Vuc3VzMjAxNlRCRUg",
+              "data": {
+                "type": "FOLDER",
+                "name": "Estimating Homelessness",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "MjAxNlBlcnNvbnNFSA",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Census - Counting Persons, Estimating Homelessness",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "Y2Vuc3VzMjAxNlRCSUhBRA",
+              "data": {
+                "type": "FOLDER",
+                "name": "Experimental Index of Household Advantage and Disadvantage",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "MjAxNkR3ZWxsaW5nc0lIQUQ",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Experimental IHAD - Counting Dwellings, Place of Enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNkZhbWlsaWVzSUhBRA",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Experimental IHAD - Counting Families, Place of Enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAxNlBlcnNvbnNJSEFE",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2016 Experimental IHAD - Counting Persons, Place of Enumeration",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "MjAyMUNlbnN1cw",
+          "data": {
+            "type": "FOLDER",
+            "name": "2021 Census of Population and Housing",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "Y2Vuc3VzMjAyMVRCQmFzaWM",
+              "data": {
+                "type": "FOLDER",
+                "name": "Census TableBuilder Basic",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "MjAyMUN1bHR1cmU",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - cultural diversity",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAyMUVJRQ",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - employment, income and education",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAyMU1pZ3JhdGlvbg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - internal migration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAyMUR3ZWxsaW5ncw",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - selected dwelling characteristics",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAyMUZhbWlsaWVz",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - selected family characteristics",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "Y2Vuc3VzMjAyMVRCUHJv",
+              "data": {
+                "type": "FOLDER",
+                "name": "Census TableBuilder Pro",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "MjAyMUR3ZWxsaW5nc0VO",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - counting dwellings, place of enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAyMUZhbWlsaWVzRU4",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - counting families, place of enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAyMVBPVw",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - counting persons, 15 years and over",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAyMVBlcnNvbnNFTg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - counting persons, place of enumeration",
+                    "iconType": "database"
+                  }
+                },
+                {
+                  "key": "MjAyMVBlcnNvbnNVUg",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - counting persons, place of usual residence",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "Y2Vuc3VzMjAyMVRCRUg",
+              "data": {
+                "type": "FOLDER",
+                "name": "Estimating Homelessness",
+                "iconType": "folder"
+              },
+              "children": [
+                {
+                  "key": "MjAyMVBlcnNvbnNFSA",
+                  "data": {
+                    "leaf": true,
+                    "type": "DATABASE",
+                    "name": "2021 Census - counting persons, estimating homelessness",
+                    "iconType": "database"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "QUFUU0lIU19mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "Aboriginal and Torres Strait Islander Peoples",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "QUFUU0lIU18yMDEyX3YyX3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Aboriginal and Torres Strait Islander Health Survey, Core Content - Risk Factors and Selected Health Conditions, 2012-13",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TkFUU0lIU18yMDEyX3Y0X3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Aboriginal and Torres Strait Islander Health Survey, Detailed Conditions and Other Health Data, 2012-13",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TkFUU0lOUEFTXzIwMTNfdjVfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Aboriginal and Torres Strait Islander Health Survey, Nutrition and Physical Activity, 2012-13",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "R1NTXzIwMTRfdjdfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "General Social Survey (Non-Indigenous), 2014",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TkFUU0lIU18yMDE4X3YzX3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "National Aboriginal and Torres Strait Islander Health Survey, 2018-19",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TkFUU0lIU18yMDIz",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "National Aboriginal and Torres Strait Islander Health Survey, 2022-23",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TkFUU0lTU18yMDE0X3Y2X3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "National Aboriginal and Torres Strait Islander Social Survey, 2014-15",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "QURTX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Administrative Data Snapshot of Population and Housing",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "QURTX0hfMjAyMQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Administrative Data Snapshot of Housing, 30 June 2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "QURTX1BfMjAyMQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Administrative Data Snapshot of Population, 30 June 2021",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "QUNMRF9mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "Australian Census Longitudinal Data",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "U0xDRF8yMDExX3Y4X2ExNXMxX256d3Q",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census Longitudinal Dataset, 2006-2011",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0xDRF8yMDA2MjAxNl92MV9hMTVzMV9uend0",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census Longitudinal Dataset, 2006-2011-2016",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "QUNMRF8wNjIx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census Longitudinal Dataset, 2006-2011-2016-2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0xDRF8yMDE2X3YyX2ExNXMxX256d3Q",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census Longitudinal Dataset, 2011-2016",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "QUNMRF8xMTIx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census Longitudinal Dataset, 2011-2016-2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "QUNMRF8xNjIx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census Longitudinal Dataset, 2016-2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0xDRF8yMDExX3YxMF9hMTVzMV9uend0",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census Longitudinal Dataset, with Social Security and Related Information, experimental statistics, 2006-2011",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "QUhTX0NvcmVfZm9sZGVy",
+          "data": {
+            "type": "FOLDER",
+            "name": "Australian Health Survey, Core Content - Risk Factors and Selected Health Conditions",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "QUhTX0NvcmVfQmlvXzIwMTFfdjRfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Health Survey, Core Content - Risk Factors and Selected Health Conditions, 2011-12",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "QkxBREVfZm9sZGVy",
+          "data": {
+            "type": "FOLDER",
+            "name": "Businesses in Australia (BLADE)",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "QkxBREU",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Businesses in Australia (BLADE), 2001-02 to 2023-24",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "Q0VhQ1NfZm9sZGVy",
+          "data": {
+            "type": "FOLDER",
+            "name": "Childhood Education and Care",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "Q0VBQ3NfMjAxMV92OF9xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Childhood Education and Care, 2011",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q0VBQ1NfMjAxNF92Ml9xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Childhood Education and Care, 2014",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q0VBQ1NfMjAxN192Ml9xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Childhood Education and Care, 2017",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "TVBIU19DcmltZV9mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "Crime and Safety",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "TVBIU19DcmltZV8yMDEwX3Y2X3ExNXMx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Crime Victimisation, 2010-11",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19DcmltZV8yMDExX3Y0X3ExNXMx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Crime Victimisation, 2011-12",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19DcmltZV8yMDEyX3YzX3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Crime Victimisation, 2012-13",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "UFNTXzIwMTZfdjJfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Personal Safety Survey, 2016",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "TVBIU19DUF9mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "Cultural Activities",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "QVNDVkVfMjAxM192M19xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Attendance at Selected Cultural Venues and Events, 2013-14",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19DUF8yMDE4X3Y0X3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Cultural Activities, 2017-18 - Adults",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19DUF8yMDE4X3Y0Y19xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Cultural Activities, 2017-18 - Children",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q0FfQURVTFRfMjAyMg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Cultural and creative activities, 2021-22 - Adults",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q0FfQ0hJTERfMjAyMg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Cultural and creative activities, 2021-22 - Children",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19DUF8yMDEwX3Y1X3ExNXMx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Participation in Selected Cultural Activities, 2010-11",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19DUF8yMDEzX3YzX3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Participation in Selected Cultural Activities, 2013-14",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "U0RBQ19mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "Disability, Ageing and Carers",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "U0RBQ18yMDAzX3Y3X3ExNXMxYw",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Disability, Ageing and Carers, 2003",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0RBQ18yMDA5X3YyNV9xMTVzMQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Disability, Ageing and Carers, 2009",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0RBQ18yMDEyX3YzX3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Disability, Ageing and Carers, 2012",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0RBQ18yMDE1X3Y3X3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Disability, Ageing and Carers, 2015",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0RBQ18yMDE4X3YzX3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Disability, Ageing and Carers, 2018",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0RBQ18yMDIy",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Disability, Ageing and Carers, 2022",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "U0VXX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Education and Work",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "U0VXXzIwMTFfdjJfcTE1czE",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2011",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMTJfdjJfcTE1czE",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2012",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMTNfdjJfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2013",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMTRfdjNfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2014",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMTVfdjRfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2015",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMTZfdjFfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2016",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMTdfdjFfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2017",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMThfdjRfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2018",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMTlfdjJfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2019",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMjA",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2020",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMjE",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMjI",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2022",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMjM",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2023",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMjQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2024",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0VXXzIwMjU",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Education and Work, 2025",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "RUVIX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Employee Earnings and Hours",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "RUVIXzIwMThfdjVfcTE1czFfbkI",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Employee Earnings and Hours, 2018",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUVIXzIwMjE",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Employee Earnings and Hours, 2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUVIXzIwMjM",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Employee Earnings and Hours, 2023",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "R1NTX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "General Social Data",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "R1NTXzIwMTRfdjRfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "General Social Survey, 2014",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "SEVTX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Income, Housing, Wealth and Expenditure",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "SEVTXzIwMTVfdjlfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Income and Housing, 2015-16",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "U0lIXzIwMTdfdjRfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Income and Housing, 2017-18",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "TVBIU19CSVJSSV9mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "Labour Statistics",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "QklMRlA",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Barriers and Incentives to Labour Force Participation, 2014-15 to 2024-25",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19CSVJSSV8yMDEwX3Y5X3ExNXMx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Barriers and Incentives to Labour Force Participation, Retirement and Retirement Intentions, 2010-11",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "QklSUklfMjAxN192M19xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Barriers and Incentives to Labour Force Participation, Retirement and Retirement Intentions, 2016-17",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "QklSUklfMjAxOV92MQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Barriers and Incentives to Labour Force Participation, Retirement and Retirement Intentions, 2018-19",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q09F",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Characteristics of Employment, 2014 to 2025",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "SklFUF8yMDIw",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Jobs and Income of Employed Persons, 2019-20",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "SklFUF8yMDIx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Jobs and Income of Employed Persons, 2020-21",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "SklFUF8yMDIy",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Jobs and Income of Employed Persons, 2021-22",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "SklFUF8yMDIz",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Jobs and Income of Employed Persons, 2022-23",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "SklB",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Jobs in Australia, 2011-12 to 2018-19",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TEZG",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Labour Force Status of Families, 2005 to 2025",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TEZT",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Labour Force Survey, 2006 to 2026",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "UEpTTQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Participation, Job Search and Mobility, 2015 to 2025",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "UlJJ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Retirement and Retirement Intentions, 2014-15 to 2024-25",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "TUhXX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Mental Health and Wellbeing",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "TUhXXzIwMjI",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "National Study of Mental Health and Wellbeing, 2020 to 2022",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "Q09STVNfZm9sZGVy",
+          "data": {
+            "type": "FOLDER",
+            "name": "Migrants",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "Q0RFX01JR18yMDExX3Y2X2ExNXMxYzJfbnp3dA",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census and Migrants, 2011",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q0RFX01JR18yMDE2X3Y2X2ExNXMxYzJfbnp3dA",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census and Migrants, 2016",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "QUNNSURfMjAyMQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census and Migrants, 2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "QUNURUlEXzIwMTZfdjVfYTE1czFjMl9uend0",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census and Temporary Entrants, 2016",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "QUNURUlEXzIwMjE",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Census and Temporary Entrants, 2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q09STVNfMjAxMF92N19xMTVzMQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Characteristics of Recent Migrants, 2010",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q09STVNfMjAxM192M19xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Characteristics of Recent Migrants, 2013",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q09STVNfMjAxNl92MV9xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Characteristics of Recent Migrants, 2016",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "Q09STVNfMjAxOV92MQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Characteristics of Recent Migrants, 2019",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "TVZDX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Motor Vehicles",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "TVZDXzIwMTNfdjRfYTE1czZjX256",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Census, 2013",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZDXzIwMTRfdjJfYTE1czZjX256",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Census, 2014",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZDXzIwMTVfdjFfYTE1czZjX256",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Census, 2015",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZDXzIwMTZfdjVfYTE1czZjX256",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Census, 2016",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZDXzIwMTdfdjJfYTE1czZjX256",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Census, 2017",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZDXzIwMThfdjJfYTE1czZjX256",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Census, 2018",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZDXzIwMTlfdjNfYTE1czZjX256",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Census, 2019",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZDXzIwMjBfdjI",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Census, 2020",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZDXzIwMjE",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Census, 2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZVXzIwMTZfdjEzX3ExNXM2Y19uejBC",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Use, 2016",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZVXzIwMTZfdjEyX3ExNXM2Y19uejBC",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Use, 2016 - Number of vehicles",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZVXzIwMThfdjNfcTE1czZjX256MEI",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Use, 2018",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZVXzIwMThfdjRfcTE1czZjX256MEI",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Use, 2018 - Number of vehicles",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZVXzIwMjA",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Use, 2020",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVZVX05PVl8yMDIw",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Motor Vehicle Use, 2020 - Number of vehicles",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "UkZNU18yMDE0X3Y3X3ExNXM2Y19uejBC",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Road Freight Movements, 2014",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "TkhTXzIwMTFfcmVpc3N1ZV9mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "National Health Survey",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "TkhTXzIwMTFfdjEyX3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "National Health Survey, 2011-12",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TkhTXzIwMTRfdjRfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "National Health Survey, 2014-15",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TkhTXzIwMTdfdjNfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "National Health Survey, 2017-18",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TkhTXzIwMjE",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "National Health Survey, 2020-21",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TkhTXzIwMjI",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "National Health Survey, 2022",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "Tk9NX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Net Overseas Migration",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "Tk9N",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Net Overseas Migration",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "Tk5QQVNfZm9sZGVy",
+          "data": {
+            "type": "FOLDER",
+            "name": "Nutrition and Physical Activity",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "Tk5QQVNfMjAxMV92NF9xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Australian Health Survey, Nutrition and Physical Activity, 2011-12",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "UEVYX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Patient Experiences",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "UEVYXzIwMTFfdjJfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Patient Experiences in Australia, 2011-12",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "UEVYXzIwMTZfdjFfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Patient Experiences in Australia, 2016-17",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "RUNFQ19mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "Preschool Education",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "RUNFQ19DSERfMjAxM192M19hMTVzMWNfbno",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2013",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAxNF92NV9hMTVzMWNfbno",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2014",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAxNV92M19hMTVzMWNfbno",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2015",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAxNl92OF9hMTVzMWNfbnpfNw",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2016 (new linking method)",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAxNl92NV9hMTVzMWNfbnpfMg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2016 (original linking method)",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAxN192MV9hMTVzMWNfbnpfNw",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2017",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAxOF92NF9hMTVzMWNfbnpfNw",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2018",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAxOV92Mg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2019",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAyMA",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2020",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAyMQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2021",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAyMg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2022",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAyMw",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2023",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19DSERfMjAyNA",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Children enrolled in a preschool program, 2024",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19FUFNfMjAxM192Ml9hMTVzMWNfbno",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Episodes of children enrolled in a preschool program, 2013",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19XS1JfMjAxM192Ml9hMTVzMWNfbno",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Episodes of workers delivering a preschool program, 2013",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19XS1JfMjAxNF92M19hMTVzMWNfbno",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Episodes of workers delivering a preschool program, 2014",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19XS1JfMjAxNl92Ml9hMTVzMWNfbno",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Episodes of workers delivering a preschool program, 2016",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "RUNFQ19XS1JfMjAyMQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Episodes of workers delivering a preschool program, 2021",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "TVBIU19MV19mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "Qualifications and Work",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "TVBIU19MV18yMDEwX3Y0X3ExNXMx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Learning and Work, 2010-11",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19RV18yMDE1X3Y2X3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Qualifications and Work, 2015",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19RV18yMDE5",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Qualifications and Work, 2018-19",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "UVdfMjAyMw",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Qualifications and Work, 2022-23",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "TVBIU19TcG9ydF9mb2xkZXI",
+          "data": {
+            "type": "FOLDER",
+            "name": "Sport and Physical Recreation",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "TVBIU19TcG9ydF8yMDExX3Y0X3ExNXMx",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Participation in Sport and Physical Recreation, 2011-12",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "TVBIU19TcG9ydF8yMDEzX3YzX3ExNXMxX24",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Participation in Sport and Physical Recreation, 2013-14",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1BCX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Sun Protection Behaviours",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "U1BCXzIwMjQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Sun Protection Behaviours, Nov 2023 to Feb 2024",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "V1JJX2ZvbGRlcg",
+          "data": {
+            "type": "FOLDER",
+            "name": "Work-Related Injuries",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "V1JJXzIwMTNfdjRfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Work-Related Injuries, 2013-14",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "V1JJXzIwMTdfdjJfcTE1czFfbg",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Work-Related Injuries, 2017-18",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "V1JJXzIwMjE",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Work-Related Injuries, 2021-22",
+                "iconType": "database"
+              }
+            }
+          ]
+        },
+        {
+          "key": "V1JUQUxfZm9sZGVy",
+          "data": {
+            "type": "FOLDER",
+            "name": "Work-Related Training and Adult Learning",
+            "iconType": "folder"
+          },
+          "children": [
+            {
+              "key": "V1JUQUxfMjAxMl92M19xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Work-Related Training and Adult Learning, 2013",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "V1JUQUxfMjAxNl92Ml9xMTVzMV9u",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Work-Related Training and Adult Learning, 2017",
+                "iconType": "database"
+              }
+            },
+            {
+              "key": "V1JUQUxfMjAyMQ",
+              "data": {
+                "leaf": true,
+                "type": "DATABASE",
+                "name": "Work-Related Training and Adult Learning, 2020-21",
+                "iconType": "database"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "expandedNodes": {
+    "cm9vdA": {
+      "value": true
+    }
+  },
+  "currentNode": {
+    "key": "cm9vdA"
+  }
+}

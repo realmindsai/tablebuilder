@@ -1,0 +1,31 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"AGE10P Age in Ten Year Groups"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+
+"AGE10P Age in Ten Year Groups",
+"0-9 years",3052581,
+"10-19 years",3048678,
+"20-29 years",3365681,
+"30-39 years",3702713,
+"40-49 years",3291494,
+"50-59 years",3160599,
+"60-69 years",2776310,
+"70-79 years",1987970,
+"80-89 years",884407,
+"90-99 years",208664,
+"100 years and over",5555,
+"Total",25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

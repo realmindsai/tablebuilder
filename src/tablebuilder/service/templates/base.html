@@ -7,27 +7,54 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <style>
+        html, body { height: 100vh; margin: 0; overflow: hidden; }
+        body { display: flex; flex-direction: column; }
+        nav { flex-shrink: 0; }
+        main { flex: 1; min-height: 0; }
         .status-queued { color: grey; }
         .status-running { color: #1e88e5; }
         .status-completed { color: #43a047; }
         .status-failed { color: #e53935; }
-        .chat-container { max-width: 800px; margin: 0 auto; }
-        .chat-messages { min-height: 400px; max-height: 600px; overflow-y: auto; padding: 1rem; border: 1px solid var(--pico-muted-border-color); border-radius: var(--pico-border-radius); margin-bottom: 1rem; }
+
+        /* Chat layout */
+        .chat-container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; height: 100%; }
+        .chat-messages { flex: 1; min-height: 0; overflow-y: auto; padding: 1rem; border: 1px solid var(--pico-muted-border-color); border-radius: var(--pico-border-radius); margin-bottom: 0.5rem; }
         .chat-message { margin-bottom: 1rem; }
         .chat-message.user { text-align: right; }
         .chat-message.assistant { text-align: left; }
-        .chat-bubble { display: inline-block; padding: 0.5rem 1rem; border-radius: 1rem; max-width: 80%; }
+        .chat-bubble { display: inline-block; padding: 0.75rem 1rem; border-radius: 1rem; max-width: 85%; text-align: left; }
+        .chat-bubble p { margin: 0.3rem 0; }
+        .chat-bubble ul, .chat-bubble ol { margin: 0.3rem 0; padding-left: 1.5rem; }
+        .chat-bubble h1, .chat-bubble h2, .chat-bubble h3, .chat-bubble h4 { margin: 0.5rem 0 0.25rem; font-size: 1rem; }
+        .chat-bubble strong { font-weight: 700; }
+        .chat-bubble code { background: rgba(0,0,0,0.06); padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.9em; }
         .chat-message.user .chat-bubble { background: var(--pico-primary-background); color: var(--pico-primary-inverse); }
         .chat-message.assistant .chat-bubble { background: var(--pico-muted-background); }
+        .dataset-link { color: var(--pico-primary); text-decoration: underline; cursor: pointer; }
+        .dataset-link:hover { text-decoration-thickness: 2px; }
+
+        /* Chat form */
+        #chat-form { flex-shrink: 0; margin-bottom: 0.5rem; }
+        #chat-form [role="group"] { margin-bottom: 0; }
+
+        /* Loading indicator for any HTMX request */
+        .htmx-request { opacity: 0.6; pointer-events: none; }
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator, .htmx-request.htmx-indicator { display: inline-block; }
+
+        /* Two-panel layout */
+        .two-panel { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; height: 100%; padding: 0 1rem; }
+        .two-panel .chat-container { max-width: none; margin: 0; }
+        .cart-panel { display: flex; flex-direction: column; min-height: 0; padding-top: 0.5rem; }
+        .cart-panel h3 { margin-bottom: 0.5rem; flex-shrink: 0; }
+        #cart-items { flex: 1; min-height: 0; overflow-y: auto; }
+
+        /* Misc */
         .filmstrip { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.5rem 0; }
         .filmstrip img { height: 150px; border: 1px solid var(--pico-muted-border-color); border-radius: 4px; cursor: pointer; }
         .filmstrip img:hover { border-color: var(--pico-primary); }
         nav ul { list-style: none; display: flex; gap: 1rem; }
-        .two-panel { display: grid; grid-template-columns: 1fr 350px; gap: 1rem; max-width: 1200px; margin: 0 auto; }
-        .two-panel .chat-container { max-width: none; margin: 0; }
-        .cart-panel { position: sticky; top: 1rem; max-height: calc(100vh - 6rem); overflow-y: auto; }
-        .cart-panel h3 { margin-bottom: 0.5rem; }
-        @media (max-width: 768px) { .two-panel { grid-template-columns: 1fr; } .cart-panel { position: static; max-height: none; } }
+        @media (max-width: 768px) { .two-panel { grid-template-columns: 1fr; height: auto; } .cart-panel { max-height: 300px; } html, body { overflow: auto; } }
     </style>
 </head>
 <body>
@@ -40,7 +67,7 @@
             <li><a href="/jobs">Jobs</a></li>
         </ul>
     </nav>
-    <main class="container">
+    <main class="container-fluid">
         {% block content %}{% endblock %}
     </main>
 </body>

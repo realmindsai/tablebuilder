@@ -1,0 +1,29 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting dwellings, place of enumeration"
+"TEND Tenure Type by STATE (EN)"
+"Counting: Dwelling Records"
+
+Filters:
+"Default summation","Dwelling Records"
+
+"STATE (EN)","New South Wales","Victoria","Queensland","South Australia","Western Australia","Tasmania","Northern Territory","Australian Capital Territory","Other Territories","Total",
+"TEND Tenure Type",
+"Owned outright",926483,777176,563484,230565,291585,82219,15091,45167,503,2932277,
+"Owned with a mortgage",943918,863515,644475,246607,384212,72281,21595,67803,284,3244684,
+"Purchased under a shared equity scheme",3613,3063,2519,909,3493,312,158,222,0,14278,
+"Rented",957820,689936,632484,194207,271892,59040,36209,52579,632,2894786,
+"Occupied rent free",29619,23341,18912,7070,12359,2493,3040,1220,98,98157,
+"Occupied under a life tenure scheme",21986,14274,14243,10227,7908,1315,141,1275,14,71379,
+"Other",6664,5642,4825,1740,2413,536,531,296,8,22653,
+"Not stated",168171,130688,117095,31834,55900,11233,8609,6414,259,530212,
+"Not applicable",306536,303182,197568,85220,120652,29888,11188,12183,400,1066819,
+"Total",3364802,2810815,2195595,808379,1150416,259318,96564,187153,2207,10875248,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

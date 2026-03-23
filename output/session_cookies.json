@@ -1,0 +1,42 @@
+[
+  {
+    "name": "JSESSIONID",
+    "value": "3D35A5EF3C3223D16603E5026011335E",
+    "domain": "tablebuilder.abs.gov.au",
+    "path": "/webapi",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "oam.Flash.REDIRECT",
+    "value": "true",
+    "domain": "tablebuilder.abs.gov.au",
+    "path": "/webapi",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "oam.Flash.RENDERMAP.TOKEN",
+    "value": "kiduods2l",
+    "domain": "tablebuilder.abs.gov.au",
+    "path": "/webapi",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "AWSALB",
+    "value": "KK3ht3dGiJbR4+rmO6Yv8xYtqEgc2bo3vc42U9Q0yKhkwh1Ycz0ZpSpmX+IF+agAQiz3li6Ra6CFiLACb+5KV4g7bKHatIrI9U/iWvlrtEyDL44RnYH2tqVcP+uW",
+    "domain": "tablebuilder.abs.gov.au",
+    "path": "/",
+    "expires": 1774653317.610707,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  }
+]

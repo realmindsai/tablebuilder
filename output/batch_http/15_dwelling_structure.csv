@@ -1,0 +1,34 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting dwellings, place of enumeration"
+"STRD Dwelling Structure"
+"Counting: Dwelling Records"
+
+Filters:
+"Default summation","Dwelling Records"
+
+
+"STRD Dwelling Structure",
+"Separate house",7624419,
+"Semi-detached, row or terrace house, townhouse etc. with one storey",754983,
+"Semi-detached, row or terrace house, townhouse etc. with two or more storeys",623138,
+"Flat or apartment in a one or two storey block",476090,
+"Flat or apartment in a three storey block",384703,
+"Flat or apartment in a four to eight storey block",441490,
+"Flat or apartment in a nine or more storey block",368943,
+"Flat or apartment attached to a house",21342,
+"Caravan",58155,
+"Cabin, houseboat",29369,
+"Improvised home, tent, sleepers out",11604,
+"House or flat attached to a shop, office, etc.",23106,
+"Not stated",34869,
+"Not applicable",23038,
+"Total",10875248,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

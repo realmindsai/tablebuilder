@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<!-- ABOUTME: Single-page query planner for ABS TableBuilder datasets. -->
+<!-- ABOUTME: Four-step wizard: Dataset -> Variables -> Geography -> Review & Export. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABS TableBuilder Query Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Loading overlay -->
+    <div id="loading-overlay">
+      <div class="loading-content">
+        <div class="spinner"></div>
+        <p>Loading database...</p>
+        <p class="loading-sub">This may take a moment for the first load (~49 MB)</p>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+      <h1>ABS TableBuilder Query Planner</h1>
+      <p class="subtitle">Plan and export structured queries for ABS TableBuilder</p>
+    </header>
+
+    <!-- Progress indicator -->
+    <nav id="progress-bar">
+      <ol>
+        <li class="step active" data-step="1">
+          <span class="step-number">1</span>
+          <span class="step-label">Dataset</span>
+        </li>
+        <li class="step" data-step="2">
+          <span class="step-number">2</span>
+          <span class="step-label">Variables</span>
+        </li>
+        <li class="step" data-step="3">
+          <span class="step-number">3</span>
+          <span class="step-label">Geography</span>
+        </li>
+        <li class="step" data-step="4">
+          <span class="step-number">4</span>
+          <span class="step-label">Review</span>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Step 1: Dataset Selection -->
+    <section id="step-1" class="wizard-step">
+      <div class="step-header">
+        <h2>Select a Dataset</h2>
+        <p>Search or browse all 131 datasets. Filter by type.</p>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="dataset-search" placeholder="Search datasets..." autocomplete="off">
+      </div>
+      <div class="filter-toggle">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="census">Census</button>
+        <button class="filter-btn" data-filter="survey">Survey</button>
+      </div>
+      <div id="dataset-list" class="card-list"></div>
+    </section>
+
+    <!-- Step 2: Variables & Categories -->
+    <section id="step-2" class="wizard-step" style="display:none">
+      <div class="step-header">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <h2>Select Variables &amp; Categories</h2>
+          <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="cross-tab">Cross-tab</button>
+            <button class="mode-btn" data-mode="pairwise">Pairwise</button>
+          </div>
+        </div>
+        <p id="step2-dataset-name"></p>
+        <p id="mode-description" class="mode-desc">Full Cartesian product of all selected variables.</p>
+      </div>
+      <div class="two-panel">
+        <div class="left-panel">
+          <div class="panel-header">
+            <h3>Variables</h3>
+            <input type="text" id="variable-search" placeholder="Search variables..." autocomplete="off">
+          </div>
+          <div id="variable-tree" class="tree-container"></div>
+        </div>
+        <div class="right-panel">
+          <div id="category-selector" class="category-container">
+            <div class="category-placeholder">
+              <p>Select a variable from the left panel to view its categories.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Geography (Census only) -->
+    <section id="step-3" class="wizard-step" style="display:none">
+      <div class="step-header">
+        <h2>Select Geography</h2>
+        <p id="step3-dataset-name"></p>
+      </div>
+      <div class="geography-container">
+        <div class="geo-type-selector">
+          <label for="geo-type-dropdown">Geography Level</label>
+          <select id="geo-type-dropdown">
+            <option value="">-- Select a geography level --</option>
+          </select>
+        </div>
+        <div id="geo-areas" class="geo-areas-container" style="display:none">
+          <div class="panel-header">
+            <div class="geo-controls">
+              <button id="geo-select-all" class="btn-small">Select All</button>
+              <button id="geo-deselect-all" class="btn-small">Deselect All</button>
+              <span id="geo-count" class="count-indicator"></span>
+            </div>
+            <input type="text" id="geo-filter" placeholder="Filter areas..." autocomplete="off">
+          </div>
+          <div id="geo-area-list" class="checklist"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 4: Review & Export -->
+    <section id="step-4" class="wizard-step" style="display:none">
+      <div class="step-header">
+        <h2>Review &amp; Export</h2>
+      </div>
+      <div id="review-content" class="review-container"></div>
+      <div class="export-actions">
+        <button id="download-json" class="btn-primary btn-large">Download JSON</button>
+      </div>
+    </section>
+
+    <!-- Cell count footer (visible on steps 2 and 3) -->
+    <footer id="cell-count-bar" style="display:none">
+      <div class="cell-info">
+        <span id="cell-count-value">0 cells</span>
+        <span id="cell-count-pct">0% of limit</span>
+        <span id="cell-count-status" class="status-badge status-green">OK</span>
+        <span id="cell-count-splits" style="display:none"></span>
+      </div>
+    </footer>
+
+    <!-- Navigation buttons -->
+    <div id="nav-buttons">
+      <button id="btn-back" class="btn-secondary" style="display:none">Back</button>
+      <button id="btn-next" class="btn-primary" disabled>Next</button>
+    </div>
+  </div>
+
+  <!-- sql.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"1-digit level OCCP Occupation by SEXP Sex"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+"SEXP Sex","Male","Female","Total",
+"1-digit level OCCP Occupation",
+"Managers",993353,652412,1645769,
+"Professionals",1261968,1624951,2886921,
+"Technicians and Trades Workers",1294807,259507,1554313,
+"Community and Personal Service Workers",398812,983392,1382205,
+"Clerical and Administrative Workers",378733,1146583,1525311,
+"Sales Workers",386919,599519,986433,
+"Machinery Operators and Drivers",661478,94383,755863,
+"Labourers",692324,393802,1086120,
+"Inadequately described",80028,53786,133815,
+"Not stated",51798,40864,92659,
+"Not applicable",6344947,7028430,13373380,
+"Overseas visitor",33295,28570,61860,
+"Total",12578447,12906202,25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

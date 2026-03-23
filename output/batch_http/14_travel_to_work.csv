@@ -1,0 +1,28 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"1-digit level  MTWP Method of Travel to Work"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+
+"1-digit level  MTWP Method of Travel to Work",
+"Public Transport",585769,
+"Vehicle",6995960,
+"Active Transport",385498,
+"Other Mode",74310,
+"Worked at home or Did not go to work",3948706,
+"Mode not stated",59167,
+"Not applicable",13373380,
+"Overseas visitor",61860,
+"Total",25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

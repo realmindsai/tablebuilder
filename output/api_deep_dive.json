@@ -1,0 +1,162 @@
+[
+  {
+    "ts": "2026-03-21T10:13:23.799017",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:13:23.897868",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "status": 200,
+    "content_type": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:13:24.662665",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "type": "document",
+    "post_data": "loginForm%3Ausername2=1207475&loginForm%3Apassword2=svqELk2VRkgBZRLTN2LHx59Ec3cyVFHj96bXLJZ4&loginForm_SUBMIT=1&javax.faces.ViewState=MkFFQTExNTFFNzJCOTA2RjAwMDAwMDAx&r=&loginForm%3A_idcl=loginForm%3Alogin2"
+  },
+  {
+    "ts": "2026-03-21T10:13:25.474275",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/login.xhtml",
+    "status": 302,
+    "content_type": "",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:13:25.474454",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:13:25.520300",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "status": 200,
+    "content_type": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:13:25.585108",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree?nocache=1774048405584",
+    "type": "fetch",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:13:25.607208",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/info/frontpage_en.html",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:13:25.607375",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databaseTables/tree?nocache=1774048405586",
+    "type": "fetch",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:13:25.613561",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree?nocache=1774048405584",
+    "status": 200,
+    "content_type": "application/json;charset=UTF-8",
+    "body": "{\n  \"nodeList\" : [ {\n    \"key\" : \"cm9vdA\",\n    \"data\" : {\n      \"type\" : \"FOLDER\",\n      \"name\" : \"Data\",\n      \"iconType\" : \"folder\"\n    },\n    \"children\" : [ {\n      \"key\" : \"MjAwNkNlbnN1cw\",\n      \"data\" : {\n        \"type\" : \"FOLDER\",\n        \"name\" : \"2006 Census of Population and Housing\",\n        \"iconType\" : \"folder\"\n      },\n      \"children\" : [ {\n        \"key\" : \"Y2Vuc3VzMjAwNlRCQmFzaWM\",\n        \"data\" : {\n          \"type\" : \"FOLDER\",\n          \"name\" : \"Census TableBuilder Basic\",\n          \"iconType\" : \"folder\"\n        },\n        \"children\" : [ {\n          \"key\" : \"Q2hpbGRjYXJl\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Childcare\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RGlzYWJpbGl0eQ\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Disability\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RHdlbGxpbmdz\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Dwellings\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RWR1Y2F0aW9u\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Education\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RXRobmljaXR5\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Ethnicity\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"RmFtaWxpZXM\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Families\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"TGFib3VyX0ZvcmNl\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Labour Force\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"TWlncmF0aW9u\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Migration\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"UGVyc29uc19pbl9Ed2VsbGluZ3M\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Persons in Dwellings\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"UGxhY2Vfb2ZfV29yaw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Place of Work\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"UmVsYXRpb25zaGlw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Relationship\",\n            \"iconType\" : \"database\"\n          }\n        } ]\n      }, {\n        \"key\" : \"Y2Vuc3VzMjAwNlRCUHJv\",\n        \"data\" : {\n          \"type\" : \"FOLDER\",\n          \"name\" : \"Census TableBuilder Pro\",\n          \"iconType\" : \"folder\"\n        },\n        \"children\" : [ {\n          \"key\" : \"VEJEd2VsbGluZ3NFbnVt\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Dwellings, Place of Enumeration\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"VEJGYW1pbGllc0VudW0\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Families, Place of Enumeration\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"VEJQZXJzb25zRW51bQ\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Persons, Place of Enumeration\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"VEJQZXJzb25zVVJlcw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Persons, Place of Usual Residence\",\n            \"iconType\" : \"database\"\n          }\n        }, {\n          \"key\" : \"VEJQZXJzb25zUE9mVw\",\n          \"data\" : {\n            \"leaf\" : true,\n            \"type\" : \"DATABASE\",\n            \"name\" : \"2006 Census - Counting Persons, Place of Work\",\n            \"iconType\" : \"database\"\n          }\n        } ]\n      } ]\n    }, {\n      \"key\" : \"MjAxMUNlbnN1cw\",\n      \"data\" : {\n        \"type\" : \"FOLDER\",\n        \"name\" : \"2011 Census of Population and Housing\",\n        \"iconType\" : \"folder\"\n      },\n      \"children\" : [ {\n        \"key\" : \"Y2Vuc3VzMjAxMVRCQmFzaWM\",\n        \"data\" : {\n          \"type\" : \"FOLDER\",\n          \"name\" : \"Census TableBuilder Basic\",\n          \"iconType\" : \"folder\"\n        },\n        \"child"
+  },
+  {
+    "ts": "2026-03-21T10:13:25.616576",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databaseTables/tree?nocache=1774048405586",
+    "status": 200,
+    "content_type": "application/json;charset=UTF-8",
+    "body": "{\n  \"nodeList\" : [ ],\n  \"expandedNodes\" : { },\n  \"emptyMessage\" : \"Select a dataset to see available tables\"\n}"
+  },
+  {
+    "ts": "2026-03-21T10:13:25.636479",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/info/frontpage_en.html",
+    "status": 200,
+    "content_type": "text/html;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:13:28.319457",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree",
+    "type": "fetch",
+    "post_data": "{\"currentNode\":[\"cm9vdA\",\"MjAyMUNlbnN1cw\"]}"
+  },
+  {
+    "ts": "2026-03-21T10:13:28.372241",
+    "dir": "req",
+    "method": "POST",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "type": "xhr",
+    "post_data": "j_id_3f_SUBMIT=1&javax.faces.ViewState=QzJCNzJBQ0M0QTMxN0I4MDAwMDAwMDAz&org.richfaces.ajax.component=j_id_3n&j_id_3n=j_id_3n&rfExt=null&AJAX%3AEVENTS_COUNT=1&javax.faces.partial.event=undefined&javax.faces.source=j_id_3n&javax.faces.partial.ajax=true&javax.faces.partial.execute=%40component&javax.faces.partial.render=%40component&j_id_3f=j_id_3f"
+  },
+  {
+    "ts": "2026-03-21T10:13:28.372357",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databases/tree",
+    "status": 200,
+    "content_type": "application/json;charset=UTF-8",
+    "body": "{ }"
+  },
+  {
+    "ts": "2026-03-21T10:13:28.402056",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml",
+    "status": 200,
+    "content_type": "text/xml;charset=UTF-8",
+    "body": ""
+  },
+  {
+    "ts": "2026-03-21T10:13:28.402273",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databaseTables/tree?nocache=1774048408400",
+    "type": "fetch",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:13:28.426818",
+    "dir": "req",
+    "method": "GET",
+    "url": "https://tablebuilder.abs.gov.au/webapi/info/2021Census_en.html",
+    "type": "document",
+    "post_data": null
+  },
+  {
+    "ts": "2026-03-21T10:13:28.451518",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/rest/catalogue/databaseTables/tree?nocache=1774048408400",
+    "status": 200,
+    "content_type": "application/json;charset=UTF-8",
+    "body": "{\n  \"nodeList\" : [ ],\n  \"expandedNodes\" : { },\n  \"emptyMessage\" : \"Select a dataset to see available tables\"\n}"
+  },
+  {
+    "ts": "2026-03-21T10:13:28.453793",
+    "dir": "resp",
+    "url": "https://tablebuilder.abs.gov.au/webapi/info/2021Census_en.html",
+    "status": 200,
+    "content_type": "text/html;charset=UTF-8",
+    "body": ""
+  }
+]

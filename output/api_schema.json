@@ -1,0 +1,1696 @@
+{
+  "nodeList": [
+    {
+      "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fR2VvZ3JhcGhpY2FsIEFyZWFzIChFbnVtZXJhdGlvbilfWEdSUA",
+      "data": {
+        "type": "schemaTreeNode",
+        "name": "Geographical Areas (Enumeration)",
+        "iconType": "FIELD_GROUP"
+      },
+      "children": [
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fQVVTX0FVU19GTEQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Australia",
+            "iconType": "FIELD",
+            "childCount": 1,
+            "levels": [
+              "Select a level below:",
+              "Australia"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fTUFTR0NfRkxE",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Main ASGC",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "SD level",
+              "SSD level",
+              "SLA level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fTEdBX0ZMRA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Local Government Areas",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "LGA level",
+              "SLA level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fUkFfRkxE",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Remoteness Areas",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "RA level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fU1NDX0ZMRA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "State Suburbs",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "SSC level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fUE9BX0ZMRA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Postal Areas",
+            "iconType": "FIELD",
+            "childCount": 10,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "POA level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fQ0VEMDRfRkxE",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Commonwealth Electoral Divisions (2004 Boundaries)",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "CED level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fQ0VEMDdfRkxE",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Commonwealth Electoral Divisions (2007 Boundaries)",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "CED level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fU0VEX0ZMRA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "State Electoral Divisions",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "SED level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fU09TX0ZMRA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Section of State",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "SOS level",
+              "SOSR level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fU0RJU1RfRkxE",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Statistical Districts",
+            "iconType": "FIELD",
+            "childCount": 37,
+            "levels": [
+              "Select a level below:",
+              "SDist level",
+              "SSD level",
+              "SLA level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fVUNMX0ZMRA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Urban Centre/Locality",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "UCL level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fU1JFR19GTEQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Statistical Regions",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "MSR level",
+              "SR level",
+              "SRS level",
+              "SLA level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fSVJFR19GTEQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Indigenous Regions",
+            "iconType": "FIELD",
+            "childCount": 45,
+            "levels": [
+              "Select a level below:",
+              "IREG level",
+              "IREG_IARE",
+              "ILOC level",
+              "CD level"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fTURCX0ZMRA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Murray Darling Basin Region",
+            "iconType": "FIELD",
+            "childCount": 2,
+            "levels": [
+              "Select a level below:",
+              "Murray Darling Basin Region"
+            ],
+            "draggable": true
+          }
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ0QgSGVhZGVyIFJlY29yZF9fTlJNX0ZMRA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Natural Resource Management Region",
+            "iconType": "FIELD",
+            "childCount": 9,
+            "levels": [
+              "Select a level below:",
+              "State level",
+              "NRM level"
+            ],
+            "draggable": true
+          }
+        }
+      ]
+    },
+    {
+      "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFZhcmlhYmxlc19YR1JQ",
+      "data": {
+        "type": "schemaTreeNode",
+        "name": "Person Variables",
+        "iconType": "FIELD_GROUP"
+      },
+      "children": [
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVvcGxlIENoYXJhY3RlcmlzdGljc19YR1JQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "People Characteristics",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0FHRVBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "AGEP Age",
+                "iconType": "FIELD",
+                "childCount": 116,
+                "levels": [
+                  "Select a level below:",
+                  "AGEP Age"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0FHRTVQSF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "AGEP Age (5 Year Groups)",
+                "iconType": "FIELD",
+                "childCount": 21,
+                "levels": [
+                  "Select a level below:",
+                  "AGEP - 5 Year Age Groups",
+                  "AGEP - Age in Single Years"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0FHRTEwUEhfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "AGEP Age (10 Year Groups)",
+                "iconType": "FIELD",
+                "childCount": 11,
+                "levels": [
+                  "Select a level below:",
+                  "AGEP - 10 Year Age Groups",
+                  "AGEP - Age in Single Years"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0lGQUdFUF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "IFAGEP Imputation Flag for Age",
+                "iconType": "FIELD",
+                "childCount": 2,
+                "levels": [
+                  "Select a level below:",
+                  "IFAGEP Imputation Flag for Age"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1NFWFBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "SEXP Sex",
+                "iconType": "FIELD",
+                "childCount": 2,
+                "levels": [
+                  "Select a level below:",
+                  "SEXP Sex"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRXRobmljaXR5X1hHUlA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Ethnicity",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQW5jZXN0cnkgTXVsdGkgUmVzcG9uc2VfX0FOQ1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "ANCP Ancestry Multi Response",
+                "iconType": "FIELD",
+                "childCount": 275,
+                "levels": [
+                  "Select a level below:",
+                  "ANCP Ancestry Multi Response"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0FOQzFQSF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "ANC1P Ancestry 1st Response",
+                "iconType": "FIELD",
+                "childCount": 12,
+                "levels": [
+                  "Select a level below:",
+                  "ANC1P - 1 digit level",
+                  "ANC1P - 2 digit level",
+                  "ANC1P - 4 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0FOQzJQSF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "ANC2P Ancestry 2nd Response",
+                "iconType": "FIELD",
+                "childCount": 12,
+                "levels": [
+                  "Select a level below:",
+                  "ANC2P - 1 digit level",
+                  "ANC2P - 2 digit level",
+                  "ANC2P - 4 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0JQRlBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "BPFP Country of Birth of Mother",
+                "iconType": "FIELD",
+                "childCount": 4,
+                "levels": [
+                  "Select a level below:",
+                  "BPFP Country of Birth of Mother"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0JQTFBIX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "BPLP Country of Birth of Person",
+                "iconType": "FIELD",
+                "childCount": 12,
+                "levels": [
+                  "Select a level below:",
+                  "BPLP - 1 digit level",
+                  "BPLP - 2 digit level",
+                  "BPLP - 4 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0JQTVBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "BPMP Country of Birth of Father",
+                "iconType": "FIELD",
+                "childCount": 4,
+                "levels": [
+                  "Select a level below:",
+                  "BPMP Country of Birth of Father"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0NJVFBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CITP Australian Citizenship",
+                "iconType": "FIELD",
+                "childCount": 4,
+                "levels": [
+                  "Select a level below:",
+                  "CITP Australian Citizenship"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0lOR1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "INGP Indigenous Status",
+                "iconType": "FIELD",
+                "childCount": 6,
+                "levels": [
+                  "Select a level below:",
+                  "INGP Indigenous Status"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1JFTFBIX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "RELP Religious Affiliation",
+                "iconType": "FIELD",
+                "childCount": 10,
+                "levels": [
+                  "Select a level below:",
+                  "RELP - 1 digit level",
+                  "RELP - 2 digit level",
+                  "RELP - 4 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1lBUlBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "YARP Year of Arrival in Australia",
+                "iconType": "FIELD",
+                "childCount": 120,
+                "levels": [
+                  "Select a level below:",
+                  "YARP Year of Arrival in Australia"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1lBUjEwUF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "YARP Year of Arrival in Australia (Decades)",
+                "iconType": "FIELD",
+                "childCount": 15,
+                "levels": [
+                  "Select a level below:",
+                  "YARP Year of Arrival in Australia (Decades)"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fTGFuZ3VhZ2VfWEdSUA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Language",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0VOR1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "ENGP Proficiency in Spoken English",
+                "iconType": "FIELD",
+                "childCount": 8,
+                "levels": [
+                  "Select a level below:",
+                  "ENGP Proficiency in Spoken English"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0VOR0xQX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "ENGLP Proficiency in Spoken English/Language",
+                "iconType": "FIELD",
+                "childCount": 8,
+                "levels": [
+                  "Select a level below:",
+                  "ENGLP Proficiency in Spoken English/Language"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0xBTlBIX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "LANP Language Spoken at Home",
+                "iconType": "FIELD",
+                "childCount": 12,
+                "levels": [
+                  "Select a level below:",
+                  "LANP - 1 digit level",
+                  "LANP - 2 digit level",
+                  "LANP - 4 digit level"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ2FyZXJzICYgTmVlZCBmb3IgQXNzaXN0YW5jZV9YR1JQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Carers & Need for Assistance",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0FTU05QX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "ASSNP Core Activity Need for Assistance",
+                "iconType": "FIELD",
+                "childCount": 4,
+                "levels": [
+                  "Select a level below:",
+                  "ASSNP Core Activity Need for Assistance"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1VOQ0FSRVBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "UNCAREP Unpaid Assistance to a Person with a Disability",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "UNCAREP Unpaid Assistance to a Person with a Disability"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5ICYgUmVsYXRpb25zaGlwc19YR1JQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Family & Relationships",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0NUUFBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CTPP Child Type",
+                "iconType": "FIELD",
+                "childCount": 8,
+                "levels": [
+                  "Select a level below:",
+                  "CTPP Child Type"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0lGTVNUUF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "IFMSTP Imputation Flag for Registered Marital Status",
+                "iconType": "FIELD",
+                "childCount": 3,
+                "levels": [
+                  "Select a level below:",
+                  "IFMSTP Imputation Flag for Registered Marital Status"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX01EQ1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "MDCP Social Marital Status",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "MDCP Social Marital Status"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX01TVFBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "MSTP Registered Marital Status",
+                "iconType": "FIELD",
+                "childCount": 6,
+                "levels": [
+                  "Select a level below:",
+                  "MSTP Registered Marital Status"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1JMSFBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "RLHP Relationship in Household",
+                "iconType": "FIELD",
+                "childCount": 31,
+                "levels": [
+                  "Select a level below:",
+                  "RLHP Relationship in Household"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1JQSVBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "RPIP Family/Household Reference Person Indicator",
+                "iconType": "FIELD",
+                "childCount": 7,
+                "levels": [
+                  "Select a level below:",
+                  "RPIP Family/Household Reference Person Indicator"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fQ2hpbGRyZW5fWEdSUA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Children",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0NIQ0FSRVBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CHCAREP Unpaid Child Care",
+                "iconType": "FIELD",
+                "childCount": 7,
+                "levels": [
+                  "Select a level below:",
+                  "CHCAREP Unpaid Child Care"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1RJU1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "TISP Number of Children Ever Born",
+                "iconType": "FIELD",
+                "childCount": 10,
+                "levels": [
+                  "Select a level below:",
+                  "TISP Number of Children Ever Born"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRW1wbG95bWVudCAmIEluY29tZV9YR1JQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Employment & Income",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0NERVBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CDEP Community Development Employment Projects Participation",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "CDEP Community Development Employment Projects Participation"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0VNUFBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "EMPP Number of Employees",
+                "iconType": "FIELD",
+                "childCount": 6,
+                "levels": [
+                  "Select a level below:",
+                  "EMPP Number of Employees"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0VNVFBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "EMTP Employment Type",
+                "iconType": "FIELD",
+                "childCount": 7,
+                "levels": [
+                  "Select a level below:",
+                  "EMTP Employment Type"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0dOR1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "GNGP Government/Non-Government Employer Indicator",
+                "iconType": "FIELD",
+                "childCount": 7,
+                "levels": [
+                  "Select a level below:",
+                  "GNGP Government/Non-Government Employer Indicator"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0hSU1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "HRSP Hours Worked",
+                "iconType": "FIELD",
+                "childCount": 11,
+                "levels": [
+                  "Select a level below:",
+                  "HRSP Hours Worked"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0lOQ1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "INCP Individual Income (gross weekly)",
+                "iconType": "FIELD",
+                "childCount": 15,
+                "levels": [
+                  "Select a level below:",
+                  "INCP Individual Income (gross weekly)"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0lORDA2UEhfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "IND06P Industry of Employment (ANZSIC06)",
+                "iconType": "FIELD",
+                "childCount": 23,
+                "levels": [
+                  "Select a level below:",
+                  "IND06P - 1 digit level",
+                  "IND06P - 2 digit level",
+                  "IND06P - 3 digit level",
+                  "IND06P - 4 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0lORDkzUEhfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "IND93P Industry of Employment (ANZSIC93)",
+                "iconType": "FIELD",
+                "childCount": 21,
+                "levels": [
+                  "Select a level below:",
+                  "IND93P - 1 digit level",
+                  "IND93P - 2 digit level",
+                  "IND93P - 3 digit level",
+                  "IND93P - 4 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0xGU1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "LFSP Labour Force Status",
+                "iconType": "FIELD",
+                "childCount": 9,
+                "levels": [
+                  "Select a level below:",
+                  "LFSP Labour Force Status"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX01UV1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "MTWP Method of Travel to Work",
+                "iconType": "FIELD",
+                "childCount": 237,
+                "levels": [
+                  "Select a level below:",
+                  "MTWP Method of Travel to Work"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX09DQzA2UEhfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "OCC06P Occupation 06 (ANZSCO)",
+                "iconType": "FIELD",
+                "childCount": 12,
+                "levels": [
+                  "Select a level below:",
+                  "OCC06P - 1 digit level",
+                  "OCC06P - 2 digit level",
+                  "OCC06P - 3 digit level",
+                  "OCC06P - 4 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX09DQzkzUEhfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "OCC93P Occupation 93 (ASCO2)",
+                "iconType": "FIELD",
+                "childCount": 13,
+                "levels": [
+                  "Select a level below:",
+                  "OCC93P - 1 digit level",
+                  "OCC93P - 2 digit level",
+                  "OCC93P - 3 digit level",
+                  "OCC93P - 4 digit level"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fVW5wYWlkIFdvcmtfWEdSUA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Unpaid Work",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0RPTVBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "DOMP Unpaid Domestic Work: Number of Hours",
+                "iconType": "FIELD",
+                "childCount": 8,
+                "levels": [
+                  "Select a level below:",
+                  "DOMP Unpaid Domestic Work: Number of Hours"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1ZPTFdQX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "VOLWP Voluntary Work for an Organisation or Group",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "VOLWP Voluntary Work for an Organisation or Group"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRWR1Y2F0aW9uICYgUXVhbGlmaWNhdGlvbl9YR1JQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Education & Qualification",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX0hTQ1BfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "HSCP Highest Year of School Completed",
+                "iconType": "FIELD",
+                "childCount": 9,
+                "levels": [
+                  "Select a level below:",
+                  "HSCP Highest Year of School Completed"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1FBTEZQSF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "QALFP Non-School Qualification: Field of Study",
+                "iconType": "FIELD",
+                "childCount": 16,
+                "levels": [
+                  "Select a level below:",
+                  "QALFP - 2 digit level",
+                  "QALFP - 4 digit level",
+                  "QALFP - 6 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1FBTExQSF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "QALLP Non-School Qualification: Level of Education",
+                "iconType": "FIELD",
+                "childCount": 9,
+                "levels": [
+                  "Select a level below:",
+                  "QALLP - 1 digit level",
+                  "QALLP - 2 digit level",
+                  "QALLP - 3 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1NUVVBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "STUP Full/Part-Time Student Status",
+                "iconType": "FIELD",
+                "childCount": 6,
+                "levels": [
+                  "Select a level below:",
+                  "STUP Full/Part-Time Student Status"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1RZUFBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "TYPP Type of Educational Institution Attending",
+                "iconType": "FIELD",
+                "childCount": 13,
+                "levels": [
+                  "Select a level below:",
+                  "TYPP Type of Educational Institution Attending"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fVXN1YWwgQWRkcmVzc19YR1JQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Usual Address",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1VBSUNQX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "UAICP Usual Address Indicator Census Night",
+                "iconType": "FIELD",
+                "childCount": 3,
+                "levels": [
+                  "Select a level below:",
+                  "UAICP Usual Address Indicator Census Night"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1VBSTFQX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "UAI1P Usual Address One Year Ago Indicator",
+                "iconType": "FIELD",
+                "childCount": 6,
+                "levels": [
+                  "Select a level below:",
+                  "UAI1P Usual Address One Year Ago Indicator"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1VBSTVQX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "UAI5P Usual Address Five Years Ago Indicator",
+                "iconType": "FIELD",
+                "childCount": 7,
+                "levels": [
+                  "Select a level below:",
+                  "UAI5P Usual Address Five Years Ago Indicator"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fUGVyc29uIFJlY29yZHNfX1JMTlBfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "RLNP Residential Status in a Non-Private Dwelling",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "RLNP Residential Status in a Non-Private Dwelling"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFZhcmlhYmxlc19YR1JQ",
+      "data": {
+        "type": "schemaTreeNode",
+        "name": "Family Variables",
+        "iconType": "FIELD_GROUP"
+      },
+      "children": [
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IENoYXJhY3RlcmlzdGljc19YR1JQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Family Characteristics",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0NEQ0FGX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CDCAF Count of Dependent Children Under 15 Temporarily Absent",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "CDCAF Count of Dependent Children Under 15 Temporarily Absent"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0NEQ0ZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CDCF Count of Dependent Children in Family",
+                "iconType": "FIELD",
+                "childCount": 8,
+                "levels": [
+                  "Select a level below:",
+                  "CDCF Count of Dependent Children in Family"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0NEU0FGX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CDSAF Count of Dependent Students (15-24) Temporarily Absent",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "CDSAF Count of Dependent Students (15-24) Temporarily Absent"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0NOREFGX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CNDAF Count of Non-Dependent Children Temporarily Absent",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "CNDAF Count of Non-Dependent Children Temporarily Absent"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0NQQUZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CPAF Count of Persons Temporarily Absent from Family",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "CPAF Count of Persons Temporarily Absent from Family"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0NQUkZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CPRF Count of Persons in Family",
+                "iconType": "FIELD",
+                "childCount": 6,
+                "levels": [
+                  "Select a level below:",
+                  "CPRF Count of Persons in Family"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0ZCTEZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "FBLF Family Blending",
+                "iconType": "FIELD",
+                "childCount": 8,
+                "levels": [
+                  "Select a level below:",
+                  "FBLF Family Blending"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0ZJREZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "FIDF Family Income Derivation Indicator",
+                "iconType": "FIELD",
+                "childCount": 9,
+                "levels": [
+                  "Select a level below:",
+                  "FIDF Family Income Derivation Indicator"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0ZJTkZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "FINF Family Income (gross weekly)",
+                "iconType": "FIELD",
+                "childCount": 21,
+                "levels": [
+                  "Select a level below:",
+                  "FINF Family Income (gross weekly)"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0ZNQ0ZIX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "FMCF Family Composition",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "FMCF - 1 digit level",
+                  "FMCF - 2 digit level",
+                  "FMCF - 3 digit level",
+                  "FMCF - 4 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0ZOT0ZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "FNOF Family Number",
+                "iconType": "FIELD",
+                "childCount": 4,
+                "levels": [
+                  "Select a level below:",
+                  "FNOF Family Number"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX0ZSTEZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "FRLF Relationship Between Families",
+                "iconType": "FIELD",
+                "childCount": 8,
+                "levels": [
+                  "Select a level below:",
+                  "FRLF Relationship Between Families"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX1NQTEZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "SPLF Location of Spouse",
+                "iconType": "FIELD",
+                "childCount": 3,
+                "levels": [
+                  "Select a level below:",
+                  "SPLF Location of Spouse"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRmFtaWx5IFJlY29yZHNfX1NTQ0ZfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "SSCF Same Sex Couple Indicator",
+                "iconType": "FIELD",
+                "childCount": 4,
+                "levels": [
+                  "Select a level below:",
+                  "SSCF Same Sex Couple Indicator"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgVmFyaWFibGVzX1hHUlA",
+      "data": {
+        "type": "schemaTreeNode",
+        "name": "Dwelling Variables",
+        "iconType": "FIELD_GROUP"
+      },
+      "children": [
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgQ2hhcmFjdGVyaXN0aWNzX1hHUlA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Dwelling Characteristics",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fQkVERF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "BEDD Number of Bedrooms in Private Dwelling",
+                "iconType": "FIELD",
+                "childCount": 8,
+                "levels": [
+                  "Select a level below:",
+                  "BEDD Number of Bedrooms in Private Dwelling"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fRExPRF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "DLOD Dwelling Location",
+                "iconType": "FIELD",
+                "childCount": 6,
+                "levels": [
+                  "Select a level below:",
+                  "DLOD Dwelling Location"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fRFdURF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "DWTD Dwelling Type",
+                "iconType": "FIELD",
+                "childCount": 6,
+                "levels": [
+                  "Select a level below:",
+                  "DWTD Dwelling Type"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fTkVERF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "NEDD Type of Internet Connection",
+                "iconType": "FIELD",
+                "childCount": 6,
+                "levels": [
+                  "Select a level below:",
+                  "NEDD Type of Internet Connection"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fTlBERF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "NPDD Type of Non-Private Dwelling",
+                "iconType": "FIELD",
+                "childCount": 22,
+                "levels": [
+                  "Select a level below:",
+                  "NPDD Type of Non-Private Dwelling"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fU1RSRF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "STRD Dwelling Structure",
+                "iconType": "FIELD",
+                "childCount": 12,
+                "levels": [
+                  "Select a level below:",
+                  "STRD Dwelling Structure"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fVkVIRF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "VEHD Number of Motor Vehicles",
+                "iconType": "FIELD",
+                "childCount": 7,
+                "levels": [
+                  "Select a level below:",
+                  "VEHD Number of Motor Vehicles"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fSG91c2Vob2xkIENoYXJhY3RlcmlzdGljc19YR1JQ",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Household Characteristics",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fQ1BBRF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "CPAD Count of Persons Temporarily Absent from Household",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "CPAD Count of Persons Temporarily Absent from Household"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fSUZOTUZEX0ZMRA",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "IFNMFD Imputation Flag for Number of Males and Females in Dwelling",
+                "iconType": "FIELD",
+                "childCount": 4,
+                "levels": [
+                  "Select a level below:",
+                  "IFNMFD Imputation Flag for Number of Males and Females in Dwelling"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fSU5HRFdURF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "INGDWTD Indigenous Household Indicator",
+                "iconType": "FIELD",
+                "childCount": 4,
+                "levels": [
+                  "Select a level below:",
+                  "INGDWTD Indigenous Household Indicator"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fSEhDREhfRkxE",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "HHCD Household Composition",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "HHCD - 1 digit level",
+                  "HHCD - 2 digit level",
+                  "HHCD - 4 digit level"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fTVYxRF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "MV1D Household Mobility Indicator One Year Ago",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "MV1D Household Mobility Indicator One Year Ago"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fTVY1RF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "MV5D Household Mobility Indicator Five Years Ago",
+                "iconType": "FIELD",
+                "childCount": 5,
+                "levels": [
+                  "Select a level below:",
+                  "MV5D Household Mobility Indicator Five Years Ago"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fTlBSRF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "NPRD Number of Persons Usually Resident in Dwelling",
+                "iconType": "FIELD",
+                "childCount": 9,
+                "levels": [
+                  "Select a level below:",
+                  "NPRD Number of Persons Usually Resident in Dwelling"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        },
+        {
+          "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fSG91c2Vob2xkIEluY29tZSAmIEV4cGVuZGl0dXJlX1hHUlA",
+          "data": {
+            "type": "schemaTreeNode",
+            "name": "Household Income & Expenditure",
+            "iconType": "FIELD_GROUP"
+          },
+          "children": [
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fSElERF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "HIDD Household Income Derivation Indicator",
+                "iconType": "FIELD",
+                "childCount": 9,
+                "levels": [
+                  "Select a level below:",
+                  "HIDD Household Income Derivation Indicator"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fSElFRF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "HIED Household Equivalised Income (gross weekly)",
+                "iconType": "FIELD",
+                "childCount": 15,
+                "levels": [
+                  "Select a level below:",
+                  "HIED Household Equivalised Income (gross weekly)"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fSElORF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "HIND Household Income (gross weekly)",
+                "iconType": "FIELD",
+                "childCount": 21,
+                "levels": [
+                  "Select a level below:",
+                  "HIND Household Income (gross weekly)"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fSExSRF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "HLRD Housing Loan Repayment (monthly)",
+                "iconType": "FIELD",
+                "childCount": 20,
+                "levels": [
+                  "Select a level below:",
+                  "HLRD Housing Loan Repayment (monthly)"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fTExERF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "LLDD Landlord Type",
+                "iconType": "FIELD",
+                "childCount": 10,
+                "levels": [
+                  "Select a level below:",
+                  "LLDD Landlord Type"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fUk5URF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "RNTD Rent (weekly)",
+                "iconType": "FIELD",
+                "childCount": 18,
+                "levels": [
+                  "Select a level below:",
+                  "RNTD Rent (weekly)"
+                ],
+                "draggable": true
+              }
+            },
+            {
+              "key": "U1hWNF9fVEJQZXJzb25zRW51bV9fRHdlbGxpbmcgUmVjb3Jkc19fVEVORF9GTEQ",
+              "data": {
+                "type": "schemaTreeNode",
+                "name": "TEND Tenure Type",
+                "iconType": "FIELD",
+                "childCount": 9,
+                "levels": [
+                  "Select a level below:",
+                  "TEND Tenure Type"
+                ],
+                "draggable": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "nodeState": {},
+  "expandedNodes": {}
+}

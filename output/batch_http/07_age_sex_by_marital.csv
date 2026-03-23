@@ -1,0 +1,63 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"AGE5P Age in Five Year Groups and SEXP Sex by MSTP Registered Marital Status"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+,"MSTP Registered Marital Status","Never married","Widowed","Divorced","Separated","Married","Not applicable","Total",
+"AGE5P Age in Five Year Groups","SEXP Sex",
+"0-4 years","Male",0,0,0,0,0,753320,753320,
+,"Female",0,0,0,0,0,711973,711973,
+"5-9 years","Male",0,0,0,0,0,815305,815305,
+,"Female",0,0,0,0,0,771984,771984,
+"10-14 years","Male",0,0,0,0,0,817135,817135,
+,"Female",0,0,0,0,0,772011,772011,
+"15-19 years","Male",748623,217,167,202,1036,0,750250,
+,"Female",707364,185,146,199,1391,0,709282,
+"20-24 years","Male",789092,422,614,1247,19426,0,810791,
+,"Female",731129,399,1212,2846,39429,0,775022,
+"25-29 years","Male",736725,556,5327,6802,142279,0,891683,
+,"Female",646521,808,9747,13032,218075,0,888177,
+"30-34 years","Male",495560,819,20387,17209,374322,0,908293,
+,"Female",424964,1893,31616,27828,464942,0,951244,
+"35-39 years","Male",311828,1178,38876,27469,525068,0,904419,
+,"Female",272076,3713,56176,39648,567149,0,938762,
+"40-44 years","Male",221167,2041,53033,33184,507172,0,816597,
+,"Female",197316,6081,75521,44274,512587,0,835781,
+"45-49 years","Male",192204,3477,75258,39187,494244,0,804370,
+,"Female",168859,10635,108100,48893,498263,0,834751,
+"50-54 years","Male",165062,5871,97457,41035,479614,0,789039,
+,"Female",136989,17876,136427,48319,485793,0,825402,
+"55-59 years","Male",132036,9225,109207,37711,467884,0,756061,
+,"Female",102779,30307,148691,42386,465935,0,790107,
+"60-64 years","Male",96593,14535,110641,33161,458202,0,713131,
+,"Female",74951,49457,148623,36137,450794,0,759958,
+"65-69 years","Male",61695,20726,97028,28200,420322,0,627968,
+,"Female",47455,72850,128971,27259,398721,0,675252,
+"70-74 years","Male",38347,30783,80334,22336,391092,0,562895,
+,"Female",29308,106733,104625,18880,341808,0,601348,
+"75-79 years","Male",20943,35097,46751,12683,278031,0,393509,
+,"Female",16347,124972,62290,9543,217059,0,430215,
+"80-84 years","Male",11327,37764,23221,6384,174213,0,252910,
+,"Female",10035,139702,31756,4300,116823,0,302627,
+"85-89 years","Male",5477,34479,9099,2529,85547,0,137132,
+,"Female",5778,123850,14341,1645,46120,0,191737,
+"90-94 years","Male",2188,23760,2744,818,29729,0,59238,
+,"Female",3386,82837,5449,465,12148,0,104290,
+"95-99 years","Male",565,7634,464,135,4442,0,13227,
+,"Female",1206,27823,1204,92,1580,0,31905,
+"100 years and over","Male",51,820,23,17,269,0,1175,
+,"Female",160,3999,117,9,107,0,4385,
+"Total","Male",4029465,229409,770625,310298,4852891,2385757,12578447,
+,"Female",3576632,804114,1065020,365757,4838714,2255971,12906202,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

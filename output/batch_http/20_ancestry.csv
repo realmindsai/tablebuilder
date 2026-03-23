@@ -1,0 +1,32 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"1-digit level ANC1P Ancestry 1st Response"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+
+"1-digit level ANC1P Ancestry 1st Response",
+"Oceanian",5724641,
+"North-West European",11203380,
+"Southern and Eastern European",1940843,
+"North African and Middle Eastern",642686,
+"South-East Asian",848912,
+"North-East Asian",1480255,
+"Southern and Central Asian",1471926,
+"Peoples of the Americas",179213,
+"Sub-Saharan African",216143,
+"Supplementary codes",130625,
+"Not stated",1584164,
+"Overseas visitor",61860,
+"Total",25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

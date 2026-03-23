@@ -1,0 +1,36 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"2-digit level QALFP Non-School Qualification: Field of Study"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+
+"2-digit level QALFP Non-School Qualification: Field of Study",
+"Natural and Physical Sciences",403340,
+"Information Technology",470318,
+"Engineering and Related Technologies",1792276,
+"Architecture and Building",702968,
+"Agriculture, Environmental and Related Studies",249755,
+"Health",1355939,
+"Education",1020373,
+"Management and Commerce",2568691,
+"Society and Culture",1593494,
+"Creative Arts",507495,
+"Food, Hospitality and Personal Services",638018,
+"Mixed Field Programmes",19619,
+"Field of study inadequately described",198556,
+"Field of study not stated",1620416,
+"Not applicable",12281528,
+"Overseas visitor",61860,
+"Total",25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

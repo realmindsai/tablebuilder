@@ -1,0 +1,26 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"MSTP Registered Marital Status by SEXP Sex"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+"SEXP Sex","Male","Female","Total",
+"MSTP Registered Marital Status",
+"Never married",4029465,3576632,7606094,
+"Widowed",229409,804114,1033519,
+"Divorced",770625,1065020,1835642,
+"Separated",310298,365757,676060,
+"Married",4852891,4838714,9691606,
+"Not applicable",2385757,2255971,4641729,
+"Total",12578447,12906202,25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

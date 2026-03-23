@@ -12,23 +12,38 @@ logger = get_logger("tablebuilder.service.chat_resolver")
 
 SYSTEM_PROMPT = """You are a senior research data scientist with deep expertise in Australian Bureau of Statistics census and survey data. You've spent years working with the 96 datasets in ABS TableBuilder — you know the variables, the quirks, the gaps.
 
-A researcher has come to you for help. Your job is to understand their research question and help them get the exact data they need. You're collegial, curious, and opinionated when it matters. You get excited when you spot a connection the researcher hasn't seen. You know when to suggest a better variable and when to just give them what they asked for.
+A researcher has come to you for help. Your job is to understand their research question and help them get the exact data they need. You're collegial, curious, and opinionated when it matters.
 
-You understand research methodology — you can advise on denominators, confounders, and geographic levels. You know that cross-tabulation needs compatible datasets and that geographic hierarchies matter.
+You have tools to search and explore the ABS data dictionary. Use them proactively — when a researcher mentions a topic, search for it immediately.
 
-You have tools to search and explore the ABS data dictionary. Use them proactively — when a researcher mentions a topic, search for it immediately. Show them what's available. Suggest combinations they might not have considered.
+PROPOSING DATA:
+When you find relevant data, use the propose_table_request tool. Include confidence scores:
+- match_confidence (0-100): how well the variables cover what they're asking about
+- clarity_confidence (0-100): has the researcher been specific enough?
 
-When you find relevant data, use the propose_table_request tool to add it to the researcher's data cart. Include your confidence assessment:
-- match_confidence (0-100): how well the dataset's variables cover what the researcher is asking about
-- clarity_confidence (0-100): has the researcher been specific enough that you're confident this data will answer their question?
+You MUST NOT propose until clarity_confidence is at least 70.
 
-If clarity_confidence would be below 70, ask a follow-up question before proposing. Use present_choices when a structured selection would be clearer than an open question (e.g., geographic levels, variable options).
+CRITICAL — VARIABLE RULES:
+- Variable labels MUST EXACTLY match the labels from the dictionary search results. Copy-paste them.
+- Geography (state, region, city) is NOT a variable — it is selected separately in TableBuilder. NEVER put geographic names like "Victoria", "Melbourne", "NSW" as row/col/wafer variables. If the researcher wants a geographic filter, note it in the rationale but do not include it in the variable lists.
+- Keep tables simple. Prefer ONE outcome variable with ONE or TWO cross-tabulation variables. Each additional variable multiplies cell count and shrinks cell sizes.
+
+CELL SIZE AWARENESS:
+You understand survey methodology. ABS survey data (not Census) has limited sample sizes. When a researcher asks about a small subpopulation (e.g., LGBTQ+ people in one city), warn them proactively:
+- Cross-tabulating a rare group by many variables produces tiny cell counts that ABS will suppress.
+- Suggest pairwise comparisons: e.g., "Sexual orientation × Self-assessed health" as one table, "Sexual orientation × Age" as another — not all three at once.
+- Suggest comparing the subpopulation against the general population for context.
+- For rare subpopulations, national-level data may be more useful than state/city because of sample size.
+
+CONVERSATION RULES:
+- Ask ONE question at a time.
+- Just talk naturally. No bullet-point lists of options. Just ask a question.
+- Keep responses to 2-3 sentences. Get to the point.
+- Be transparent about trade-offs (cell size, geographic granularity, variable coverage).
 
 When the researcher asks for a summary of the session, use show_session_summary.
 
-Variable labels in proposals must EXACTLY match the labels from the dictionary. Do not modify or abbreviate them.
-
-Stay focused on data. You're a data scientist in a consultation — if the conversation drifts off-topic, gently steer it back: "That's outside my wheelhouse — I'm here to help you find the right data. What are you working on?"
+Stay focused on data. If the conversation drifts off-topic, steer it back.
 """
 
 TOOLS = [
@@ -72,28 +87,16 @@ TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
+                "title": {"type": "string", "description": "Short descriptive title for this table, e.g. 'Health status by sexual orientation' or 'Income by age and sex'"},
                 "dataset": {"type": "string", "description": "Exact dataset name"},
                 "rows": {"type": "array", "items": {"type": "string"}, "description": "Variable labels for row axis"},
                 "cols": {"type": "array", "items": {"type": "string"}, "description": "Variable labels for column axis"},
                 "wafers": {"type": "array", "items": {"type": "string"}, "description": "Variable labels for wafer (layer) axis"},
                 "match_confidence": {"type": "integer", "description": "0-100: how well this dataset covers the research question"},
                 "clarity_confidence": {"type": "integer", "description": "0-100: how clearly the researcher has specified what they need"},
-                "rationale": {"type": "string", "description": "Brief explanation of why this dataset and these variables"},
+                "rationale": {"type": "string", "description": "One sentence: why this table answers the research question"},
             },
-            "required": ["dataset", "rows", "match_confidence", "clarity_confidence", "rationale"],
-        },
-    },
-    {
-        "name": "present_choices",
-        "description": "Show the researcher a structured multiple-choice question. Use this when a selection from a fixed set of options would be clearer than an open question.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "question": {"type": "string", "description": "The question to ask"},
-                "options": {"type": "array", "items": {"type": "object", "properties": {"label": {"type": "string"}, "description": {"type": "string"}}, "required": ["label"]}, "description": "List of options to present"},
-                "allow_multiple": {"type": "boolean", "description": "Whether multiple selections are allowed", "default": False},
-            },
-            "required": ["question", "options"],
+            "required": ["title", "dataset", "rows", "match_confidence", "clarity_confidence", "rationale"],
         },
     },
     {
@@ -156,6 +159,7 @@ class ChatResolver:
             proposal_id = f"p{len(self._display_payloads) + 1}"
             proposal = {
                 "id": proposal_id,
+                "title": tool_input.get("title", ""),
                 "dataset": tool_input["dataset"],
                 "rows": tool_input.get("rows", []),
                 "cols": tool_input.get("cols", []),
@@ -168,15 +172,6 @@ class ChatResolver:
             }
             self._display_payloads.append({"type": "proposal", "data": proposal})
             return f"Proposal #{proposal_id} stored and shown to researcher."
-
-        elif tool_name == "present_choices":
-            choices = {
-                "question": tool_input["question"],
-                "options": tool_input["options"],
-                "allow_multiple": tool_input.get("allow_multiple", False),
-            }
-            self._display_payloads.append({"type": "choices", "data": choices})
-            return "Choices presented, waiting for researcher's selection."
 
         elif tool_name == "show_session_summary":
             events = []
@@ -217,11 +212,11 @@ class ChatResolver:
         if cart_context:
             system_prompt += f"\n\nCurrent data cart:\n{cart_context}"
 
-        for round_num in range(10):
+        for round_num in range(25):
             try:
                 response = self.client.messages.create(
                     model="claude-sonnet-4-20250514",
-                    max_tokens=2048,
+                    max_tokens=4096,
                     system=system_prompt,
                     tools=TOOLS,
                     messages=messages,

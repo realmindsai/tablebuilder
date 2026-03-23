@@ -1,0 +1,162 @@
+[
+  {
+    "name": "population_by_remoteness",
+    "index": 1,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/01_population_by_remoteness.csv",
+    "status": "success",
+    "duration_seconds": 34.2,
+    "csv_size": 798
+  },
+  {
+    "name": "employment_by_industry",
+    "index": 2,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/02_employment_by_industry.csv",
+    "status": "fetch_error",
+    "error": "Variable not found in schema: IND21P Industry of Employment",
+    "duration_seconds": 8.6
+  },
+  {
+    "name": "housing_tenure_by_state",
+    "index": 3,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/03_housing_tenure_by_state.csv",
+    "status": "success",
+    "duration_seconds": 46.0,
+    "csv_size": 1550
+  },
+  {
+    "name": "age_by_sex",
+    "index": 4,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/04_age_by_sex.csv",
+    "status": "success",
+    "duration_seconds": 32.9,
+    "csv_size": 1427
+  },
+  {
+    "name": "country_of_birth_by_language",
+    "index": 5,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/05_country_of_birth_by_language.csv",
+    "status": "success",
+    "duration_seconds": 32.3,
+    "csv_size": 2157
+  },
+  {
+    "name": "income_by_occupation",
+    "index": 6,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/06_income_by_occupation.csv",
+    "status": "fetch_error",
+    "error": "Variable not found in schema: OCC21P Occupation",
+    "duration_seconds": 10.7
+  },
+  {
+    "name": "age_sex_by_marital",
+    "index": 7,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/07_age_sex_by_marital.csv",
+    "status": "success",
+    "duration_seconds": 40.7,
+    "csv_size": 3089
+  },
+  {
+    "name": "indigenous_by_age_sex",
+    "index": 8,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/08_indigenous_by_age_sex.csv",
+    "status": "success",
+    "duration_seconds": 102.6,
+    "csv_size": 3141
+  },
+  {
+    "name": "sex_simple",
+    "index": 9,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/09_sex_simple.csv",
+    "status": "success",
+    "duration_seconds": 21.8,
+    "csv_size": 592
+  },
+  {
+    "name": "age_simple",
+    "index": 10,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/10_age_simple.csv",
+    "status": "success",
+    "duration_seconds": 23.2,
+    "csv_size": 851
+  },
+  {
+    "name": "marital_by_sex",
+    "index": 11,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/11_marital_by_sex.csv",
+    "status": "success",
+    "duration_seconds": 29.8,
+    "csv_size": 885
+  },
+  {
+    "name": "labour_force",
+    "index": 12,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/12_labour_force.csv",
+    "status": "success",
+    "duration_seconds": 23.9,
+    "csv_size": 906
+  },
+  {
+    "name": "education_level",
+    "index": 13,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/13_education_level.csv",
+    "status": "success",
+    "duration_seconds": 23.5,
+    "csv_size": 1223
+  },
+  {
+    "name": "travel_to_work",
+    "index": 14,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/14_travel_to_work.csv",
+    "status": "success",
+    "duration_seconds": 23.4,
+    "csv_size": 847
+  },
+  {
+    "name": "dwelling_structure",
+    "index": 15,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/15_dwelling_structure.csv",
+    "status": "success",
+    "duration_seconds": 36.6,
+    "csv_size": 1246
+  },
+  {
+    "name": "household_income",
+    "index": 16,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/16_household_income.csv",
+    "status": "success",
+    "duration_seconds": 27.7,
+    "csv_size": 1583
+  },
+  {
+    "name": "birthplace_by_sex",
+    "index": 17,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/17_birthplace_by_sex.csv",
+    "status": "success",
+    "duration_seconds": 33.3,
+    "csv_size": 1219
+  },
+  {
+    "name": "occupation_by_sex",
+    "index": 18,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/18_occupation_by_sex.csv",
+    "status": "fetch_error",
+    "error": "Variable not found in schema: OCC21P Occupation",
+    "duration_seconds": 7.4
+  },
+  {
+    "name": "religion",
+    "index": 19,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/19_religion.csv",
+    "status": "success",
+    "duration_seconds": 24.2,
+    "csv_size": 906
+  },
+  {
+    "name": "ancestry",
+    "index": 20,
+    "csv_path": "/tank/code/tablebuilder/output/batch_http/20_ancestry.csv",
+    "status": "success",
+    "duration_seconds": 22.8,
+    "csv_size": 993
+  }
+]

@@ -1,0 +1,30 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"1-digit level RELP Religious Affiliation"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+
+"1-digit level RELP Religious Affiliation",
+"Buddhism",615823,
+"Christianity",11148814,
+"Hinduism",684002,
+"Islam",813392,
+"Judaism",99956,
+"Other Religions",325421,
+"Secular Beliefs and Other Spiritual Beliefs and No Religious Affiliation",9886957,
+"Inadequately described",97376,
+"Not stated",1751052,
+"Overseas visitor",61860,
+"Total",25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

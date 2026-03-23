@@ -2,8 +2,10 @@
 # ABOUTME: Uses Jinja2 templates with HTMX for dynamic updates.
 
 import json
+import re
 from pathlib import Path
 
+import markdown
 from fastapi import APIRouter, Request, Response, Form
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
@@ -36,6 +38,25 @@ def _get_valid_api_key(request: Request) -> str | None:
 @router.get("/", response_class=HTMLResponse)
 async def chat_page(request: Request):
     api_key = _get_valid_api_key(request)
+
+    # Auto-register with default credentials if no valid session
+    if not api_key:
+        abs_user = request.app.state.default_abs_user
+        abs_pass = request.app.state.default_abs_password
+        if abs_user and abs_pass:
+            db = request.app.state.db
+            encryption_key = request.app.state.encryption_key
+            api_key = generate_api_key()
+            key_hash = hash_api_key(api_key)
+            encrypted = encrypt_credentials(encryption_key, abs_user, abs_pass)
+            db.create_user(api_key_hash=key_hash, abs_credentials_encrypted=encrypted)
+            response = templates.TemplateResponse("chat.html", {
+                "request": request,
+                "api_key": api_key,
+            })
+            response.set_cookie("tb_api_key", api_key, httponly=True, max_age=86400 * 365)
+            return response
+
     response = templates.TemplateResponse("chat.html", {
         "request": request,
         "api_key": api_key,
@@ -127,16 +148,16 @@ async def web_chat(
     # Build response HTML
     html = f'<div class="chat-message user"><div class="chat-bubble">{message}</div></div>'
 
-    # Render choice buttons inline if present
-    for payload in result.get("display_payloads", []):
-        if payload["type"] == "choices":
-            choices_html = _render_choices(payload["data"], session_id)
-            text += choices_html
+    # Render Claude's markdown to HTML
+    text_html = _render_markdown(text)
 
-    html += f'<div class="chat-message assistant"><div class="chat-bubble">{text}</div></div>'
+    html += f'<div class="chat-message assistant"><div class="chat-bubble">{text_html}</div></div>'
 
-    # Set session_id for subsequent messages
-    html += f'<script>document.getElementById("session_id").value = "{session_id}";</script>'
+    # Set session_id and update placeholder for subsequent messages
+    html += f'''<script>
+document.getElementById("session_id").value = "{session_id}";
+document.querySelector("input[name='message']").placeholder = "Reply...";
+</script>'''
 
     # OOB swap for cart if proposals changed
     all_proposals = db.get_proposals(session_id)
@@ -268,6 +289,71 @@ async def web_cart_fetch(
     return HTMLResponse(cart_html)
 
 
+@router.post("/web/cart/fetch-one/{proposal_id}", response_class=HTMLResponse)
+async def web_cart_fetch_one(
+    proposal_id: str,
+    request: Request,
+    session_id: str = Form(...),
+):
+    """Fetch a single proposal — creates one job, returns collapsed card."""
+    api_key = _get_valid_api_key(request)
+    if not api_key:
+        return HTMLResponse("<p>Please register first.</p>", status_code=401)
+
+    db = request.app.state.db
+    key_hash = hash_api_key(api_key)
+    user = db.get_user_by_api_key_hash(key_hash)
+    if not user:
+        return HTMLResponse("<p>Session expired.</p>", status_code=401)
+
+    session = db.get_chat_session(session_id)
+    if not session or session["user_id"] != user["id"]:
+        return HTMLResponse("<p>Session not found.</p>", status_code=404)
+
+    proposals = db.get_proposals(session_id)
+    target = None
+    for p in proposals:
+        if p["id"] == proposal_id:
+            target = p
+            break
+    if target is None:
+        return HTMLResponse("<p>Proposal not found.</p>", status_code=404)
+
+    request_json = json.dumps({
+        "dataset": target["dataset"],
+        "rows": target.get("rows", []),
+        "cols": target.get("cols", []),
+        "wafers": target.get("wafers", []),
+    })
+    job_id = db.create_job(user_id=user["id"], request_json=request_json)
+    db.update_proposal_status(session_id, proposal_id, "confirmed")
+
+    # Store job_id on the proposal for the card link
+    all_proposals = db.get_proposals(session_id)
+    for p in all_proposals:
+        if p["id"] == proposal_id:
+            p["job_id"] = job_id
+            break
+    conn = db._connect()
+    conn.execute(
+        "UPDATE chat_sessions SET proposals_json = ? WHERE id = ?",
+        (json.dumps(all_proposals), session_id),
+    )
+    conn.commit()
+    conn.close()
+
+    db.add_session_event(
+        session_id, "jobs_queued",
+        f"Queued job for {target['dataset']}",
+        metadata_json=json.dumps({"job_id": job_id, "proposal_id": proposal_id}),
+    )
+
+    # Return just the collapsed card
+    target["status"] = "confirmed"
+    target["job_id"] = job_id
+    return HTMLResponse(_render_cart_card(target, session_id))
+
+
 @router.get("/web/job-status/{job_id}", response_class=HTMLResponse)
 async def web_job_status(job_id: str, request: Request):
     db = request.app.state.db
@@ -380,41 +466,46 @@ async def serve_screenshot(job_id: str, filename: str, request: Request):
     return FileResponse(path, media_type="image/png")
 
 
+def _proposal_title(p: dict) -> str:
+    """Get the title for a proposal card — prefer Claude's title, fall back to variable names."""
+    if p.get("title"):
+        return p["title"]
+    parts = []
+    for axis in ["rows", "cols", "wafers"]:
+        for v in p.get(axis, []):
+            short = v.split(" - ")[0].strip()
+            if short not in parts:
+                parts.append(short)
+    return " x ".join(parts[:3]) if parts else p.get("dataset", "Table")
+
+
 def _render_cart_card(proposal: dict, session_id: str) -> str:
     """Render a single proposal card HTML."""
     p = proposal
-    checked = p["status"] == "checked"
     confirmed = p["status"] == "confirmed"
-    opacity = "1" if checked or confirmed else "0.5"
-    check_mark = "checked" if checked else ""
-    disabled = "disabled" if confirmed else ""
-    status_label = ""
+    title = _proposal_title(p)
+
     if confirmed:
         job_id = p.get("job_id", "")
-        status_label = f' <a href="/jobs/{job_id}">Queued</a>'
+        return f"""<div id="cart-card-{p['id']}" style="padding: 0.4rem 0.5rem; border-left: 3px solid #43a047; margin-bottom: 0.4rem; font-size: 0.85rem;">
+            <a href="/jobs/{job_id}">{title}</a> — queued
+        </div>"""
 
-    rows = ", ".join(p.get("rows", []))
-    cols = ", ".join(p.get("cols", []))
-    wafers = ", ".join(p.get("wafers", []))
-    axes = f"Rows: {rows}" if rows else ""
-    if cols:
-        axes += f" | Cols: {cols}"
-    if wafers:
-        axes += f" | Wafers: {wafers}"
+    match_color = '#43a047' if p.get('match_confidence', 0) >= 70 else '#e53935'
+    clarity_color = '#43a047' if p.get('clarity_confidence', 0) >= 70 else '#ff9800'
 
-    return f"""<div id="cart-card-{p['id']}" style="opacity: {opacity}; padding: 0.5rem; border: 1px solid var(--pico-muted-border-color); border-radius: 0.5rem; margin-bottom: 0.5rem;">
-        <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-            <input type="checkbox" {check_mark} {disabled}
-                hx-post="/web/cart/toggle/{p['id']}"
-                hx-target="#cart-card-{p['id']}"
-                hx-swap="outerHTML"
-                hx-include="[name='session_id']"
-                name="session_id" value="{session_id}">
-            <strong>{p['dataset']}</strong>{status_label}
-        </label>
-        <small style="display: block; margin-left: 1.5rem;">{axes}</small>
-        <small style="display: block; margin-left: 1.5rem;">Match: {p.get('match_confidence', '?')}% | Clarity: {p.get('clarity_confidence', '?')}%</small>
-        <small style="display: block; margin-left: 1.5rem; color: var(--pico-muted-color);">{p.get('rationale', '')}</small>
+    return f"""<div id="cart-card-{p['id']}" style="padding: 0.5rem; border: 1px solid var(--pico-muted-border-color); border-radius: 0.5rem; margin-bottom: 0.5rem;">
+        <strong style="font-size: 0.9rem;">{title}</strong>
+        <div style="font-size: 0.8rem; color: var(--pico-muted-color); margin: 0.2rem 0;">{p.get('dataset', '')}</div>
+        <div style="display: flex; gap: 0.5rem; font-size: 0.8rem; margin: 0.25rem 0;">
+            <span style="font-weight: 600; color: {match_color};">Match {p.get('match_confidence', '?')}%</span>
+            <span style="font-weight: 600; color: {clarity_color};">Clarity {p.get('clarity_confidence', '?')}%</span>
+        </div>
+        <form hx-post="/web/cart/fetch-one/{p['id']}" hx-target="#cart-card-{p['id']}" hx-swap="outerHTML"
+              hx-on::before-request="this.querySelector('button').setAttribute('aria-busy','true')">
+            <input type="hidden" name="session_id" value="{session_id}">
+            <button type="submit" style="width: 100%; padding: 0.3rem; font-size: 0.85rem;" class="outline">Fetch</button>
+        </form>
     </div>"""
 
 
@@ -423,32 +514,22 @@ def _render_cart_contents(proposals: list[dict], session_id: str) -> str:
     if not proposals:
         return '<p style="color: var(--pico-muted-color);">No proposals yet. Start chatting to discover datasets.</p>'
 
-    cards = "".join(_render_cart_card(p, session_id) for p in proposals)
-    has_checked = any(p["status"] == "checked" for p in proposals)
-    fetch_btn = ""
-    if has_checked:
-        fetch_btn = f"""<form hx-post="/web/cart/fetch" hx-target="#cart-items" hx-swap="innerHTML">
-            <input type="hidden" name="session_id" value="{session_id}">
-            <button type="submit" style="width: 100%;">Fetch Selected</button>
-        </form>"""
-
-    return f'{cards}{fetch_btn}'
+    return "".join(_render_cart_card(p, session_id) for p in proposals)
 
 
-def _render_choices(choices_data: dict, session_id: str) -> str:
-    """Render multiple-choice buttons for inline chat display."""
-    options = choices_data["options"]
-    buttons = ""
-    for opt in options:
-        label = opt["label"]
-        desc = opt.get("description", "")
-        title_attr = f' title="{desc}"' if desc else ""
-        buttons += f"""<button type="submit" name="message" value="{label}"{title_attr}
-            style="margin: 0.25rem;" class="outline">{label}</button>"""
+def _render_markdown(text: str) -> str:
+    """Convert markdown text to HTML for chat display."""
+    html = markdown.markdown(
+        text,
+        extensions=["tables", "fenced_code", "nl2br"],
+    )
+    # Make dataset names clickable — search for them on click
+    # Match patterns like "Census 2021" or quoted dataset names
+    html = re.sub(
+        r'\*\*([^*]+(?:Census|Survey|BLADE|Labour Force|Disability|Income|Housing)[^*]*)\*\*',
+        r'<a href="#" class="dataset-link" onclick="document.querySelector(\'input[name=message]\').value=\'Tell me about \1\';document.getElementById(\'chat-form\').requestSubmit();return false;"><strong>\1</strong></a>',
+        html,
+    )
+    return html
 
-    return f"""<div style="margin-top: 0.5rem;">
-        <form hx-post="/web/chat" hx-target="#chat-messages" hx-swap="beforeend">
-            <input type="hidden" name="session_id" value="{session_id}">
-            {buttons}
-        </form>
-    </div>"""
+

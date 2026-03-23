@@ -1,0 +1,41 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"AGE5P Age in Five Year Groups by SEXP Sex"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+"SEXP Sex","Male","Female","Total",
+"AGE5P Age in Five Year Groups",
+"0-4 years",753320,711973,1465295,
+"5-9 years",815305,771984,1587290,
+"10-14 years",817135,772011,1589150,
+"15-19 years",750250,709282,1459528,
+"20-24 years",810791,775022,1585820,
+"25-29 years",891683,888177,1779865,
+"30-34 years",908293,951244,1859539,
+"35-39 years",904419,938762,1843177,
+"40-44 years",816597,835781,1652377,
+"45-49 years",804370,834751,1639122,
+"50-54 years",789039,825402,1614437,
+"55-59 years",756061,790107,1546161,
+"60-64 years",713131,759958,1473090,
+"65-69 years",627968,675252,1303228,
+"70-74 years",562895,601348,1164242,
+"75-79 years",393509,430215,823728,
+"80-84 years",252910,302627,555539,
+"85-89 years",137132,191737,328874,
+"90-94 years",59238,104290,163529,
+"95-99 years",13227,31905,45138,
+"100 years and over",1175,4385,5555,
+"Total",12578447,12906202,25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

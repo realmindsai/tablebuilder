@@ -1,0 +1,77 @@
+{
+  "/rest/catalogue": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/rest/catalogue/databases": {
+    "status": 404,
+    "content_type": "text/html",
+    "size": 66400
+  },
+  "/rest/catalogue/variables": {
+    "status": 404,
+    "content_type": "text/html",
+    "size": 66400
+  },
+  "/rest/catalogue/search": {
+    "status": 404,
+    "content_type": "text/html",
+    "size": 66400
+  },
+  "/rest/table": {
+    "status": 405,
+    "content_type": "text/html",
+    "size": 44194
+  },
+  "/rest/table/variables": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/rest/download": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/rest/user": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/rest/session": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/rest/query": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/rest/data": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/rest/export": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/rest/api": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/api": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  },
+  "/api/v1": {
+    "status": 403,
+    "content_type": "text/html",
+    "size": 70
+  }
+}

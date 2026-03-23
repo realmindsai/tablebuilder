@@ -1,0 +1,32 @@
+Australian Bureau of Statistics
+
+"2021 Census - counting persons, place of enumeration"
+"1-digit level BPLP Country of Birth of Person by 1-digit level LANP Language Used at Home"
+"Counting: Person Records"
+
+Filters:
+"Default summation","Person Records"
+
+"1-digit level LANP Language Used at Home","Northern European Languages","Southern European Languages","Eastern European Languages","Southwest and Central Asian Languages","Southern Asian Languages","Southeast Asian Languages","Eastern Asian Languages","Australian Indigenous Languages","Other Languages","Supplementary codes","Not stated","Overseas visitor","Total",
+"1-digit level BPLP Country of Birth of Person",
+"Oceania and Antarctica",15886806,320813,119575,236181,258941,170345,254905,77798,152271,40478,190533,0,17708639,
+"North-West Europe",1391906,32933,5548,2560,7321,1899,3083,37,1348,1221,11968,0,1459833,
+"Southern and Eastern Europe",160765,248851,228435,5164,599,553,1822,5,235,629,11133,0,658197,
+"North Africa and the Middle East",54728,7437,782,358180,11105,834,444,0,10735,1116,9494,0,454856,
+"South-East Asia",223932,3470,286,857,11987,646303,150617,15,513,1395,12063,0,1051437,
+"North-East Asia",58527,1011,2015,1362,733,1873,782547,3,110,374,6232,0,854800,
+"Southern and Central Asia",136590,1458,4115,70223,915966,1174,1751,8,249,1712,16927,0,1150155,
+"Americas",171095,154276,951,1920,2287,968,3555,7,602,319,3639,0,339618,
+"Sub-Saharan Africa",252795,17025,272,3424,5757,148,707,11,77810,8482,5725,0,372151,
+"Supplementary codes",4938,467,5469,720,204,194,426,26,765,646,592,0,14447,
+"Not stated",140501,7166,4012,5278,2674,3699,4626,743,2250,597,1187123,0,1358658,
+"Overseas visitor",0,0,0,0,0,0,0,0,0,0,0,61860,61860,
+"Total",18482571,794897,371451,685875,1217575,827994,1204488,78656,246886,56980,1455423,61860,25484656,
+
+"Data source: Census of Population and Housing, 2021, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. No reliance should be placed on small cells."
+
+
+"Copyright Commonwealth of Australia, 2026, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+
+    
+
+    <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <title>TableBuilder - Table view</title>
+
+    <link rel="shortcut icon" href="/webapi/favicon.ico" type="image/x-icon" />
+    <link href="/webapi/gxt-resources/css/gxt-all.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" href="/webapi/stylesheets/smoothness/jquery-ui-1.8.24.custom.css" rel="stylesheet" />
+
+    <script>
+        window.SW2_CONTEXT_PATH = "\/webapi";
+        window.SW2_LOCK_URL = "\/webapi\/jsf\/tableView\/tableView.xhtml";
+    </script>
+
+    <script type="application/json" id="jsonSchemaTreeLabels">
+        {
+  "icons" : {
+    "summation_folder" : "Summation group",
+    "summation" : "Summation",
+    "folder" : "Variable group",
+    "field" : "Variable",
+    "value" : "Category",
+    "bulk_selection" : "Bulk selection",
+    "mappable_field" : "Mappable variable",
+    "mappable_value" : "Mappable category group",
+    "mappable_bulk_selection" : "Mappable bulk selection",
+    "mandatory_overlay" : "Mandatory",
+    "meta_info" : "About this data"
+  },
+  "labels" : {
+    "unweighted" : "Unweighted",
+    "weightedBy" : "Weighted by: {0}",
+    "range" : "Range",
+    "manage" : "Manage",
+    "bulkSelection" : "Bulk selection",
+    "levelSelect" : "Select a level below:",
+    "row" : "Row",
+    "column" : "Column",
+    "wafer" : "Wafer"
+  },
+  "tableOnly" : {
+    "symbol" : "†",
+    "title" : "Temporary table recode. If removed from the table, it will also be removed from this list."
+  }
+}
+    </script>
+    <script type="application/json" id="jsonCatalogueTreeLabels">
+        {
+  "icons" : {
+    "database" : "Dataset",
+    "folder" : "Private folder",
+    "folder-read" : "Readable folder",
+    "folder-write" : "Writable folder",
+    "user_table" : "User table",
+    "system_table" : "System table"
+  }
+}
+    </script>
+    <script type="application/json" id="jsonTreeLabels">
+        {
+  "icons" : {
+    "expanded" : "Expanded",
+    "collapsed" : "Collapsed"
+  },
+  "labels" : {
+    "loading" : "Loading..."
+  }
+}
+    </script>
+
+    <script src="/webapi/scripts/build/vendor.bundle.js"></script>
+    <script src="/webapi/scripts/build/common.bundle.js"></script>
+    <script src="/webapi/scripts/build/layout.bundle.js"></script>
+        <script src="/webapi/recordview/recordview.nocache.js"></script>
+        <script src="/webapi/scripts/build/react.bundle.js"></script>
+        <script src="/webapi/scripts/build/catalogueTrees.bundle.js"></script>
+        <script>
+            //<![CDATA[
+            window.awaiting_tabulation = false;
+            window.CONTEXT_PATH = "\/webapi";
+            var gwtInfo = {
+                loginURL: "\/webapi\/jsf\/login.xhtml",
+                invalidSessionSuffix: "?invalidSession=true"
+            };
+
+            var SW2_DBID = "TBPersonsEnum";
+            //]]>
+        </script>
+
+        <script type="application/json" id="jsonFunctionTitlesPlaceholder">
+            {
+  "mathsFnDisabledTitle" : "Requires a single variable category to be selected",
+  "statsFnDisabledTitle" : "Requires multiple continuous variable categories to be selected",
+  "formulaPlaceholder" : "(V1 + V2) / V3"
+}
+        </script>
+        <script src="/webapi/scripts/build/tableView.bundle.js"></script>
+
+    
+    
+    <style>
+        /* Custom banner height */
+        .customBanner {
+            background: transparent url() fixed;
+            height: 0px;
+        }
+
+        .sw2-bannerImage {
+            width: 385px;
+            height: 80px;
+        }
+    </style><script type="text/javascript" src="/webapi/jsf/javax.faces.resource/jsf.js?ln=javax.faces"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/jquery.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/richfaces.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/richfaces-queue.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/richfaces-base-component.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/status.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/jquery.position.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/richfaces-event.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/popup.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/tooltip.js"></script><link rel="stylesheet" type="text/css" href="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/tooltip.ecss?db=eAETn3PiPwAEwwJ7" /><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/popupPanel.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/popupPanelBorders.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/popupPanelSizer.js"></script><link rel="stylesheet" type="text/css" href="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/popupPanel.ecss?db=eAETn3PiPwAEwwJ7" /><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/progressBar.js"></script><link rel="stylesheet" type="text/css" href="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/progressBar.ecss?db=eAETn3PiPwAEwwJ7" /><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/togglePanel.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/tabPanel.js"></script><link rel="stylesheet" type="text/css" href="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/tabPanel.ecss?db=eAETn3PiPwAEwwJ7" /><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/togglePanelItem.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/tab.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/poll.js"></script><link rel="stylesheet" type="text/css" href="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/list.ecss?db=eAETn3PiPwAEwwJ7" /><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/datatable.js"></script><link rel="stylesheet" type="text/css" href="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/datatable.ecss?db=eAETn3PiPwAEwwJ7" /><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/jquery.hotkeys.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/hotkey.js"></script><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/datascroller.js"></script><link rel="stylesheet" type="text/css" href="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/datascroller.ecss?db=eAETn3PiPwAEwwJ7" /><script type="text/javascript" src="/webapi/org.richfaces.resources/javax.faces.resource/org.richfaces/component-control.js"></script></head><body class="fl-col fl-fill">
+
+    
+    <link href="/webapi/common-styles.css" rel="stylesheet" type="text/css" />
+    <link href="/webapi/layout/sw2-layout.css" rel="stylesheet" type="text/css" />
+    <link href="/webapi/layout/optionsMenu.css" rel="stylesheet" type="text/css" />
+        <link href="/webapi/stylesheets/sw2skin-recordview.css" rel="stylesheet" type="text/css" />
+        <link href="/webapi/tableView/tableView.css" rel="stylesheet" type="text/css" />
+        <link href="/webapi/dataCatalogueExplorer.css" rel="stylesheet" type="text/css" />
+        <link href="/webapi/tableView/modals.css" rel="stylesheet" type="text/css" />
+        <link href="/webapi/tableView/schemaTree.css" rel="stylesheet" type="text/css" />
+        <link href="/webapi/tableView/progressbar.css" rel="stylesheet" type="text/css" />
+        <link href="/webapi/react-tree.css" rel="stylesheet" type="text/css" />
+    <link href="/webapi/wrap-tree-labels.css" rel="stylesheet" type="text/css" />
+
+    <div id="spinner" class="spinner" style="display: none;">
+        <div id="outerLoad" class="outerLoad">
+            <div id="innerLoad" class="innerLoad">
+                <div class="vAlignSpacer"></div><img id="loadGif" src="/webapi/images/busyIndicator_small.gif" alt="" class="loadGif" />
+
+                <div id="loadTextDiv" class="loadTextDiv"><span class="loadingText1">TableBuilder</span><span class="loadingText2">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div><span id="j_id_o"><span style="display:none" class="rf-st-start"></span><span class="rf-st-stop"></span><script type="text/javascript">new RichFaces.ui.Status("j_id_o",{"onstart":function(event){SW2.fullPageSpinner.start();},"statusName":"loadingPage","onstop":function(event){SW2.fullPageSpinner.stop();}} )</script></span><span id="j_id_p"><span style="display:none" class="rf-st-start"></span><span class="rf-st-stop"></span><script type="text/javascript">new RichFaces.ui.Status("j_id_p",{"onstart":function(event){SW2.fullPageSpinner.start();},"onerror":function(event){SW2.fullPageSpinner.stop();},"onsuccess":function(event){if (!SW2.util.isJsfRedirectEvent(arguments[0])) SW2.fullPageSpinner.stop();},"statusName":"redirectLoadingPage"} )</script></span>
+
+    <header class="fl-row">
+
+    <nav id="navigationBar" class="fl-fill fl-row sw2-page-header"><span class="sw2-bannerImage"><a href="https://www.abs.gov.au/" aria-label="Australian Bureau of Statistics Home">
+                <img src="/webapi/images/sw2_logo.png" alt="Australian Bureau of Statistics Home" title="Australian Bureau of Statistics Home" /></a></span><form id="headerForm" name="headerForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" class="fl-fill fl-row" role="none" enctype="application/x-www-form-urlencoded" onsubmit="SW2.fullPageSpinner.start();">
+            <ul class="fl-nav-row sw2-page-header-tabs" role="none">
+                    <li id="datasetsNavTab" role="none"><a href="#" onclick="return myfaces.oam.submitForm('headerForm','headerForm:dataCatalogue');" id="headerForm:dataCatalogue" class="sw2-page-header-menu header-tab " aria-current="false">
+                            Datasets
+                        </a>
+                    </li>
+                    <li role="none"><a href="#" onclick="return myfaces.oam.submitForm('headerForm','headerForm:tableView');" id="headerForm:tableView" class="sw2-page-header-menu header-tab  selected " aria-current="page">
+                            Table view
+                        </a>
+                    </li>
+                    <li id="graphNavTab" role="none"><span id="headerForm:graphNavTabPanel">
+                                <a href="#" onclick="stopPropagation(event); return false" class="sw2-page-header-menu header-tab  disabled " aria-disabled="true" aria-current="false" aria-describedby="graphNavTabTooltip">
+                                    Graph view
+                                </a><span id="headerForm:j_id_1n" style="display: none;"><span id="headerForm:j_id_1n:wrp" class="rf-tt inactiveTabTooltip" style="z-index:1000"><span id="headerForm:j_id_1n:cntr" class="rf-tt-cntr"><span id="headerForm:j_id_1n:content" class="rf-tt-cnt">
+                                <span id="graphNavTabTooltip">
+                                        <span role="tooltip">Add data to table to generate a graph</span>
+                                </span></span></span></span></span>
+                            <span id="graphNavTabTooltipEmpty"></span></span>
+                    </li>
+            </ul><input type="hidden" name="headerForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:1" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form>
+
+        <ul class="fl-nav-row sw2-page-header-tabs" role="none">
+                <li class="sw2-page-header-search" role="none"><form id="headerSearchForm" name="headerSearchForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" role="search" enctype="application/x-www-form-urlencoded" onsubmit="return SW2.layout.onCatalogueSearchFormSubmit()">
+                        
+                        <div class="menu-spacer"></div>
+                        <div class="searchWrapper"><input id="headerSearchForm:searchText" name="headerSearchForm:searchText" type="text" value="" maxlength="256" class="searchInput" aria-label="Search" /><input id="headerSearchForm:searchButton" name="headerSearchForm:searchButton" type="submit" value="" title="Search" class="searchButton" />
+                            <input type="text" name="dummy" style="display: none;" title="" />
+                            <script type="application/json" id="jsonSearchPlaceholder">
+                                {
+  "searchButton" : "Search"
+}
+                            </script>
+                            <script>
+                                SW2.layout.setSearchPlaceholder(SW2.util.requireUntypedElementJson("jsonSearchPlaceholder").searchButton);
+                            </script>
+                        </div><input type="hidden" name="headerSearchForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:2" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form>
+                </li>
+
+            
+            <li role="none">
+                <a href="https://www.abs.gov.au/statistics/microdata-tablebuilder/tablebuilder" target="_blank" onMouseUp="this.blur();" class="sw2-page-header-menu header-button help-link" title="TableBuilder help">
+                    <div class="menu-spacer"></div><img src="/webapi/images/material/ic_help_white.svg" alt="TableBuilder help" />
+                </a>
+            </li>
+
+            
+            <li class="sw2-page-header-options" role="none"><form id="optionsForm" name="optionsForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" class="fl-row" enctype="application/x-www-form-urlencoded" onsubmit="SW2.fullPageSpinner.start();">
+        <div class="page-menu-settings-menu" id="page-settings-menu">
+            <div class="dropdown">
+                <a id="options-toggler" href="#" role="button" data-bs-toggle="dropdown" class="sw2-page-header-menu header-button dropdown-toggle" aria-haspopup="true" aria-expanded="false" title="Log out and other options">
+                    <div class="menu-spacer"></div><img src="/webapi/images/material/ic_more_vert_white.svg" alt="Log out and other options" class="menu-icon" />
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-right multi-level" role="menu" aria-labelledby="options-toggler">
+
+                    
+                    <li class="page-menu-item linkContainer " role="none"><a href="#" id="optionsForm:savedTables" name="optionsForm:savedTables" onclick="RichFaces.ajax(&quot;optionsForm:savedTables&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="dropdown-item" role="menuitem" tabindex="-1">
+                            Saved and large tables
+                        </a>
+                    </li>
+                        <script>
+                            var showGuidedTutorial = window.showGuidedTutorial || function () {};
+                        </script>
+                        <li id="page-menu-item-show-tutorial" class="page-menu-item linkContainer " role="none">
+                            <a class="dropdown-item" tabindex="-1" href="#" onclick="showGuidedTutorial(); event.preventDefault();" role="menuitem">
+                                Tour
+                            </a>
+                        </li>
+                        
+                        <li class="divider" role="none"></li>
+
+                        <li class="page-menu-item linkContainer " role="none"><a href="#" onclick="return myfaces.oam.submitForm('optionsForm','optionsForm:j_id_2y');" tabindex="-1" role="menuitem" class="dropdown-item">Log out 1207475</a>
+                        </li>
+
+                </ul>
+            </div>
+            <script>
+                SW2.settingsMenu.init("#page-settings-menu");
+            </script>
+        </div><input type="hidden" name="optionsForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:3" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form>
+            </li>
+        </ul>
+    </nav>
+    </header>
+
+    <main class="fl-col fl-fill" aria-label="Main application">
+        <header class="fl-buttons fl-row-outer fl-ai-center sw2-contentHeaderContainer"><div id="catalogueItemPageHeadings" class="fl-ai-center"><span id="databaseNamePageHeading"><span class="pageHeading">Data source: </span><a href="/webapi/openinfopage?id=TBPersonsEnum" id="databaseNamePageHeadingLink" name="databaseNamePageHeadingLink" class="pageHeading" title="Show dataset in Datasets catalogue">2006 Census - Counting Persons, Place of Enumeration</a><a href="/iLinks/Redirect2Dict?tableDescription=&amp;dbid=TBPersonsEnum&amp;databaseName=2006+Census+-+Counting+Persons%2C+Place+of+Enumeration&amp;key=2006+Census+-+Counting+Persons%2C+Place+of+Enumeration&amp;languageTag=en&amp;sxv4Id=TBPersonsEnum" id="DatabaseMetaInfoLink" name="DatabaseMetaInfoLink" rel="noopener noreferrer" target="_blank" class="metaInfoButton"><img src="/webapi/images/meta_info.png" alt="About this data" height="12" width="12" class="dbMetaInfo" title="About this data" /></a></span></div>
+
+    <link rel="stylesheet" type="text/css" href="/webapi/stylesheets/contentHeading.css" /><form id="downloadControl" name="downloadControl" method="post" action="/webapi/jsf/tableView/tableView.xhtml" class="headerContent fl-row-end" enctype="application/x-www-form-urlencoded"><input type="hidden" name="downloadControl_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:4" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form>
+        </header>
+        <div class="fl-fill fl-row " id="sw2-contentContainer"><form id="j_id_45" name="j_id_45" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><span id="j_id_45:j_id_46" style="display: none;"><script type="text/javascript">saveSW2TourSetStateInSession=function(param1,param2){RichFaces.ajax("j_id_45:j_id_46",null,{"incId":"1","parameters":{"param1":param1,"param2":param2} ,"status":"none"} )};</script></span><input type="hidden" name="j_id_45_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:5" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form>
+
+        
+        <script src="/webapi/scripts/build/tour.bundle.js"></script>
+        <script type="application/json" id="jsonTourData">
+            {
+  "tabStatus" : {
+    "chartViewEnabled" : true,
+    "mapViewEnabled" : false
+  },
+  "labels" : {
+    "buttons" : {
+      "next" : "Next",
+      "expand" : "Expand",
+      "previous" : "Back",
+      "ok" : "OK",
+      "complete" : "Complete",
+      "welcome" : "Let&#39;s go!"
+    },
+    "datasetSteps" : {
+      "welcome" : "<p class=\"centerImg\"><img alt=\"\" src=\"<context-path>/images/guides/Tour.png\" class=\"welcomeIcon\" width=\"70\" height=\"70\"/></p><h2>Take the TableBuilder tour</h2><p>Take a few minutes to tour through the TableBuilder basics. This tour can be accessed at any time from the three vertical dots menu at the top right.</p>",
+      "databases" : "<h3>Datasets</h3><p>These are all the datasets available to you. Open a folder and single-click a dataset to find out more in the information panel on the right.</p><p>Double-click to open a dataset to view the dataset tour, or click next to continue with the home page tour first.</p>",
+      "tables" : "<h3>Saved and predefined tables</h3><p>These are the saved and predefined tables for the selected dataset</p>",
+      "info" : "<h3>Learn more</h3><p>This area shows more information about the selected dataset</p>",
+      "open" : "<h3>Start exploring</h3><p>Double-click to open a dataset or table and continue the tour</p>"
+    },
+    "tableSteps" : {
+      "expandSchemaPanel" : "<h3>Customise the table</h3><p>Click here to expand the variable tree</p>",
+      "fieldList" : "<h3>Drag and drop to get started</h3><p>These are all the variables available for analysis. Click and drag variables or categories from the list to start building your table. </p><img alt=\"Demonstration of dragging Ancestry to row\" src=\"<context-path>/images/guides/Guides01.png\" draggable=\"false\" width=\"340\" height=\"145\"/>",
+      "addToTable" : "<h3>Build a table</h3><p>You can also select the tick boxes next to the individual categories and then click one of the buttons at the top to add to the table</p><img alt=\"Demonstration of adding to column\" src=\"<context-path>/images/guides/Guides02.png\" draggable=\"false\" width=\"340\" height=\"150\"/>",
+      "retrieveData" : "<h3>Queue your table</h3><p>Once you&#39;ve built your table, click this button to queue your table. Once your table has completed you can download it from Saved and queued tables view, accessed from the three dots menu at the top right.</p>",
+      "tableOperation" : "<h3>Drag and drop to change the table</h3><p>You can rearrange your table by dragging the variables between rows, columns or wafers or drag a variable to Remove</p><img alt=\"Demonstration of dragging variable to Remove\" src=\"<context-path>/images/guides/Guides04.png\" draggable=\"false\" width=\"310\" height=\"140\"/>",
+      "addDerivation" : "<h3>Add codes or totals to your table</h3><p>Click on the three vertical dots menu next to the variable name for more options. You can add totals to your table and toggle between category labels and codes.</p><div style=\"white-space:nowrap\"><img alt=\"Demonstration of additional variable options menu\" src=\"<context-path>/images/guides/Guides-Deriv-01.png\" draggable=\"false\" width=\"260\" height=\"160\"/><img alt=\"Demonstration of additional variable options menu\" src=\"<context-path>/images/guides/Guides-Deriv-02.png\" draggable=\"false\" width=\"260\" height=\"160\" style=\"margin-left:10px\"/></div>",
+      "chartViewNav" : "<h3>Visualise the data</h3><p>Once you have built your table you can visualise it as a graph</p><img alt=\"Demonstration of graph view\" src=\"<context-path>/images/guides/Guides05.png\" draggable=\"false\" width=\"320\" height=\"150\"/>",
+      "mapViewNav" : "???",
+      "datasetsViewNav" : "<h3>Choose a new dataset</h3><p>Click this button to go back and select another dataset</p>",
+      "tutorialMenu" : "<h3>Log out and other options</h3><p>Click on the three vertical dots menu in the top right of the screen to find your saved and queued tables, find this tour again, or log out</p>"
+    }
+  }
+}
+        </script>
+
+        <script>
+            //<![CDATA[
+
+            const tourLabels = SW2.util.requireUntypedElementJson("jsonTourData").labels;
+
+            const getCommonTourButtons = (tour) => {
+                return {
+                    next: {
+                        text: tourLabels.buttons.next,
+                        action: tour.next,
+                        classes: "primary",
+                    },
+                    expand: {
+                        text: tourLabels.buttons.expand,
+                        action: () => document.getElementById("hideSchemaPane")?.click(),
+                        classes: "primary",
+                    },
+                    previous: {
+                        text: tourLabels.buttons.previous,
+                        action: tour.previous,
+                        secondary: true,
+                    },
+                    ok: {
+                        text: tourLabels.buttons.ok,
+                        action: tour.complete,
+                        classes: "primary",
+                    },
+                    complete: {
+                        text: tourLabels.buttons.complete,
+                        action: tour.complete,
+                        classes: "primary",
+                    },
+                    welcome: {
+                        text: tourLabels.buttons.welcome,
+                        action: tour.next,
+                        classes: "primary",
+                    },
+                };
+            };
+
+            const IS_FIRST_TIME_USER = JSON.parse("false");
+
+            const parseTourMessage = SW2.tour.getReplaceContext("\/webapi");
+
+            SW2.Tour.setInitialState({
+                state: SW2.tour.parseJsonOrNull(decodeURI("")),
+                isGuestUser: JSON.parse("false"),
+            });
+
+            const datasetsTour = new SW2.Tour("datasets");
+            const tableViewTour = new SW2.Tour("tableView");
+
+            // Global config. Set regardless of current page
+            datasetsTour.addChildTour(tableViewTour);
+            tableViewTour.addProgressStep(datasetsTour, "open").setCompleteAll(true);
+
+            //]]>
+        </script>
+            <script>
+                //<![CDATA[
+                const { mapViewEnabled, chartViewEnabled } = SW2.util.requireUntypedElementJson("jsonTourData").tabStatus;
+                const { offset, shift, flip } = SW2.tour.floatingUIMiddleware;
+
+                const getTableCellElement = () =>
+                    document.querySelector(".crossTabTable .rowTitle") ||
+                    document.querySelector(".crossTabTable .columnTitle") ||
+                    document.querySelector(".crossTabTable .rowLabel");
+
+                // EXPAND SCHEMA (not part of the tutorial but required for some steps if the schema tree is hidden)
+                const getExpandSchemaStep = (stepId) => {
+                    return {
+                        id: stepId || "expandSchemaPanel",
+                        text: parseTourMessage(tourLabels.tableSteps.expandSchemaPanel),
+                        attachTo: {
+                            element: "#hideSchemaPane",
+                            on: "right",
+                        },
+                        buttons: [tableViewTourButtons.expand],
+                    };
+                };
+
+                /**
+                 * This method checks whether the schema tree is expanded and shows the appropriate step.
+                 * When it is collapsed, the method will return a prompt to expand the schema panel.
+                 * Once expanded, the step provided is returned.
+                 */
+                const afterSchemaTreeExpansion = (id, step) => {
+                    return SW2.Tour.isSchemaPanelVisible() ? { ...step, id } : getExpandSchemaStep(id);
+                };
+
+                const tableViewTourButtons = getCommonTourButtons(tableViewTour);
+
+                tableViewTour.setDefaultButtons([tableViewTourButtons.previous, tableViewTourButtons.next]).addSteps([
+                    () =>
+                        afterSchemaTreeExpansion("fieldList", {
+                            text: parseTourMessage(tourLabels.tableSteps.fieldList),
+                            attachTo: {
+                                element: "#showSchemaPane",
+                                on: "right",
+                            },
+                            classes: "no-margins",
+                            floatingUIOptions: {
+                                middleware: [
+                                    flip({
+                                        mainAxis: true,
+                                        crossAxis: true,
+                                        fallbackPlacements: ["bottom"],
+                                        padding: { right: 300 },
+                                    }),
+                                ],
+                            },
+                            buttons: [tableViewTourButtons.next],
+                        }),
+                    () =>
+                        afterSchemaTreeExpansion("addToTableButtons", {
+                            text: parseTourMessage(tourLabels.tableSteps.addToTable),
+                            attachTo: {
+                                element: "#showSchemaPane",
+                                on: "right",
+                            },
+                            classes: "no-margins",
+                            floatingUIOptions: {
+                                middleware: [
+                                    flip({
+                                        mainAxis: true,
+                                        crossAxis: true,
+                                        fallbackPlacements: ["bottom"],
+                                        padding: { right: 300 },
+                                    }),
+                                ],
+                            },
+                        }),
+                    {
+                        id: "retrieveData",
+                        text: parseTourMessage(tourLabels.tableSteps.retrieveData),
+                        attachTo: {
+                            element: ".retrieveDataButton",
+                            on: "bottom-start",
+                        },
+                        floatingUIOptions: {
+                            middleware: [shift({ crossAxis: true })],
+                        },
+                        when: SW2.Tour.revealById("rightPane"),
+                    },
+                    {
+                        id: "tableOperation",
+                        text: parseTourMessage(tourLabels.tableSteps.tableOperation),
+                        attachTo: { element: () => getTableCellElement(), on: "bottom-start" },
+                        floatingUIOptions: {
+                            middleware: [flip({ fallbackStrategy: "bestFit" })],
+                        },
+                        when: SW2.Tour.revealById("rightPane"),
+                    },
+                    {
+                        id: "addDerivation",
+                        text: parseTourMessage(tourLabels.tableSteps.addDerivation),
+                        classes: "fitContent",
+                        attachTo: { element: () => getTableCellElement(), on: "bottom-start" },
+                        floatingUIOptions: {
+                            middleware: [flip({ fallbackStrategy: "bestFit" })],
+                        },
+                        when: SW2.Tour.revealById("rightPane"),
+                    },
+                    {
+                        id: "chartViewNav",
+                        text: parseTourMessage(tourLabels.tableSteps.chartViewNav),
+                        attachTo: {
+                            element: "#graphNavTab",
+                            on: "bottom",
+                        },
+                        when: SW2.Tour.revealByBodyClass("sw2-tour-navBar"),
+                        showOn: () => chartViewEnabled,
+                    },
+                    {
+                        id: "mapViewNav",
+                        text: parseTourMessage(tourLabels.tableSteps.mapViewNav),
+                        attachTo: {
+                            element: "#mapNavTab",
+                            on: "bottom",
+                        },
+                        when: SW2.Tour.revealByBodyClass("sw2-tour-navBar"),
+                        showOn: () => mapViewEnabled,
+                    },
+                    {
+                        id: "datasetsViewNav",
+                        text: parseTourMessage(tourLabels.tableSteps.datasetsViewNav),
+                        attachTo: {
+                            element: "#datasetsNavTab",
+                            on: "bottom-start",
+                        },
+                        when: SW2.Tour.revealByBodyClass("sw2-tour-navBar"),
+                    },
+                    {
+                        id: "tutorialMenu",
+                        text: parseTourMessage(tourLabels.tableSteps.tutorialMenu),
+                        attachTo: {
+                            element: "#page-menu-item-show-tutorial",
+                            on: "left-end",
+                        },
+                        classes: "menu-tour-step",
+                        floatingUIOptions: {
+                            middleware: [offset({ crossAxis: 10, mainAxis: 14 })],
+                        },
+                        when: SW2.Tour.revealByBodyClass("sw2-tour-navBar"),
+                        beforeShowPromise: () => {
+                            const menu = document.getElementById("options-toggler");
+                            if (menu.getAttribute("aria-expanded") !== "true") {
+                                menu.click();
+                            }
+                        },
+                        /**
+                         * The advanceOn property effectively closes the tour, it should only be used on the last step
+                         * of a tour (if ever)
+                         */
+                        advanceOn: { selector: "#options-toggler", event: "hide.bs.dropdown" },
+                        buttons: [tableViewTourButtons.complete],
+                    },
+                ]);
+
+                SW2.tour.initTour(tableViewTour, IS_FIRST_TIME_USER);
+                //]]>
+            </script>
+
+        <div id="sw2-print-watermark">ABS data licensed under creativecommons.org/licenses/by/4.0/</div><form id="j_id_4f" name="j_id_4f" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><span id="j_id_4f:j_id_4g" style="display: none;"><script type="text/javascript">updateTabulationProgress=function(){RichFaces.ajax("j_id_4f:j_id_4g",null,{"incId":"1","status":"none"} )};</script></span><span id="j_id_4f:j_id_4h" style="display: none;"><script type="text/javascript">hideModalPopulateProgress=function(){RichFaces.ajax("j_id_4f:j_id_4h",null,{"incId":"1","status":"none"} )};</script></span><input type="hidden" name="j_id_4f_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:6" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form><div id="progressPanel" style="visibility: hidden; display: inline-block;" aria-labelledby="progressPanel_header_content"><div class="rf-pp-shade" id="progressPanel_shade" style="z-index:100;" aria-labelledby="progressPanel_header_content"><button class="rf-pp-btn" id="progressPanelFirstHref" name="progressPanelfirstHref" aria-labelledby="progressPanel_header_content"></button></div><div class="rf-pp-cntr progressPanel" id="progressPanel_container" style="position: fixed; z-index:100; " role="dialog" aria-labelledby="progressPanel_header_content"><div class="rf-pp-shdw" id="progressPanel_shadow" aria-labelledby="progressPanel_header_content"></div><div class="rf-pp-hdr " id="progressPanel_header" aria-labelledby="progressPanel_header_content"><div class="rf-pp-hdr-cnt" id="progressPanel_header_content" aria-labelledby="progressPanel_header_content">Tabulating...</div></div><div class="rf-pp-cnt-scrlr" id="progressPanel_content_scroller" aria-labelledby="progressPanel_header_content"><div class="rf-pp-cnt" id="progressPanel_content" aria-labelledby="progressPanel_header_content"><form id="j_id_4j" name="j_id_4j" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded">
+            <div class="str-pp-cnt-body"><div class="rf-pb" id="retrievalProgress"><div class="rf-pb-fin" id="retrievalProgress.fin" style="display: none">Rendering...</div><div id="retrievalProgress.rmng" class="rf-pb-rmng" style=""><div class="rf-pb-prgs" id="retrievalProgress.prgs" style="width: 0%"></div><div class="rf-pb-lbl" id="retrievalProgress.lbl">INACTIVE</div></div><script type="text/javascript">new RichFaces.ui.ProgressBar("retrievalProgress",{"onfinish":"hideModalPopulateProgress();"} );</script></div>
+            </div>
+
+            <div class="str-pp-cnt-footer"><input id="cancelRetrieveCube" name="cancelRetrieveCube" onclick="RichFaces.ajax(&quot;cancelRetrieveCube&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;status&quot;:&quot;none&quot;} );return false;" value="Cancel" class="activeButton" type="submit" />
+            </div><input type="hidden" name="j_id_4j_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:7" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form></div></div></div><script type="text/javascript" aria-labelledby="progressPanel_header_content">new RichFaces.ui.PopupPanel("progressPanel",{"domElementAttachment":"parent","height":100,"width":220,"onshow":function(event){window.SW2.util.focusElement('cancelRetrieveCube')}} );</script></div>
+    <script>modal.fixInitialStyle("progressPanel");</script>
+
+        <div id="customiseTablePage" class="fl-fill fl-row"><span id="j_id_4s"><span style="display:none" class="rf-st-start"></span><span class="rf-st-stop"></span><script type="text/javascript">new RichFaces.ui.Status("j_id_4s",{"onstart":function(event){onQueueStart();},"onstop":function(event){onQueueStop();}} )</script></span><div id="schemaPane" class="fl-col">
+                <script>
+                    //<![CDATA[
+                    if (window.SW2 && SW2.Tour) {
+                        SW2.Tour.setSchemaPanelVisible(true);
+                    }
+                    //]]>
+                </script><div id="showSchemaPane" class="fl-fill fl-col leftPaneWrapper contentPageLeftFunctionBar">
+                    <div id="leftPane" class="fl-fill fl-col leftPane" style="visibility: hidden;"><form id="showSchemaForm" name="showSchemaForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><a href="#" id="showSchemaForm:j_id_4y" name="showSchemaForm:j_id_4y" onclick="RichFaces.ajax(&quot;showSchemaForm:j_id_4y&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="showHidePanelImg" title="???tableview.hideCustomiseTable???"><img src="/webapi/images/glyphicons/customised-png/cus_glyphicons_08_chevron-left-8px.png" alt="???tableview.hideCustomiseTable???" /></a><input type="hidden" name="showSchemaForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:8" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form><form id="j_id_50" name="j_id_50" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><div id="tableViewPanelTabs" class="rf-tbp"><input id="tableViewPanelTabs-value" name="tableViewPanelTabs-value" type="hidden" value="schemaTab" /><div id="tableViewPanelTabsheader" class="rf-tab-hdr-tabline-vis rf-tab-hdr-tabline-top"><table class="rf-tab-hdr-tabs" style="border-collapse: collapse; border-spacing: 0;" role="none"><tbody><tr><td style="padding-left: 5px;" class="rf-tab-hdr-spcr" aria-hidden="true"><br /></td><td id="j_id_52:header" class="rf-tab-hdr rf-tab-hdr-act rf-tab-hdr-top" style="" data-tabname="schemaTab"><span class="rf-tab-lbl">Variables</span></td><td style="" class="rf-tab-hdr-spcr rf-tab-hortab-tabspcr-wdh" aria-hidden="true"><br /></td><td id="j_id_53:header" class="rf-tab-hdr rf-tab-hdr-inact rf-tab-hdr-top" style="" data-tabname="tablesTab"><span class="rf-tab-lbl"><a href="#" onclick="return false;">Saved and predefined tables</a></span></td><td style="" class="rf-tab-hdr-spcr rf-tab-hortab-tabspcr-wdh" aria-hidden="true"><br /></td><td style="padding-right: 5px; width: 100%;" class="rf-tab-hdr-spcr" aria-hidden="true"><br /></td></tr></tbody></table><div class="rf-tab-hdr-scrl-lft rf-tab-hdn">«</div><div class="rf-tab-hdr-tablst rf-tab-hdn">↓</div><div class="rf-tab-hdr-scrl-rgh rf-tab-hdn">»</div></div><div class="rf-tab-hdr-brd"></div><div id="j_id_52" class="rf-tab"><div class="rf-tab-cnt" id="j_id_52:content"></div></div><div id="j_id_53" style="display:none;"></div></div><input type="hidden" name="j_id_50_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:9" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form><div id="tableViewPanelContent" class="fl-fill fl-col tabs">
+
+    <script src="/webapi/scripts/build/schemaTree.bundle.js"></script>
+
+    <div id="schemaTreePanel" class="fl-fill fl-col"><form id="buttonForm" name="buttonForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><span id="buttonForm:j_id_58" style="display: none;"><script type="text/javascript">dropToTable=function(id,dim,comp){RichFaces.ajax("buttonForm:j_id_58",null,{"incId":"1","parameters":{"id":id,"dim":dim,"comp":comp} } )};</script></span><span id="buttonForm:j_id_5c" style="display: none;"><script type="text/javascript">manageRange=function(rowKey){RichFaces.ajax("buttonForm:j_id_5c",null,{"incId":"1","parameters":{"rowKey":rowKey} } )};</script></span><div id="buttonForm:buttonPanel" class="fl-buttons treeControlButtons">
+                <div class="fl-ai-center">
+
+                    <span>Add to:</span>
+
+                    <div class="dropdownButtonGroup"><input id="buttonForm:addR" name="buttonForm:addR" onclick="return false;" value="Row" class="inactiveButton buttonWithDropdown" disabled="disabled" title="Add selected items to the table row" type="submit" />
+                        <div class="dropdown">
+                                    <button id="disabledAddToRowButton" class="inactiveButton dropdownButton" disabled="disabled" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="/webapi/images/glyphicons/svg/glyphicons-602-chevron-down-666.svg" alt="" />
+                                    </button>
+                            <ul class="dropdown-menu" aria-labelledby="disabledAddToRowButton">
+                                <li><a href="#" id="buttonForm:j_id_5l" name="buttonForm:j_id_5l" onclick="RichFaces.ajax(&quot;buttonForm:j_id_5l&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="dropdown-item" tabindex="-1">Add in selection order</a>
+                                </li>
+                                <li><a href="#" id="buttonForm:j_id_5n" name="buttonForm:j_id_5n" onclick="RichFaces.ajax(&quot;buttonForm:j_id_5n&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="dropdown-item" tabindex="-1">Add in hierarchical order</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="dropdownButtonGroup"><input id="buttonForm:addC" name="buttonForm:addC" onclick="return false;" value="Column" class="inactiveButton buttonWithDropdown" disabled="disabled" title="Add selected items to the table column" type="submit" />
+                        <div class="dropdown">
+                                    <button id="disabledAddToColumnButton" class="inactiveButton dropdownButton" disabled="disabled" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="/webapi/images/glyphicons/svg/glyphicons-602-chevron-down-666.svg" alt="" />
+                                    </button>
+                            <ul class="dropdown-menu" aria-labelledby="disabledAddToColumnButton">
+                                <li><a href="#" id="buttonForm:j_id_5t" name="buttonForm:j_id_5t" onclick="RichFaces.ajax(&quot;buttonForm:j_id_5t&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="dropdown-item" tabindex="-1">Add in selection order</a>
+                                </li>
+                                <li><a href="#" id="buttonForm:j_id_5v" name="buttonForm:j_id_5v" onclick="RichFaces.ajax(&quot;buttonForm:j_id_5v&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="dropdown-item" tabindex="-1">Add in hierarchical order</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="dropdownButtonGroup"><input id="buttonForm:addL" name="buttonForm:addL" onclick="return false;" value="Wafer" class="inactiveButton buttonWithDropdown" disabled="disabled" title="Add selected items to the table wafer" type="submit" />
+                        <div class="dropdown">
+                                    <button id="disabledAddToWaferButton" class="inactiveButton dropdownButton" disabled="disabled" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="/webapi/images/glyphicons/svg/glyphicons-602-chevron-down-666.svg" alt="" />
+                                    </button>
+                            <ul class="dropdown-menu" aria-labelledby="disabledAddToWaferButton">
+                                <li><a href="#" id="buttonForm:j_id_61" name="buttonForm:j_id_61" onclick="RichFaces.ajax(&quot;buttonForm:j_id_61&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="dropdown-item" tabindex="-1">Add in selection order</a>
+                                </li>
+                                <li><a href="#" id="buttonForm:j_id_63" name="buttonForm:j_id_63" onclick="RichFaces.ajax(&quot;buttonForm:j_id_63&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="dropdown-item" tabindex="-1">Add in hierarchical order</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div><input id="buttonForm:addS" name="buttonForm:addS" onclick="return false;" value="Filter" class="inactiveButton" disabled="disabled" title="Add selected items to the table filter" type="submit" />
+
+                    <span class="linkSeparator" role="none">|</span><input id="buttonForm:remB" name="buttonForm:remB" onclick="return false;" value="Remove" class="inactiveButton" disabled="disabled" title="Remove selected items from the table" type="submit" />
+                </div></div><input type="hidden" name="buttonForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:10" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form><form id="linkForm" name="linkForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" class="fl-row-outer fl-ai-center" enctype="application/x-www-form-urlencoded"><div id="linkForm:linkPanel" class="fl-fill fl-buttons">
+                <div id="linkHeader" class="linkHeader"><a href="#" id="linkForm:colAll" name="linkForm:colAll" onclick="RichFaces.ajax(&quot;linkForm:colAll&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="activeLink">Collapse all</a>
+                    <span class="linkSeparator">|</span><span id="linkForm:untAll" class="inactiveLink">Untick all</span>
+                    <span class="linkSeparator">|</span><span id="linkForm:selNodeCount">0 items selected.  </span>
+                </div></div>
+            <div class="spinnerContainer">
+                <div id="tableSpinner" class="noDisplay" aria-label="Processing" role="status" aria-live="polite"><img src="/webapi/images/ajax_active.gif" alt="Processing" />
+                </div>
+            </div><input type="hidden" name="linkForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:11" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form><form id="treeForm" name="treeForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><span id="treeForm:j_id_6m" style="display: none;"><script type="text/javascript">tableSchemaTreeOnSelect=function(){RichFaces.ajax("treeForm:j_id_6m",null,{"incId":"1"} )};</script></span><span id="treeForm:j_id_6n" style="display: none;"><script type="text/javascript">openBulkSelection=function(rowKey){RichFaces.ajax("treeForm:j_id_6n",null,{"incId":"1","parameters":{"rowKey":rowKey} } )};</script></span><span id="treeForm:j_id_6p" style="display: none;"><script type="text/javascript">displaySchemaSelectionLimitExceededError=function(){RichFaces.ajax("treeForm:j_id_6p",null,{"incId":"1"} )};</script></span><div id="treeForm:refreshTableViewSchemaTree" class="display-none">
+                <script>
+                    SW2.schemaTrees.table.refreshFromServer();  // Before mounting so first render does not trigger it.
+                </script></div><input type="hidden" name="treeForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:12" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form>
+
+        <div id="tableViewSchemaTree" class="fl-fill"></div>
+        <script>
+            SW2.schemaTrees.table.mount("tableViewSchemaTree", {
+                labelledBy: "databaseNamePageHeadingLink",
+                onExpandedChange: tableSchemaTreeOnSelect,
+                onStateChange: tableSchemaTreeOnSelect,
+                onLoadingChange: function(loading) {
+                    loading ? SW2.schemaTree.tableSpinner.queue() : SW2.schemaTree.tableSpinner.stop()
+                },
+                onDrop: function(rowKey, dim, comp) { return dropToTable(rowKey.join("."), dim, comp); },
+                onBulkSelect: function(rowKey) { return openBulkSelection(rowKey.join(".")); },
+                onManageRange: function(rowKey) { return manageRange(rowKey.join(".")); },
+                onSelectionLimitError: displaySchemaSelectionLimitExceededError,
+                metadata: {
+                    id: "TBPersonsEnum",
+                    name: "2006 Census - Counting Persons, Place of Enumeration",
+                    locale: "en",
+                    metaUrl: "\/iLinks\/Redirect2Dict"
+                }
+            });
+        </script>
+
+        <div class="fl-row-outer"><form id="searchForm" name="searchForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" class="searchPanel" title="Search" enctype="application/x-www-form-urlencoded"><div id="searchPanel" onclick="stopPropagation(event);" onkeydown="stopPropagation(event);">
+
+                    <div class="schemaTreeBottom schemaTreeFilterSearch">
+                        <div class="schemaTreeFilterSearch">
+                            
+                            <input type="text" name="dummy" class="noDisplay" title="" /><input id="searchPattern" name="searchPattern" type="text" value="" onkeydown="stopPropagation(event);" maxlength="1024" class="schemaSearchFilter activeTextField" title="Filter tree" autocomplete="off" />
+                            <div class="schemaTreeFilterSearchButtons"><input id="searchButton" name="searchButton" onclick="RichFaces.ajax(&quot;searchButton&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;begin&quot;:&quot;SW2.schemaTree.showSearchStatus(); SW2.schemaTree.disableSearchCriteria();&quot;} );return false;" alt="Search tree" class="activeButton" title="Search tree" type="image" src="/webapi/images/material/ic_filter_list_white.svg" />
+                            </div>
+                        </div>
+
+                        <div class="schemaTreeFilterSearchResultContainer">
+                            <div class="schemaTreeFilterSearchResult">
+                                <div class="schemaSearchResultMessage"><span id="searchResultMessage" role="alert"></span><span id="searchStatusMessage" class="noDisplay" role="alert">Searching...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div></div><input type="hidden" name="searchForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:13" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form><form id="j_id_7a" name="j_id_7a" method="post" action="/webapi/jsf/tableView/tableView.xhtml" class="schemaTreeBottom customDataButtonContainer" enctype="application/x-www-form-urlencoded">
+                <div><input id="j_id_7a:customData" name="j_id_7a:customData" onclick="RichFaces.ajax(&quot;j_id_7a:customData&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" value="Custom data" class="activeButton customDataButton" type="submit" />
+                </div><input type="hidden" name="j_id_7a_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:14" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form>
+        </div>
+    </div></div>
+                    </div></div></div><form id="tableJsFunctions" name="tableJsFunctions" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><span id="tableJsFunctions:j_id_81" style="display: none;"><script type="text/javascript">tableDrillDown=function(dimension,component,componentRelativeOrderedItemIndex){RichFaces.ajax("tableJsFunctions:j_id_81",null,{"incId":"1","parameters":{"dimension":dimension,"component":component,"componentRelativeOrderedItemIndex":componentRelativeOrderedItemIndex} } )};</script></span><span id="tableJsFunctions:j_id_85" style="display: none;"><script type="text/javascript">tableDrillUp=function(dimension,component,componentRelativeOrderedItemIndex){RichFaces.ajax("tableJsFunctions:j_id_85",null,{"incId":"1","parameters":{"dimension":dimension,"component":component,"componentRelativeOrderedItemIndex":componentRelativeOrderedItemIndex} } )};</script></span><span id="tableJsFunctions:j_id_89" style="display: none;"><script type="text/javascript">tableInitializeCreateDerivation=function(dimension,component){RichFaces.ajax("tableJsFunctions:j_id_89",null,{"incId":"1","parameters":{"dimension":dimension,"component":component,"javax.faces.partial.resetValues":true} ,"status":"none"} )};</script></span><span id="tableJsFunctions:j_id_8c" style="display: none;"><script type="text/javascript">tableInitializeEditDerivation=function(dimension,component,componentRelativeOrderedItemIndex){RichFaces.ajax("tableJsFunctions:j_id_8c",null,{"incId":"1","parameters":{"dimension":dimension,"component":component,"componentRelativeOrderedItemIndex":componentRelativeOrderedItemIndex} ,"status":"none"} )};</script></span><span id="tableJsFunctions:j_id_8g" style="display: none;"><script type="text/javascript">tableRemoveDerivation=function(dimension,component,componentRelativeOrderedItemIndex){RichFaces.ajax("tableJsFunctions:j_id_8g",null,{"incId":"1","parameters":{"dimension":dimension,"component":component,"componentRelativeOrderedItemIndex":componentRelativeOrderedItemIndex} } )};</script></span><span id="tableJsFunctions:j_id_8k" style="display: none;"><script type="text/javascript">tableRemoveSubjectComponent=function(component){RichFaces.ajax("tableJsFunctions:j_id_8k",null,{"incId":"1","parameters":{"component":component} } )};</script></span><span id="tableJsFunctions:j_id_8m" style="display: none;"><script type="text/javascript">tableRemoveLayerComponent=function(component){RichFaces.ajax("tableJsFunctions:j_id_8m",null,{"incId":"1","parameters":{"component":component} } )};</script></span><span id="tableJsFunctions:j_id_8o" style="display: none;"><script type="text/javascript">tableSortRow=function(component,descending){RichFaces.ajax("tableJsFunctions:j_id_8o",null,{"incId":"1","parameters":{"component":component,"descending":descending} } )};</script></span><span id="tableJsFunctions:j_id_8r" style="display: none;"><script type="text/javascript">tableUnsortRow=function(component){RichFaces.ajax("tableJsFunctions:j_id_8r",null,{"incId":"1","parameters":{"component":component} } )};</script></span><span id="tableJsFunctions:j_id_8t" style="display: none;"><script type="text/javascript">tableSortDataByColumn=function(component,descending){RichFaces.ajax("tableJsFunctions:j_id_8t",null,{"incId":"1","parameters":{"component":component,"descending":descending} } )};</script></span><span id="tableJsFunctions:j_id_8w" style="display: none;"><script type="text/javascript">tableResetSortDataByColumn=function(component){RichFaces.ajax("tableJsFunctions:j_id_8w",null,{"incId":"1","parameters":{"component":component} } )};</script></span><span id="tableJsFunctions:j_id_8y" style="display: none;"><script type="text/javascript">tableToggleTotal=function(dimension,component){RichFaces.ajax("tableJsFunctions:j_id_8y",null,{"incId":"1","parameters":{"dimension":dimension,"component":component} } )};</script></span><span id="tableJsFunctions:j_id_91" style="display: none;"><script type="text/javascript">tableToggleCode=function(dimension,component){RichFaces.ajax("tableJsFunctions:j_id_91",null,{"incId":"1","parameters":{"dimension":dimension,"component":component} } )};</script></span><span id="tableJsFunctions:j_id_94" style="display: none;"><script type="text/javascript">tableSelectWafer=function(wafer){RichFaces.ajax("tableJsFunctions:j_id_94",null,{"incId":"1","parameters":{"wafer":wafer} } )};</script></span><input type="hidden" name="tableJsFunctions_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:15" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form>
+
+            <div id="rightPane" class="fl-fill fl-col rightPane"><div id="dndDropPanel" class="fl-fill"><div id="tableViewPanel"><div id="messagePanel"></div><form id="pageForm" name="pageForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><span style="display:none;" id="pageForm:tableViewPoll"><script type="text/javascript">new RichFaces.ui.Poll("pageForm:tableViewPoll",{"interval":0,"ontimer":function(event){RichFaces.ajax("pageForm:tableViewPoll",event,{"incId":"1"} )}} )</script></span>
+                            <div><div id="pageForm:dataControlPanel" class="dataControlPanel">
+                                    <script>
+                                        //<![CDATA[
+                                        if (window.SW2 && SW2.Tour) {
+                                            SW2.Tour.dataPanelChanged();
+                                        }
+                                        //]]>
+                                    </script>
+
+                                    <div id="toolBar"><div id="pageForm:actionButtons" class="tableActionButtonsPanel"><div class="toolBar-func-disabled toolBar-func linkButton" title="Retrieve data">
+                                                <div class="retrieveDataButtonWrapper"><span id="pageForm:retB" class="retrieveDataButton">
+                                                        <span class="tableViewOptionHeader">Retrieve data</span>
+                                                        <span class="tableViewOptionBody"><img src="/webapi/images/retrieveData-disabled.png" alt="" class="retrieveDataImage" role="none" />
+                                                        </span></span><a href="#" id="pageForm:autoRetrieve" name="pageForm:autoRetrieve" onclick="RichFaces.ajax(&quot;pageForm:autoRetrieve&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="autoRetrieveDataLink" title="Automatically retrieve data when you add or remove variables">
+                                                        <span class="vAlignSpacer"></span><img src="/webapi/images/autoRetrieve-disabled.png" alt="Auto retrieve disabled" class="autoRetrieveDataImage" /></a>
+                                                </div></div><span id="pageForm:j_id_9y" style="display: none;"><script type="text/javascript">renderTable=function(){RichFaces.ajax("pageForm:j_id_9y",null,{"incId":"1"} )};</script></span><div class="toolBar-func-disabled toolBar-func linkButton" title="Clear table"><span id="pageForm:clearButton">
+                                                    <span class="tableViewOptionHeader">
+                                                        Clear table
+                                                    </span>
+                                                    <span class="tableViewOptionBody"><img src="/webapi/images/clearTable-disabled.png" alt="" role="none" />
+                                                    </span></span></div><div class="toolBar-func-disabled toolBar-func linkButton" title="Save table"><span id="pageForm:saveTableLinkId">
+                                                    <span class="tableViewOptionHeader">
+                                                        Save table
+                                                    </span>
+                                                    <span class="tableViewOptionBody"><img id="pageForm:activeSaveImg" src="/webapi/images/saveTable-disabled.png" alt="" role="none" />
+                                                    </span></span></div><div class="toolBar-func-disabled toolBar-func linkButton" title="Print table"><span id="pageForm:printButton">
+                                                    <span class="tableViewOptionHeader">
+                                                        Print table
+                                                    </span>
+                                                    <span class="tableViewOptionBody"><img src="/webapi/images/printTable-disabled.png" alt="" role="none" />
+                                                    </span></span></div><div id="pageForm:table-settings-menu" class="toolBar-submenu" title="Table options">
+                                                <div class="dropdown">
+                                                    <a id="table-settings-toggler" role="button" title="Table view options" data-bs-toggle="dropdown" class="mainToggle dropdown-toggle" aria-haspopup="true" aria-expanded="false" href="#" onclick="event.preventDefault();">
+                                                       <span class="tableViewOptionHeader">Options</span><img src="/webapi/images/glyphicons/png/glyphicons_137_cogwheels.png" alt="Table view options" />
+                                                    </a>
+
+                                                    <ul class="dropdown-menu dropdown-menu-left multi-level" role="menu" aria-labelledby="table-settings-toggler">
+                                                        
+                                                        <li class="table-settings-menu-item dropdown-submenu" role="none">
+                                                            <a id="zeroSuppressionSubmenuToggle" class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" href="#" onclick="event.preventDefault();" role="menuitem" aria-haspopup="true" aria-expanded="false" tabindex="-1">
+                                                                Zero suppression
+                                                            </a>
+                                                            <ul class="dropdown-menu" role="menu" aria-labelledby="zeroSuppressionSubmenuToggle">
+                                                                <li role="none"><a href="#" id="pageForm:zeroSuppressRows" name="pageForm:zeroSuppressRows" onclick="RichFaces.ajax(&quot;pageForm:zeroSuppressRows&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="toggleLink dropdown-item " role="menuitemcheckbox" tabindex="-1" aria-checked="false">Rows</a>
+                                                                </li>
+                                                                <li role="none"><a href="#" id="pageForm:zeroSuppressCols" name="pageForm:zeroSuppressCols" onclick="RichFaces.ajax(&quot;pageForm:zeroSuppressCols&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="toggleLink dropdown-item " role="menuitemcheckbox" tabindex="-1" aria-checked="false">Columns</a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                        <li class="table-settings-menu-item dropdown-submenu " id="percentages-control" role="none">
+                                                            <a id="percentagesSubmenuToggle" href="#" onclick="event.preventDefault();" class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" role="menuitem" aria-haspopup="true" aria-expanded="false" tabindex="-1">
+                                                                Percentages
+                                                            </a>
+                                                                <ul id="percentages-options-ul" class="dropdown-menu" role="menu" aria-labelledby="percentagesSubmenuToggle">
+                                                                        <li role="none"><a href="#" id="pageForm:j_id_b9:0:j_id_bb" name="pageForm:j_id_b9:0:j_id_bb" onclick="RichFaces.ajax(&quot;pageForm:j_id_b9:0:j_id_bb&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="toggleLink dropdown-item selected" role="menuitemradio" tabindex="-1" aria-checked="true">None</a>
+                                                                        </li>
+                                                                        <li role="none"><a href="#" id="pageForm:j_id_b9:1:j_id_bb" name="pageForm:j_id_b9:1:j_id_bb" onclick="RichFaces.ajax(&quot;pageForm:j_id_b9:1:j_id_bb&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="toggleLink dropdown-item " role="menuitemradio" tabindex="-1" aria-checked="false">Row</a>
+                                                                        </li>
+                                                                        <li role="none"><a href="#" id="pageForm:j_id_b9:2:j_id_bb" name="pageForm:j_id_b9:2:j_id_bb" onclick="RichFaces.ajax(&quot;pageForm:j_id_b9:2:j_id_bb&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="toggleLink dropdown-item " role="menuitemradio" tabindex="-1" aria-checked="false">Column</a>
+                                                                        </li>
+                                                                        <li role="none"><a href="#" id="pageForm:j_id_b9:3:j_id_bb" name="pageForm:j_id_b9:3:j_id_bb" onclick="RichFaces.ajax(&quot;pageForm:j_id_b9:3:j_id_bb&quot;,event,{&quot;incId&quot;:&quot;1&quot;} );return false;" class="toggleLink dropdown-item " role="menuitemradio" tabindex="-1" aria-checked="false">Total</a>
+                                                                        </li>
+                                                                </ul>
+                                                        </li>
+
+                                                    </ul>
+                                                </div></div><div id="pageForm:dndTrashCtrl" class="dndTrashControl toolBar-func-wrapper" title="Drag and drop variables to remove them from your table"><div class="toolBar-func-disabled toolBar-func dndBoxContainer">
+                                                    <div id="dndTrash" class="dndBox" title="Drag and drop variables to remove them from your table">
+                                                        <div class="tableViewOptionHeader">
+                                                            <span>Remove</span>
+                                                        </div>
+                                                        <div class="tableViewOptionBody"><img src="/webapi/images/trash-disabled.png" alt="Remove" class="bin-normal" /><img src="/webapi/images/trash_hover.png" alt="Remove" class="bin-hovered" />
+                                                        </div>
+                                                    </div></div></div>
+
+                                            <div style="clear:both;"></div>
+
+                                            <script>
+                                                SW2.settingsMenu.init("#pageForm\\:table-settings-menu", true);
+                                            </script></div>
+                                    </div><table id="pageForm:transformPanel" class="tableTransformPanel"><tbody><tr><td><input id="pageForm:swapRowsWithColumnsButton" name="pageForm:swapRowsWithColumnsButton" type="submit" value="Swap rows with columns" class="activeButton" /></td><td><input id="pageForm:swapColumnsWithLayersButton" name="pageForm:swapColumnsWithLayersButton" type="submit" value="Swap columns with layers" class="activeButton" /></td><td><input id="pageForm:swapLayersWithRowsButton" name="pageForm:swapLayersWithRowsButton" type="submit" value="Swap layers with rows" class="activeButton" /></td><td><input id="pageForm:rotateTableLeftButton" name="pageForm:rotateTableLeftButton" type="submit" value="Rotate table Left" class="activeButton" /></td><td><input id="pageForm:rotateTableRightButton" name="pageForm:rotateTableRightButton" type="submit" value="Rotate table Right" class="activeButton" /></td></tr></tbody></table></div><div id="pageForm:dataPanel">
+                                    <script>
+                                        /* Insert get annotation desc by key function */
+                                        function getAnnotationDescription(key){
+var annoDescriptions = new Object();
+return annoDescriptions[key];}
+                                    </script><div id="pageForm:dataTable:emptyEditableTableGroup" class="tableDescriptionItem"><span id="pageForm:dataTable:emptyTableHeader" class="tableTitle">Your table is empty. Add variables from the list on the left.</span>
+                                                <table aria-describedby="pageForm:dataTable:emptyTableHeader" id="pageForm:dataTable" class="crossTabTable" style="margin-top:10px; margin-bottom: 15px;">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="columnTitleHeader" colspan="2">
+                                                            <div id="pageForm:dataTable:columnTitleHeaderDndBox" class="dndBox"></div>
+                                                        </th>
+                                                        <th class="columnLabelHeader"></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <th class="rowLabelHeader"></th>
+                                                        <th class="rowLabel topRowLabel bottomRowLabel leftRowLabel topLeftRowLabel bottomLeftRowLabel"></th>
+                                                        <td class="dataCell topDataCell bottomDataCell leftDataCell topLeftDataCell bottomLeftDataCell rightDataCell topRightDataCell bottomRightDataCell">
+                                                            <span class="cell-data">-</span>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table></div><span id="pageForm:j_id_d2" style="display: none;"><script type="text/javascript">handleDnD=function(){RichFaces.ajax("pageForm:j_id_d2",null,{"incId":"1"} )};</script></span><div id="pageForm:footNotePanel"><div class="tableFootnote"><div class="tableFootnote">Data source: Census of Population and Housing, 2006, TableBuilder</div></div><table id="pageForm:confidentialityLink" class="tableFootnote"><tbody><tr><td>See <a href="/iLinks/Redirect2Confid?dbid=TBPersonsEnum" id="pageForm:curl" name="pageForm:curl" target="_blank">Data confidentiality</a> to understand how TableBuilder confidentialises your tables</td></tr></tbody></table><span id="pageForm:customiseTableMessage"></span>
+                                        <div style="clear: both;"></div></div></div>
+                            </div><input type="hidden" name="pageForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:16" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form></div><div id="docModalPanel"><div id="modalSaveTable" style="visibility: hidden; display: inline-block;" aria-labelledby="modalSaveTable_header_content"><div class="rf-pp-shade" id="modalSaveTable_shade" style="z-index:100;" aria-labelledby="modalSaveTable_header_content"><button class="rf-pp-btn" id="modalSaveTableFirstHref" name="modalSaveTablefirstHref" aria-labelledby="modalSaveTable_header_content"></button></div><div class="rf-pp-cntr modalSave" id="modalSaveTable_container" style="position: fixed; z-index:100; " role="dialog" aria-labelledby="modalSaveTable_header_content"><div class="rf-pp-shdw" id="modalSaveTable_shadow" aria-labelledby="modalSaveTable_header_content"></div><div class="rf-pp-hdr " id="modalSaveTable_header" aria-labelledby="modalSaveTable_header_content"><div class="rf-pp-hdr-cnt" id="modalSaveTable_header_content" aria-labelledby="modalSaveTable_header_content">Save table</div></div><div class="rf-pp-cnt-scrlr" id="modalSaveTable_content_scroller" aria-labelledby="modalSaveTable_header_content"><div class="rf-pp-cnt" id="modalSaveTable_content" aria-labelledby="modalSaveTable_header_content"><form id="saveTableForm" name="saveTableForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded">
+            <div class="str-pp-cnt-body"><div id="saveTableForm:saveTableErrors"></div>
+
+                <div class="str-pp-cnt-section"><label for="saveTableForm:saveTableFld">Name:</label><input id="saveTableForm:saveTableFld" name="saveTableForm:saveTableFld" type="text" value="" class="activeTextField" />
+                </div>
+
+                <div class="str-pp-cnt-section"><span id="saveTableForm:locationLabel">Location:</span><span id="saveTableForm:j_id_ej" style="display: none;"><script type="text/javascript">saveTableTreeChangeRender=function(){RichFaces.ajax("saveTableForm:j_id_ej",null,{"incId":"1"} )};</script></span>
+                    <div id="saveTableTree" class="treeContainer"></div>
+                    <script>
+                        SW2.catalogueTrees.saveTable.mount("saveTableTree", {
+                            labelledBy: "saveTableForm:locationLabel",
+                            onCurrentChange: saveTableTreeChangeRender
+                        });
+                    </script>
+                </div>
+            </div><div id="saveTableForm:saveTableButtonPanel" class="str-pp-cnt-footer">
+                <div class="modalButtons"><input id="saveTableForm:cancelSaveTableButton" name="saveTableForm:cancelSaveTableButton" onclick="jsf.util.chain(this,event,&quot;modal.cancelModal('modalSaveTable');&quot;,&quot;RichFaces.ajax(\&quot;saveTableForm:cancelSaveTableButton\&quot;,event,{\&quot;incId\&quot;:\&quot;1\&quot;,\&quot;status\&quot;:\&quot;none\&quot;} )&quot;);return false;" value="Cancel" class="activeButton" type="button" /><input id="saveTableForm:saveTableButton" name="saveTableForm:saveTableButton" onclick="RichFaces.ajax(&quot;saveTableForm:saveTableButton&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;begin&quot;:&quot;modal.submitBegin(100, this, 'saveTableForm:cancelSaveTableButton');&quot;,&quot;status&quot;:&quot;none&quot;} );return false;" value="Save" class="activeButton" type="submit" />
+                </div></div><span id="saveTableForm:saveHotKey" style="display: none;"><script type="text/javascript">new RichFaces.ui.HotKey("saveTableForm:saveHotKey",  {"key":"return","selector":"#saveTableForm"} );</script></span><span id="saveTableForm:closeHotKey" style="display: none;"><script type="text/javascript">new RichFaces.ui.HotKey("saveTableForm:closeHotKey",  {"key":"esc","selector":"#saveTableForm"} );</script></span><input type="hidden" name="saveTableForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:17" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form></div></div></div><script type="text/javascript" aria-labelledby="modalSaveTable_header_content">new RichFaces.ui.PopupPanel("modalSaveTable",{"autosized":true,"onshow":function(event){document.getElementById('saveTableForm:saveTableFld').focus();}} );</script></div>
+    <script>modal.fixInitialStyle("modalSaveTable");</script><div id="modalDerivation" style="visibility: hidden; display: inline-block;" aria-labelledby="modalDerivation_header_content"><div class="rf-pp-shade" id="modalDerivation_shade" style="z-index:100;" aria-labelledby="modalDerivation_header_content"><button class="rf-pp-btn" id="modalDerivationFirstHref" name="modalDerivationfirstHref" aria-labelledby="modalDerivation_header_content"></button></div><div class="rf-pp-cntr modalDerivation" id="modalDerivation_container" style="position: fixed; z-index:100; " role="dialog" aria-labelledby="modalDerivation_header_content"><div class="rf-pp-shdw" id="modalDerivation_shadow" aria-labelledby="modalDerivation_header_content"></div><div class="rf-pp-hdr " id="modalDerivation_header" aria-labelledby="modalDerivation_header_content"><div class="rf-pp-hdr-cnt" id="modalDerivation_header_content" aria-labelledby="modalDerivation_header_content">Define derivation</div></div><div class="rf-pp-cnt-scrlr" id="modalDerivation_content_scroller" aria-labelledby="modalDerivation_header_content"><div class="rf-pp-cnt" id="modalDerivation_content" aria-labelledby="modalDerivation_header_content"></div></div></div><script type="text/javascript" aria-labelledby="modalDerivation_header_content">new RichFaces.ui.PopupPanel("modalDerivation",{"autosized":true,"onshow":function(event){handleModalDerivationFormShown()}} );</script></div>
+    <script>modal.fixInitialStyle("modalDerivation");</script>
+
+    <script>
+        //<![CDATA[
+        var DOWNLOAD_SERVLET_LOCATION = "..\/downloadTable";
+        //]]>
+    </script><form id="dummyform" name="dummyform" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><div id="dummyform:dummyTabPanel" class="rf-tbp noDisplay"><input id="dummyform:dummyTabPanel-value" name="dummyform:dummyTabPanel-value" type="hidden" value="" /><div id="dummyform:dummyTabPanelheader" class="rf-tab-hdr-tabline-vis rf-tab-hdr-tabline-top"><table class="rf-tab-hdr-tabs" style="border-collapse: collapse; border-spacing: 0;" role="none"><tbody><tr><td style="padding-left: 5px;" class="rf-tab-hdr-spcr" aria-hidden="true"><br /></td><td style="padding-right: 5px; width: 100%;" class="rf-tab-hdr-spcr" aria-hidden="true"><br /></td></tr></tbody></table><div class="rf-tab-hdr-scrl-lft rf-tab-hdn">«</div><div class="rf-tab-hdr-tablst rf-tab-hdn">↓</div><div class="rf-tab-hdr-scrl-rgh rf-tab-hdn">»</div></div><div class="rf-tab-hdr-brd"></div></div><input type="hidden" name="dummyform_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:18" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form><div id="confirmation" style="visibility: hidden; display: inline-block;" aria-labelledby="confirmation_header_content"><div class="rf-pp-shade" id="confirmation_shade" style="z-index:100;" aria-labelledby="confirmation_header_content"><button class="rf-pp-btn" id="confirmationFirstHref" name="confirmationfirstHref" aria-labelledby="confirmation_header_content"></button></div><div class="rf-pp-cntr modalDeleteRanges" id="confirmation_container" style="position: fixed; z-index:100; " role="dialog" aria-labelledby="confirmation_header_content"><div class="rf-pp-shdw" id="confirmation_shadow" aria-labelledby="confirmation_header_content"></div><div class="rf-pp-hdr " id="confirmation_header" aria-labelledby="confirmation_header_content"><div class="rf-pp-hdr-cnt" id="confirmation_header_content" aria-labelledby="confirmation_header_content">Are you sure?</div></div><div class="rf-pp-cnt-scrlr" id="confirmation_content_scroller" aria-labelledby="confirmation_header_content"><div class="rf-pp-cnt" id="confirmation_content" aria-labelledby="confirmation_header_content"><form id="confirmationForm" name="confirmationForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded">
+                <div class="str-pp-cnt-body">
+                    <div class="str-pp-cnt-section"><span id="confirmationForm:deleteTitle"></span>
+                    </div>
+
+                    <div class="str-pp-cnt-section table"><table id="confirmationForm:dependentRecodePanel" class="rf-dt sw2Table fullWidth"><colgroup span="2"></colgroup><thead id="confirmationForm:dependentRecodePanel:th" class="rf-dt-thd"><tr id="confirmationForm:dependentRecodePanel:ch" class="rf-dt-shdr"><th class="rf-dt-shdr-c" scope="col" id="confirmationForm:dependentRecodePanel:j_id_gu">Group name</th><th class="rf-dt-shdr-c" scope="col" id="confirmationForm:dependentRecodePanel:j_id_gx">Last modified</th></tr></thead><tbody id="confirmationForm:dependentRecodePanel:tb" class="rf-dt-b"><tr class="rf-dt-nd"><td colspan="2" class="rf-dt-nd-c" style="display: none;"></td></tr></tbody><tbody id="confirmationForm:dependentRecodePanel:sc" style="display: none;"><tr><td colspan="2"><script type="text/javascript">new RichFaces.ui.DataTable("confirmationForm:dependentRecodePanel",{"ajaxEventOptions":{} } )</script></td></tr></tbody></table>
+                    </div>
+
+                    <div class="str-pp-cnt-section table"><table id="confirmationForm:dependentTablesPanel" class="rf-dt sw2Table fullWidth"><colgroup span="2"></colgroup><thead id="confirmationForm:dependentTablesPanel:th" class="rf-dt-thd"><tr id="confirmationForm:dependentTablesPanel:ch" class="rf-dt-shdr"><th class="rf-dt-shdr-c" scope="col" id="confirmationForm:dependentTablesPanel:j_id_h2">Table name</th><th class="rf-dt-shdr-c" scope="col" id="confirmationForm:dependentTablesPanel:j_id_h5">Last modified</th></tr></thead><tbody id="confirmationForm:dependentTablesPanel:tb" class="rf-dt-b"><tr class="rf-dt-nd"><td colspan="2" class="rf-dt-nd-c" style="display: none;"></td></tr></tbody><tbody id="confirmationForm:dependentTablesPanel:sc" style="display: none;"><tr><td colspan="2"><script type="text/javascript">new RichFaces.ui.DataTable("confirmationForm:dependentTablesPanel",{"ajaxEventOptions":{} } )</script></td></tr></tbody></table>
+                    </div>
+                </div>
+
+                <div class="str-pp-cnt-footer">
+                    <div class="modalButtons"><input id="confirmationForm:udfConfirmCancelLink" name="confirmationForm:udfConfirmCancelLink" onclick="jsf.util.chain(this,event,&quot;RichFaces.component('confirmation').hide()&quot;,&quot;RichFaces.ajax(\&quot;confirmationForm:udfConfirmCancelLink\&quot;,event,{\&quot;incId\&quot;:\&quot;1\&quot;,\&quot;status\&quot;:\&quot;none\&quot;} )&quot;);return false;" value="Cancel" class="activeButton" type="button" /><input id="confirmationForm:udfConfirmDeleteLink" name="confirmationForm:udfConfirmDeleteLink" onclick="RichFaces.ajax(&quot;confirmationForm:udfConfirmDeleteLink&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;begin&quot;:&quot;modal.submitBegin(100, this, 'confirmationForm:udfConfirmCancelLink');&quot;,&quot;status&quot;:&quot;none&quot;} );return false;" value="OK" class="activeButton" type="submit" />
+                    </div>
+                </div><input type="hidden" name="confirmationForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:19" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form></div></div></div><script type="text/javascript" aria-labelledby="confirmation_header_content">new RichFaces.ui.PopupPanel("confirmation",{"autosized":true,"onshow":function(event){window.SW2.util.focusElement('confirmationForm:udfConfirmCancelLink');}} );</script></div>
+        <script>modal.fixInitialStyle("confirmation");</script><div id="modalRanges" style="visibility: hidden; display: inline-block;" aria-labelledby="modalRanges_header_content"><div class="rf-pp-shade" id="modalRanges_shade" style="z-index:100;" aria-labelledby="modalRanges_header_content"><button class="rf-pp-btn" id="modalRangesFirstHref" name="modalRangesfirstHref" aria-labelledby="modalRanges_header_content"></button></div><div class="rf-pp-cntr modalRanges" id="modalRanges_container" style="position: fixed; z-index:100; " role="dialog" aria-labelledby="modalRanges_header_content"><div class="rf-pp-shdw" id="modalRanges_shadow" aria-labelledby="modalRanges_header_content"></div><div class="rf-pp-hdr " id="modalRanges_header" aria-labelledby="modalRanges_header_content"><div class="rf-pp-hdr-cnt" id="modalRanges_header_content" aria-labelledby="modalRanges_header_content">Range of NO SUMMATION CURRENTLY SET</div></div><div class="rf-pp-cnt-scrlr" id="modalRanges_content_scroller" aria-labelledby="modalRanges_header_content"><div class="rf-pp-cnt" id="modalRanges_content" aria-labelledby="modalRanges_header_content"><form id="masterRangesModal" name="masterRangesModal" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded"><div>
+
+    <div class="str-pp-cnt-body">
+        <div class="str-pp-cnt-section"><label for="masterRangesModal:itemName">Name</label><input id="masterRangesModal:itemName" name="masterRangesModal:itemName" type="text" value="" maxlength="25" />
+        </div>
+
+        <div class="str-pp-cnt-section noSpace"><div id="masterRangesModal:curTabPanel" class="rf-tbp"><input id="masterRangesModal:curTabPanel-value" name="masterRangesModal:curTabPanel-value" type="hidden" value="custom" /><div id="masterRangesModal:curTabPanelheader" class="rf-tab-hdr-tabline-vis rf-tab-hdr-tabline-top"><table class="rf-tab-hdr-tabs" style="border-collapse: collapse; border-spacing: 0;" role="none"><tbody><tr><td style="padding-left: 5px;" class="rf-tab-hdr-spcr" aria-hidden="true"><br /></td><td id="masterRangesModal:custom:header" class="rf-tab-hdr rf-tab-hdr-act rf-tab-hdr-top" style="" data-tabname="custom"><span class="rf-tab-lbl">Custom ranges</span></td><td style="" class="rf-tab-hdr-spcr rf-tab-hortab-tabspcr-wdh" aria-hidden="true"><br /></td><td id="masterRangesModal:quantile:header" class="rf-tab-hdr rf-tab-hdr-inact rf-tab-hdr-top" style="" data-tabname="quantile"><span class="rf-tab-lbl"><a href="#" onclick="return false;">Quantile</a></span></td><td style="" class="rf-tab-hdr-spcr rf-tab-hortab-tabspcr-wdh" aria-hidden="true"><br /></td><td style="padding-right: 5px; width: 100%;" class="rf-tab-hdr-spcr" aria-hidden="true"><br /></td></tr></tbody></table><div class="rf-tab-hdr-scrl-lft rf-tab-hdn">«</div><div class="rf-tab-hdr-tablst rf-tab-hdn">↓</div><div class="rf-tab-hdr-scrl-rgh rf-tab-hdn">»</div></div><div class="rf-tab-hdr-brd"></div><div id="masterRangesModal:custom" class="rf-tab"><div class="rf-tab-cnt" id="masterRangesModal:custom:content"><table class="modalTable input"><tbody><tr class="str-table-section"><td><label id="masterRangesModal:customFromLabel" for="masterRangesModal:customFrom">From</label></td><td><input id="masterRangesModal:customFrom" name="masterRangesModal:customFrom" type="text" value="" class="modalFixedWidthInput" /></td><td><select id="masterRangesModal:fromEquality" name="masterRangesModal:fromEquality" size="1" onchange="jsf.ajax.request(this,event,{execute:'masterRangesModal:fromEquality ',render:'masterRangesModal:toEquality ','javax.faces.behavior.event':'change'})">	<option value="CLOSED">&le;</option>	<option value="OPEN" selected="selected">&lt;</option></select></td><td></td></tr><tr class="str-table-section"><td><label id="masterRangesModal:customToLabel" for="masterRangesModal:customTo">To</label></td><td><input id="masterRangesModal:customTo" name="masterRangesModal:customTo" type="text" value="" class="modalFixedWidthInput" /></td><td><select id="masterRangesModal:toEquality" name="masterRangesModal:toEquality" size="1" onchange="jsf.ajax.request(this,event,{execute:'masterRangesModal:toEquality ',render:'masterRangesModal:fromEquality ','javax.faces.behavior.event':'change'})">	<option value="CLOSED" selected="selected">&le;</option>	<option value="OPEN">&lt;</option></select></td><td></td></tr><tr class="str-table-section"><td><label id="masterRangesModal:customIncrementLabel" for="masterRangesModal:customIncrement">Increment</label></td><td><input id="masterRangesModal:customIncrement" name="masterRangesModal:customIncrement" type="text" value="" class="modalFixedWidthInput" /></td><td>
+        <div></div></td><td></td></tr></tbody></table></div></div><div id="masterRangesModal:quantile" style="display:none;"></div></div>
+        </div><div id="masterRangesModal:nextScreenValidationMessage"></div><span id="masterRangesModal:quantileFilterMoveValidationMessage"></span>
+    </div><div id="masterRangesModal:dialogueButtonPanel" class="str-pp-cnt-footer">
+        <div class="modalButtons"><input id="masterRangesModal:close-link" name="masterRangesModal:close-link" onclick="RichFaces.ajax(&quot;masterRangesModal:close\u002Dlink&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;parameters&quot;:{&quot;javax.faces.partial.resetValues&quot;:true} ,&quot;status&quot;:&quot;none&quot;} );return false;" value="Cancel" class="activeButton" type="button" /><input id="masterRangesModal:next-screen" name="masterRangesModal:next-screen" onclick="RichFaces.ajax(&quot;masterRangesModal:next\u002Dscreen&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;status&quot;:&quot;none&quot;} );return false;" value="Next" class="activeButton" type="submit" />
+        </div></div></div><input type="hidden" name="masterRangesModal_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:20" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form></div></div></div><script type="text/javascript" aria-labelledby="modalRanges_header_content">new RichFaces.ui.PopupPanel("modalRanges",{"autosized":true,"onshow":function(event){resetTab(true, 'custom'); setRangesInitialFocus('custom');}} );</script></div>
+    <script>modal.fixInitialStyle("modalRanges");</script>
+
+    <script>
+        function bulkSelectionCaptureKeyPress() {
+            var $elem = $(document.getElementById("bulkSelectionFilterInput"));
+            $elem.off("keypress");
+            $elem.on("keypress", function(event) {
+                var keyCode = event.which || event.keyCode;
+                if (13 === keyCode) {
+                    $(document.getElementById("bulkSelectionFilterButton")).click();
+                    return false;
+                }
+                return true;
+            });
+        }
+    </script><div id="bulkSelectionDialog" style="visibility: hidden; display: inline-block;" aria-labelledby="bulkSelectionDialog_header_content"><div class="rf-pp-shade" id="bulkSelectionDialog_shade" style="z-index:100;" aria-labelledby="bulkSelectionDialog_header_content"><button class="rf-pp-btn" id="bulkSelectionDialogFirstHref" name="bulkSelectionDialogfirstHref" aria-labelledby="bulkSelectionDialog_header_content"></button></div><div class="rf-pp-cntr bulkSelection" id="bulkSelectionDialog_container" style="position: fixed; z-index:100; " role="dialog" aria-labelledby="bulkSelectionDialog_header_content"><div class="rf-pp-shdw" id="bulkSelectionDialog_shadow" aria-labelledby="bulkSelectionDialog_header_content"></div><div class="rf-pp-hdr " id="bulkSelectionDialog_header" aria-labelledby="bulkSelectionDialog_header_content"><div class="rf-pp-hdr-cnt" id="bulkSelectionDialog_header_content" aria-labelledby="bulkSelectionDialog_header_content"></div></div><div class="rf-pp-cnt-scrlr" id="bulkSelectionDialog_content_scroller" aria-labelledby="bulkSelectionDialog_header_content"><div class="rf-pp-cnt" id="bulkSelectionDialog_content" aria-labelledby="bulkSelectionDialog_header_content"><form id="bulkSelectionForm" name="bulkSelectionForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded">
+            <div class="str-pp-cnt-body">
+                <div class="str-pp-cnt-section horizontal"><input id="bulkSelectionForm:bulkSelectionFilterInput" name="bulkSelectionForm:bulkSelectionFilterInput" type="text" value="" maxlength="100" class="activeTextField fl-fit" /><input id="bulkSelectionForm:bulkSelectionFilterButton" name="bulkSelectionForm:bulkSelectionFilterButton" onclick="RichFaces.ajax(&quot;bulkSelectionForm:bulkSelectionFilterButton&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;status&quot;:&quot;none&quot;} );return false;" value="Filter" class="activeButton" type="submit" />
+                </div>
+
+                <div class="str-pp-cnt-section"><ul class="sw2TableList rf-ulst" id="bulkSelectionForm:bulkSelectionResults"><li style="display:none"></li></ul><span class="rf-ds sw2Pagination" id="bulkSelectionForm:bulkSelectionResultsScroller" style="display:none"></span>
+                </div>
+            </div>
+
+            <div class="str-pp-cnt-footer">
+                <div class="modalButtons"><input id="bulkSelectionForm:cancelButton" name="bulkSelectionForm:cancelButton" onclick="jsf.util.chain(this,event,&quot;RichFaces.component('bulkSelectionDialog').hide()&quot;,&quot;RichFaces.ajax(\&quot;bulkSelectionForm:cancelButton\&quot;,event,{\&quot;incId\&quot;:\&quot;1\&quot;,\&quot;status\&quot;:\&quot;none\&quot;} )&quot;);return false;" value="Close" class="activeButton" type="button" /><input id="bulkSelectionForm:okButton" name="bulkSelectionForm:okButton" onclick="RichFaces.ajax(&quot;bulkSelectionForm:okButton&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;begin&quot;:&quot;modal.submitBegin(100, this, 'bulkSelectionForm:cancelButton');&quot;,&quot;status&quot;:&quot;none&quot;} );return false;" value="OK" class="activeButton" type="submit" />
+                </div>
+            </div><input type="hidden" name="bulkSelectionForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:21" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form></div></div></div><script type="text/javascript" aria-labelledby="bulkSelectionDialog_header_content">new RichFaces.ui.PopupPanel("bulkSelectionDialog",{"autosized":true,"onbeforeshow":function(event){bulkSelectionCaptureKeyPress();},"onshow":function(event){window.SW2.util.focusElement('bulkSelectionForm:bulkSelectionFilterInput');}} );</script></div>
+    <script>modal.fixInitialStyle("bulkSelectionDialog");</script><div id="docPanel" style="visibility: hidden; display: inline-block;" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText"><div class="rf-pp-shade" id="docPanel_shade" style="z-index:100;" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText"><button class="rf-pp-btn" id="docPanelFirstHref" name="docPanelfirstHref" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText"></button></div><div class="rf-pp-cntr dutyOfCare" id="docPanel_container" style="position: fixed; z-index:100; " role="dialog" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText"><div class="rf-pp-shdw" id="docPanel_shadow" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText"></div><div class="rf-pp-hdr " id="docPanel_header" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText"><div class="rf-pp-hdr-cnt" id="docPanel_header_content" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText">Check what you are counting in the filter</div></div><div class="rf-pp-cnt-scrlr" id="docPanel_content_scroller" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText"><div class="rf-pp-cnt" id="docPanel_content" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText"><form id="docForm" name="docForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded">
+            <div class="str-pp-cnt-body">
+                <div class="str-pp-cnt-section"><span id="docForm:dutyOfCareText">The table contains variables which can be counted using different types of records. When dealing with multiple types of records, there is a risk of misinterpreting by counting the wrong data.</span>
+                </div>
+
+                <div class="str-pp-cnt-section"><label id="docForm:dutyOfCareCaption" for="docForm:selectedSumOption">Select a summation option, which will determine what exactly you are counting</label>
+                </div>
+
+                <div class="str-pp-cnt-section"><select id="docForm:selectedSumOption" name="docForm:selectedSumOption" size="1" aria-labelledby="docForm:dutyOfCareCaption"></select>
+                </div>
+            </div>
+
+            <div class="str-pp-cnt-footer"><img id="docForm:docStatus" src="/webapi/images/ajax_active.gif" alt="Processing" class="modalLoading noDisplay" />
+                <div class="modalButtons"><input id="docForm:cancelDocButton" name="docForm:cancelDocButton" onclick="jsf.util.chain(this,event,&quot;RichFaces.component('docPanel').hide()&quot;,&quot;RichFaces.ajax(\&quot;docForm:cancelDocButton\&quot;,event,{\&quot;incId\&quot;:\&quot;1\&quot;,\&quot;status\&quot;:\&quot;none\&quot;} )&quot;);return false;" value="Cancel" class="activeButton" type="button" /><input id="docForm:okDocButton" name="docForm:okDocButton" onclick="RichFaces.ajax(&quot;docForm:okDocButton&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;begin&quot;:&quot;modal.showLoading('docForm:docStatus');modal.submitBegin(0, this, 'docForm:cancelDocButton');&quot;,&quot;status&quot;:&quot;none&quot;} );return false;" value="OK" class="activeButton" type="submit" />
+                </div>
+            </div><span id="docForm:closeHotKey" style="display: none;"><script type="text/javascript">new RichFaces.ui.HotKey("docForm:closeHotKey",  {"key":"esc","selector":"#docForm"} );</script></span><input type="hidden" name="docForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:22" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form></div></div></div><script type="text/javascript" aria-labelledby="docPanel_header_content" aria-describedby="docForm:dutyOfCareText">new RichFaces.ui.PopupPanel("docPanel",{"autosized":true,"onshow":function(event){window.SW2.util.focusElement('docForm:selectedSumOption')}} );</script></div>
+    <script>modal.fixInitialStyle("docPanel");</script><div id="largeTableModePanel" style="visibility: hidden; display: inline-block;" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage"><div class="rf-pp-shade" id="largeTableModePanel_shade" style="z-index:100;" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage"><button class="rf-pp-btn" id="largeTableModePanelFirstHref" name="largeTableModePanelfirstHref" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage"></button></div><div class="rf-pp-cntr largeTableModePanel" id="largeTableModePanel_container" style="position: fixed; z-index:100; " role="dialog" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage"><div class="rf-pp-shdw" id="largeTableModePanel_shadow" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage"></div><div class="rf-pp-hdr " id="largeTableModePanel_header" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage"><div class="rf-pp-hdr-cnt" id="largeTableModePanel_header_content" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage">Entering large table preview mode</div></div><div class="rf-pp-cnt-scrlr" id="largeTableModePanel_content_scroller" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage"><div class="rf-pp-cnt" id="largeTableModePanel_content" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage"><form id="largeTableModeForm" name="largeTableModeForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded">
+            <div class="str-pp-cnt-body">
+                <div class="str-pp-cnt-section"><span id="largeTableModeForm:ltmMessage">You are about to enter large table summary mode. You can continue to edit the table's structure and content. When ready, click the Queue table button to populate your table with data.</span>
+                </div>
+
+                <div class="str-pp-cnt-section horizontal fl-ai-center"><input id="largeTableModeForm:largeTableAutoPreview" type="checkbox" name="largeTableModeForm:largeTableAutoPreview" value="true" /><label for="largeTableModeForm:largeTableAutoPreview">Don't show this message again</label>
+                </div>
+            </div>
+
+            <div class="str-pp-cnt-footer"><img id="largeTableModeForm:ltmStatus" src="/webapi/images/ajax_active.gif" alt="Processing" class="modalLoading noDisplay" />
+                <div class="modalButtons"><input id="largeTableModeForm:cancelLtmButton" name="largeTableModeForm:cancelLtmButton" onclick="jsf.util.chain(this,event,&quot;RichFaces.component('largeTableModePanel').hide()&quot;,&quot;RichFaces.ajax(\&quot;largeTableModeForm:cancelLtmButton\&quot;,event,{\&quot;incId\&quot;:\&quot;1\&quot;,\&quot;status\&quot;:\&quot;none\&quot;} )&quot;);return false;" value="Cancel" class="activeButton" onkeydown="modal.forceEnterToActivate(event, this);" type="button" /><input id="largeTableModeForm:largeTableModeOKButton" name="largeTableModeForm:largeTableModeOKButton" onclick="RichFaces.ajax(&quot;largeTableModeForm:largeTableModeOKButton&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;begin&quot;:&quot;modal.showLoading('largeTableModeForm:ltmStatus');modal.submitBegin(0, this, 'largeTableModeForm:cancelLtmButton');&quot;,&quot;status&quot;:&quot;none&quot;} );return false;" value="OK" class="activeButton" type="submit" />
+                </div>
+            </div><span id="largeTableModeForm:closeHotKey" style="display: none;"><script type="text/javascript">new RichFaces.ui.HotKey("largeTableModeForm:closeHotKey",  {"key":"esc","selector":"#largeTableModeForm","onkeydown":function(event){RichFaces.ui.ComponentControl.execute(event,{"callback":function(event,component){component['click'].apply(component,[] );},"selector":null,"target":["largeTableModeForm:cancelLtmButton"] } ); return false;}} );</script></span><input type="hidden" name="largeTableModeForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:23" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form></div></div></div><script type="text/javascript" aria-labelledby="largeTableModePanel_header_content" aria-describedby="largeTableModeForm:ltmMessage">new RichFaces.ui.PopupPanel("largeTableModePanel",{"width":400,"onshow":function(event){window.SW2.util.focusElement('largeTableModeForm:largeTableModeOKButton')}} );</script></div>
+    <script>modal.fixInitialStyle("largeTableModePanel");</script><div id="downloadTableModePanel" style="visibility: hidden; display: inline-block;" aria-labelledby="downloadTableModePanel_header_content"><div class="rf-pp-shade" id="downloadTableModePanel_shade" style="z-index:100;" aria-labelledby="downloadTableModePanel_header_content"><button class="rf-pp-btn" id="downloadTableModePanelFirstHref" name="downloadTableModePanelfirstHref" aria-labelledby="downloadTableModePanel_header_content"></button></div><div class="rf-pp-cntr " id="downloadTableModePanel_container" style="position: fixed; z-index:100; " role="dialog" aria-labelledby="downloadTableModePanel_header_content"><div class="rf-pp-shdw" id="downloadTableModePanel_shadow" aria-labelledby="downloadTableModePanel_header_content"></div><div class="rf-pp-hdr " id="downloadTableModePanel_header" aria-labelledby="downloadTableModePanel_header_content"><div class="rf-pp-hdr-cnt" id="downloadTableModePanel_header_content" aria-labelledby="downloadTableModePanel_header_content">Queue table</div></div><div class="rf-pp-cnt-scrlr" id="downloadTableModePanel_content_scroller" aria-labelledby="downloadTableModePanel_header_content"><div class="rf-pp-cnt" id="downloadTableModePanel_content" aria-labelledby="downloadTableModePanel_header_content"><form id="downloadTableModeForm" name="downloadTableModeForm" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded">
+            <div class="str-pp-cnt-body"><span id="downloadTableModeForm:downloadTableNameError"></span>
+                <div class="str-pp-cnt-section"><label for="downloadTableModeForm:downloadTableNameTxt">Provide a name for the table. To save your table you also need to click the Save table button. Refresh your browser to update the queue status.</label><input id="downloadTableModeForm:downloadTableNameTxt" name="downloadTableModeForm:downloadTableNameTxt" type="text" value="" maxlength="63" class="activeTextField" />
+                </div>
+            </div>
+
+            <div class="str-pp-cnt-footer"><img id="downloadTableModeForm:ltmStatus" src="/webapi/images/ajax_active.gif" alt="Processing" class="modalLoading noDisplay" />
+                <div class="modalButtons"><input id="downloadTableModeForm:cancelQueueTableButton" name="downloadTableModeForm:cancelQueueTableButton" onclick="jsf.util.chain(this,event,&quot;modal.cancelModal('downloadTableModePanel'); return false;&quot;,&quot;RichFaces.ajax(\&quot;downloadTableModeForm:cancelQueueTableButton\&quot;,event,{\&quot;incId\&quot;:\&quot;1\&quot;,\&quot;status\&quot;:\&quot;none\&quot;} )&quot;);return false;" value="Cancel" class="activeButton" onkeydown="modal.forceEnterToActivate(event, this);" type="button" /><input id="downloadTableModeForm:queueTableButton" name="downloadTableModeForm:queueTableButton" onclick="RichFaces.ajax(&quot;downloadTableModeForm:queueTableButton&quot;,event,{&quot;incId&quot;:&quot;1&quot;,&quot;begin&quot;:&quot;modal.showLoading('downloadTableModeForm:ltmStatus');modal.submitBegin(100, this, 'downloadTableModeForm:cancelQueueTableButton');&quot;,&quot;status&quot;:&quot;none&quot;} );return false;" value="Queue table" class="activeButton" type="submit" />
+                </div>
+            </div><span id="downloadTableModeForm:saveHotKey" style="display: none;"><script type="text/javascript">new RichFaces.ui.HotKey("downloadTableModeForm:saveHotKey",  {"key":"return","selector":"#downloadTableModeForm","onkeydown":function(event){RichFaces.ui.ComponentControl.execute(event,{"callback":function(event,component){component['click'].apply(component,[] );},"selector":null,"target":["downloadTableModeForm:queueTableButton"] } ); return false;}} );</script></span><span id="downloadTableModeForm:closeHotKey" style="display: none;"><script type="text/javascript">new RichFaces.ui.HotKey("downloadTableModeForm:closeHotKey",  {"enabledInInput":true,"key":"esc","selector":"#downloadTableModeForm","onkeydown":function(event){RichFaces.ui.ComponentControl.execute(event,{"callback":function(event,component){component['click'].apply(component,[] );},"selector":null,"target":["downloadTableModeForm:cancelQueueTableButton"] } ); return false;}} );</script></span><input type="hidden" name="downloadTableModeForm_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:24" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form></div></div></div><script type="text/javascript" aria-labelledby="downloadTableModePanel_header_content">new RichFaces.ui.PopupPanel("downloadTableModePanel",{"onshow":function(event){window.SW2.util.focusElement('downloadTableModeForm:downloadTableNameTxt')}} );</script></div>
+    <script>modal.fixInitialStyle("downloadTableModePanel");</script></div></div>
+            </div>
+        </div><form id="autoRetrieveScripts" name="autoRetrieveScripts" method="post" action="/webapi/jsf/tableView/tableView.xhtml" enctype="application/x-www-form-urlencoded">
+            <script>
+                function showProgressIfAutoRetrievingData() {
+                    if (false) {
+                        tabulationProgress.show();
+                        tabulationProgress.start();
+                    }
+                    return true;
+                }
+            </script><input type="hidden" name="autoRetrieveScripts_SUBMIT" value="1" /><input type="hidden" name="javax.faces.ViewState" id="j_id__v_0:javax.faces.ViewState:25" value="MTkxMDY4ODEzODQyQTYyNjAwMDAwMDA0" autocomplete="off" /></form>
+        </div>
+    </main>
+
+    <footer class="fl-row-end sw2-footer" id="footer" aria-label="Footer">
+
+    <ul class="fl-nav-row">
+                <li>
+                    <a target="_blank" rel="noopener noreferrer" href="https://www.abs.gov.au/websitedbs/D3310114.nsf/Home/Privacy?opendocument#from-banner=GB">Privacy</a>
+                </li>
+                <li>
+                    <a target="_blank" rel="noopener noreferrer" href="https://www.abs.gov.au/websitedbs/D3310114.nsf/Home/Disclaimer?opendocument#from-banner=GB">Disclaimer</a>
+                </li>
+                <li>
+                    <a target="_blank" rel="noopener noreferrer" href="https://www4.abs.gov.au/web/survey.nsf/feedbackform/">Feedback</a>
+                </li>
+                <li>
+                    <a target="_blank" rel="noopener noreferrer" href="https://www.abs.gov.au/ccby">
+                        <img src="/webapi/images/creative_commons.gif" alt="abs.gov.au/ccby" title="Creative Commons" />
+                    </a>
+                </li>
+                <li>
+                    <a target="_blank" rel="noopener noreferrer" href="https://www.abs.gov.au/copyright">© Copyright</a>
+                </li>
+        <li class="powered-by-superstar">
+            <a class="fl-row" target="_blank" rel="noopener noreferrer" href="https://wingarc.com.au/products/superweb/">
+                <p>TableBuilder - Powered by WingArc</p><img src="/webapi/images/wingarc1st.png" alt="" role="none" />
+            </a>
+        </li>
+    </ul>
+    </footer><script type="text/javascript">new RichFaces.ui.Tooltip("headerForm:j_id_1n",{"offset":[10,10] ,"ajax":{"incId":"1"} ,"target":"headerForm:graphNavTabPanel"} )
+new RichFaces.ui.TabPanel("tableViewPanelTabs",{"onbeforeitemchange":function(event){if (event.target != event.currentTarget) {return;}window.savePositions()},"activeItem":"schemaTab","cycledSwitching":false,"ajax":{"incId":"1"} ,"isKeepHeight":false} )
+new RichFaces.ui.Tab("j_id_52",{"leave":null,"name":"schemaTab","index":0,"togglePanelId":"tableViewPanelTabs","disabled":false,"enter":null,"ajax":{"incId":"1"} ,"switchMode":"ajax"} )
+new RichFaces.ui.Tab("j_id_53",{"leave":null,"name":"tablesTab","index":1,"togglePanelId":"tableViewPanelTabs","disabled":false,"enter":null,"ajax":{"incId":"1"} ,"switchMode":"ajax"} )
+new RichFaces.ui.TabPanel("dummyform:dummyTabPanel",{"activeItem":null,"cycledSwitching":false,"ajax":{"incId":"1"} ,"isKeepHeight":false} )
+new RichFaces.ui.TabPanel("masterRangesModal:curTabPanel",{"activeItem":"custom","cycledSwitching":false,"ajax":{"incId":"1"} ,"isKeepHeight":false} )
+new RichFaces.ui.Tab("masterRangesModal:custom",{"leave":null,"name":"custom","index":0,"togglePanelId":"masterRangesModal:curTabPanel","disabled":false,"enter":null,"ajax":{"incId":"1","status":"none"} ,"switchMode":"ajax"} )
+new RichFaces.ui.Tab("masterRangesModal:quantile",{"leave":null,"name":"quantile","index":1,"togglePanelId":"masterRangesModal:curTabPanel","disabled":false,"enter":null,"ajax":{"incId":"1","status":"none"} ,"switchMode":"ajax"} )
+</script></body>
+
+</html>
