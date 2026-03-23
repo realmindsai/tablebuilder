@@ -156,6 +156,38 @@ class ChatResolver:
             return json.dumps(result)
 
         elif tool_name == "propose_table_request":
+            # Validate variables exist in the dataset before accepting
+            dataset_name = tool_input["dataset"]
+            all_vars = tool_input.get("rows", []) + tool_input.get("cols", []) + tool_input.get("wafers", [])
+            if DEFAULT_DB_PATH.exists() and all_vars:
+                ds = get_dataset(DEFAULT_DB_PATH, dataset_name)
+                if ds is None:
+                    return f"ERROR: Dataset '{dataset_name}' not found in dictionary. Use search_dictionary to find the exact name."
+                # Build set of valid variable labels for this dataset
+                valid_labels = set()
+                for group in ds.get("groups", []):
+                    for var in group.get("variables", []):
+                        valid_labels.add(var["label"])
+                        if var.get("code"):
+                            valid_labels.add(f"{var['code']} {var['label']}")
+                invalid = [v for v in all_vars if v not in valid_labels]
+                if invalid:
+                    sample_vars = sorted(valid_labels)[:20]
+                    return (
+                        f"ERROR: These are not valid variable labels for '{dataset_name}': {invalid}. "
+                        f"You may be confusing category values (like '20-24 years') with variable names (like 'Age in Five Year Groups'). "
+                        f"Geographic names like 'Victoria' are also not variables — geography is selected separately. "
+                        f"Valid variable labels include: {sample_vars}. "
+                        f"Use get_dataset_variables to see all variables for this dataset."
+                    )
+            # Reject proposals with too many variables
+            total_vars = len(tool_input.get("rows", [])) + len(tool_input.get("cols", [])) + len(tool_input.get("wafers", []))
+            if total_vars > 4:
+                return (
+                    f"ERROR: Too many variables ({total_vars}). Each additional variable multiplies cell count. "
+                    f"Use at most 2-3 variables per table. Propose multiple simpler tables instead."
+                )
+
             proposal_id = f"p{len(self._display_payloads) + 1}"
             proposal = {
                 "id": proposal_id,
