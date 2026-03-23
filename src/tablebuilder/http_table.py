@@ -433,10 +433,12 @@ def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
     })
 
     # Direct HTTP download failed — table is too large and needs to be queued.
-    # Cookie transfer to Playwright doesn't carry JSF server state, so we use
-    # the full Playwright fallback that logs in fresh and rebuilds the table.
-    logger.info("Direct download unavailable — using Playwright to queue and download")
-    _playwright_full_fallback(session, output_path)
+    # Use Playwright to login, navigate to tableView, queue the table, and
+    # poll saved tables until it completes.
+    import time as _time
+    table_name = f"tb_{int(_time.time())}"
+    logger.info("Direct download unavailable — queuing as '%s' via Playwright", table_name)
+    _playwright_queue_and_download(session, output_path, table_name)
 
 
 def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> None:
@@ -533,22 +535,24 @@ def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> 
         browser.close()
 
 
-def _playwright_full_fallback(session: TableBuilderHTTPSession, output_path: str) -> None:
-    """Full Playwright fallback when cookie transfer doesn't carry JSF state.
+def _playwright_queue_and_download(
+    session: TableBuilderHTTPSession, output_path: str, table_name: str,
+) -> None:
+    """Queue a table via Playwright and poll saved tables until it completes.
 
-    Logs in fresh via Playwright and uses the existing table_builder + downloader
-    to rebuild and download. Still faster than the original flow because we skip
-    the slow catalogue navigation by using REST to open the database directly.
+    The HTTP session already built the table on the server. Playwright logs in
+    as the same user, navigates to tableView (where the built table should be),
+    opens the queue dialog, submits with our table_name, then polls the saved
+    tables page until "Completed, click here to download" appears.
     """
     from playwright.sync_api import sync_playwright
-
-    logger.info("Using full Playwright fallback for download")
+    import time as _time
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
-        # Login via Playwright (fast — just form fill + click)
+        # Login via Playwright
         page.goto(f"{BASE_URL}/jsf/login.xhtml", wait_until="networkidle")
         page.fill("#loginForm\\:username2", session.config.user_id)
         page.fill("#loginForm\\:password2", session.config.password)
@@ -557,12 +561,86 @@ def _playwright_full_fallback(session: TableBuilderHTTPSession, output_path: str
         if "terms.xhtml" in page.url:
             page.click("#termsForm\\:termsButton")
             page.wait_for_load_state("networkidle", timeout=10000)
+        logger.info("Playwright logged in")
 
-        # Use the queue_and_download from the existing downloader
-        # which handles the full Playwright download flow
-        from tablebuilder.downloader import queue_and_download
-        queue_and_download(page, output_path)
+        # Navigate to tableView — server should have our built table
+        page.goto(f"{BASE_URL}/jsf/tableView.xhtml", wait_until="networkidle", timeout=30000)
+        page.wait_for_timeout(2000)
+
+        # If redirected to catalogue, no table is available
+        if "dataCatalogueExplorer" in page.url:
+            browser.close()
+            raise RuntimeError(
+                "Playwright session redirected to catalogue — no table available. "
+                "The HTTP session's server state may have expired."
+            )
+
+        # Open the queue dialog by clicking the downloadTableMode link
+        queue_dialog_link = page.query_selector("#downloadTableModePanelFirstHref")
+        if queue_dialog_link:
+            queue_dialog_link.click()
+            page.wait_for_timeout(1000)
+        else:
+            # Try clicking the retrieve button first, then the queue dialog
+            ret_btn = page.query_selector("#pageForm\\:retB")
+            if ret_btn:
+                ret_btn.click(force=True)
+                page.wait_for_timeout(5000)
+
+        # Fill in the table name and submit
+        name_input = page.query_selector("#downloadTableModeForm\\:downloadTableNameTxt")
+        if name_input:
+            name_input.fill(table_name)
+            page.wait_for_timeout(500)
+            queue_btn = page.query_selector("#downloadTableModeForm\\:queueTableButton")
+            if queue_btn:
+                queue_btn.click()
+                page.wait_for_timeout(3000)
+                logger.info("Queued table as '%s'", table_name)
+            else:
+                logger.warning("Queue button not found")
+        else:
+            logger.warning("Queue name input not found — trying direct queue via large table mode")
+            # Try the large table mode dialog instead
+            ltm_ok = page.query_selector("#largeTableModeForm\\:largeTableModeOKButton")
+            if ltm_ok:
+                ltm_ok.click()
+                page.wait_for_timeout(3000)
+
+        # Navigate to saved tables and poll for completion
+        saved_url = f"{BASE_URL}/jsf/tableView/openTable.xhtml"
+        for attempt in range(240):  # up to 20 minutes
+            page.goto(saved_url, wait_until="networkidle", timeout=30000)
+            page.wait_for_timeout(1000)
+            page_text = page.content()
+
+            if table_name in page_text and "Completed" in page_text:
+                # Find download links
+                links = page.query_selector_all('a:has-text("click here to download")')
+                for link in links:
+                    row = link.evaluate("el => el.closest('tr') ? el.closest('tr').textContent : ''")
+                    if table_name in row:
+                        logger.info("Table '%s' completed, downloading", table_name)
+                        try:
+                            with page.expect_download(timeout=60000) as dl_info:
+                                link.click()
+                            download = dl_info.value
+                            download.save_as(output_path)
+                            _extract_if_zip(output_path)
+                            logger.info("Downloaded to %s", output_path)
+                            browser.close()
+                            return
+                        except Exception as e:
+                            logger.warning("Download click failed: %s", e)
+
+            if attempt % 12 == 0:
+                logger.info("Polling for '%s'... attempt %d", table_name, attempt + 1)
+            _time.sleep(5)
+
         browser.close()
+        raise RuntimeError(
+            f"Table '{table_name}' did not complete within 20 minutes."
+        )
 
 
 def _extract_if_zip(path: str) -> None:
