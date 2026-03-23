@@ -156,6 +156,14 @@ class ChatResolver:
             return json.dumps(result)
 
         elif tool_name == "propose_table_request":
+            # Normalize string inputs to lists (Claude sometimes passes a string)
+            for axis in ("rows", "cols", "wafers"):
+                val = tool_input.get(axis, [])
+                if isinstance(val, str):
+                    tool_input[axis] = [v.strip() for v in val.split(",") if v.strip()]
+                elif not isinstance(val, list):
+                    tool_input[axis] = []
+
             # Validate variables exist in the dataset before accepting
             dataset_name = tool_input["dataset"]
             all_vars = tool_input.get("rows", []) + tool_input.get("cols", []) + tool_input.get("wafers", [])
