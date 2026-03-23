@@ -433,10 +433,10 @@ def download_table(session: TableBuilderHTTPSession, output_path: str) -> None:
     })
 
     # Direct HTTP download failed — table is too large and needs to be queued.
-    # The JSF queue dialog doesn't work via pure HTTP POST (needs browser JS state).
-    # Fall back to Playwright for the queue-and-download flow.
-    logger.info("Falling back to Playwright for queue download")
-    _playwright_download(session, output_path)
+    # Cookie transfer to Playwright doesn't carry JSF server state, so we use
+    # the full Playwright fallback that logs in fresh and rebuilds the table.
+    logger.info("Direct download unavailable — using Playwright to queue and download")
+    _playwright_full_fallback(session, output_path)
 
 
 def _playwright_download(session: TableBuilderHTTPSession, output_path: str) -> None:
