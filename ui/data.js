@@ -40,20 +40,6 @@ const PHASES = [
   { id: "download", label: "Downloading result",         sub: "streaming CSV",                   est: 3.0  },
 ];
 
-// Fake realistic preview row data for the success result
-const PREVIEW_ROWS = [
-  { r: "Male · 0-14",   cols: [825412, 834118, 1659530] },
-  { r: "Male · 15-34",  cols: [1412087, 1395204, 2807291] },
-  { r: "Male · 35-54",  cols: [1540213, 1512670, 3052883] },
-  { r: "Male · 55-74",  cols: [1083541, 1095422, 2178963] },
-  { r: "Male · 75+",    cols: [340127,  412889,  753016]  },
-  { r: "Female · 0-14", cols: [784108,  792430, 1576538] },
-  { r: "Female · 15-34",cols: [1381204, 1398077, 2779281] },
-  { r: "Female · 35-54",cols: [1551340, 1542908, 3094248] },
-  { r: "Female · 55-74",cols: [1103988, 1141290, 2245278] },
-  { r: "Female · 75+",  cols: [498711,  602448, 1101159] },
-];
-
 // History is built up from real runs at runtime — no seeded mock entries.
 const SEED_HISTORY = [];
 
@@ -94,6 +80,6 @@ function fuzzyScore(query, target) {
 }
 
 Object.assign(window, {
-  DATASETS, VARIABLES, PHASES, PREVIEW_ROWS, SEED_HISTORY,
+  DATASETS, VARIABLES, PHASES, SEED_HISTORY,
   fmtDuration, fmtDurationTicker, fmtNumber, fuzzyScore,
 });

@@ -2,145 +2,6 @@
 
 const { useState: useS, useEffect: useE, useRef: useRef2, useCallback: useCB } = React;
 
-// --------- State machine for an in-progress run ---------
-function useRunner(speed, onComplete) {
-  const [runState, setRunState] = useS({
-    status: "idle", // idle | running | success | error | cancelled
-    phaseIndex: -1,
-    phaseElapsed: {}, // { phaseId: seconds }
-    totalElapsed: 0,
-    request: null,
-    result: null,
-    log: [],
-    injectError: null, // which phase to fail in
-  });
-  const tickRef = useRef2(null);
-  const runningRef = useRef2(null); // mutable copy
-
-  // stop + reset ticker
-  const clearTick = () => { if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = null; } };
-
-  useE(() => () => clearTick(), []);
-
-  function log(state, lv, msg) {
-    const t = `${String(Math.floor(state.totalElapsed / 60)).padStart(2,"0")}:${(state.totalElapsed % 60).toFixed(1).padStart(4,"0")}`;
-    state.log.push({ t, lv, msg });
-  }
-
-  function start(request, opts = {}) {
-    clearTick();
-    const initial = {
-      status: "running",
-      phaseIndex: 0,
-      phaseElapsed: {},
-      totalElapsed: 0,
-      request,
-      result: null,
-      log: [],
-      injectError: opts.injectError || null,
-    };
-    // first phase logs
-    log(initial, "info", `$ tablebuilder run --dataset "${request.dataset}"`);
-    log(initial, "phase", `» phase 1/${window.PHASES.length} — ${window.PHASES[0].label}`);
-    log(initial, "info", `  connecting to tablebuilder.abs.gov.au...`);
-    runningRef.current = initial;
-    setRunState({ ...initial });
-
-    const DT = 0.1; // tick 100ms
-    tickRef.current = setInterval(() => {
-      const s = runningRef.current;
-      if (!s || s.status !== "running") return;
-      s.totalElapsed += DT * speed.mult;
-      const ph = window.PHASES[s.phaseIndex];
-      const cur = s.phaseElapsed[ph.id] || 0;
-      s.phaseElapsed[ph.id] = cur + DT * speed.mult;
-
-      // inject log entries at phase midpoint
-      if (cur < ph.est / 2 && s.phaseElapsed[ph.id] >= ph.est / 2) {
-        const mids = {
-          login:    "  ✓ session cookie set · user=analyst",
-          dataset:  `  ✓ resolved dataset: ${s.request.dataset}`,
-          tree:     `  expanded ${s.request.rows.length + s.request.cols.length + s.request.wafer.length} classification branches`,
-          check:    `  selected categories across ${s.request.rows.length + s.request.cols.length + s.request.wafer.length} dimensions`,
-          submit:   "  POST /TableBuilder/view/layout → 202 accepted",
-          retrieve: "  waiting on ABS compute engine… this may take a moment",
-          download: "  streaming bytes → ~/tablebuilder/",
-        };
-        log(s, "info", mids[ph.id] || "");
-      }
-
-      // error injection
-      if (s.injectError === ph.id && s.phaseElapsed[ph.id] >= ph.est * 0.7) {
-        log(s, "err", `  ✗ ${ph.label} failed`);
-        log(s, "err", "  ABS session expired while computing table. Retry recommended.");
-        s.status = "error";
-        s.result = {
-          phaseId: ph.id,
-          phaseLabel: ph.label,
-          errorMsg: "ABS session expired while computing table. Retry recommended.",
-          duration: s.totalElapsed,
-          httpStatus: "504 Gateway Timeout",
-        };
-        clearTick();
-        onComplete && onComplete(s);
-        setRunState({ ...s });
-        return;
-      }
-
-      if (s.phaseElapsed[ph.id] >= ph.est) {
-        // phase complete
-        log(s, "ok", `  ✓ ${ph.label.toLowerCase()} (${s.phaseElapsed[ph.id].toFixed(1)}s)`);
-        s.phaseIndex += 1;
-        if (s.phaseIndex >= window.PHASES.length) {
-          // success
-          s.status = "success";
-          const rowCount = Math.round(
-            Math.pow(2, s.request.rows.length + s.request.cols.length * 0.7) *
-            (12 + Math.random() * 14)
-          );
-          s.result = {
-            resolvedDataset: s.request.dataset,
-            duration: s.totalElapsed,
-            rowCount,
-            fileSize: `${(rowCount * 0.092).toFixed(1)} KB`,
-            file: s.request.output || `~/tablebuilder/${slugify(s.request.dataset)}_${stamp()}.csv`,
-          };
-          log(s, "ok", `✓ run complete · ${rowCount} rows · ${s.result.fileSize}`);
-          clearTick();
-          onComplete && onComplete(s);
-        } else {
-          log(s, "phase", `» phase ${s.phaseIndex + 1}/${window.PHASES.length} — ${window.PHASES[s.phaseIndex].label}`);
-        }
-      }
-      setRunState({ ...s, log: [...s.log], phaseElapsed: { ...s.phaseElapsed } });
-    }, 100);
-  }
-
-  function cancel() {
-    const s = runningRef.current;
-    if (!s || s.status !== "running") return;
-    const ph = window.PHASES[s.phaseIndex];
-    log(s, "warn", `  ⏹ cancelled by user at ${ph.label.toLowerCase()}`);
-    s.status = "cancelled";
-    s.result = {
-      phaseId: ph.id,
-      phaseLabel: ph.label,
-      duration: s.totalElapsed,
-    };
-    clearTick();
-    onComplete && onComplete(s);
-    setRunState({ ...s });
-  }
-
-  function reset() {
-    clearTick();
-    const fresh = { status: "idle", phaseIndex: -1, phaseElapsed: {}, totalElapsed: 0, request: null, result: null, log: [], injectError: null };
-    runningRef.current = fresh;
-    setRunState(fresh);
-  }
-
-  return { runState, start, cancel, reset };
-}
 
 // ================= API Runner (real backend via SSE) =================
 // applyEvent, fmtTimestamp, and INITIAL_RUN_STATE are loaded from applyEvent.js (global)
@@ -248,7 +109,7 @@ function stamp() {
 }
 
 // ================= Form Panel =================
-function FormPanel({ disabled, onRun, initial, injectError, setInjectError }) {
+function FormPanel({ disabled, onRun, initial }) {
   const [dataset, setDataset] = useS(initial?.dataset || "");
   const [rows, setRows] = useS(initial?.rows || []);
   const [cols, setCols] = useS(initial?.cols || []);
@@ -599,21 +460,7 @@ function HistoryPanel({ items, activeId, onSelect, onReuse }) {
 }
 
 // ================= App =================
-const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "layout": "split",
-  "speed": "demo",
-  "seedState": "idle"
-}/*EDITMODE-END*/;
-
 function App() {
-  const [tweaks, setTweak] = (window.useTweaks ? window.useTweaks(TWEAK_DEFAULTS) : [TWEAK_DEFAULTS, () => {}]);
-
-  const speed = tweaks.speed === "realtime"
-    ? { mult: 1 }
-    : tweaks.speed === "slow"
-    ? { mult: 4 }
-    : { mult: 12 }; // demo
-
   const [history, setHistory] = useS(window.SEED_HISTORY);
   const [formInitial, setFormInitial] = useS({
     dataset: "",
@@ -624,16 +471,12 @@ function App() {
   });
   const [selectedHistory, setSelectedHistory] = useS(null);
 
-  // Always use real backend. Simulation only via tweaks panel "Demo a run" button.
-  // (Localhost-only simulation was wrong — the real server runs everywhere.)
-  const isLive = true;
-
-  // Hydrate dataset picker with real names from server; keep mock DATASETS on failure
+  // Hydrate dataset picker with real names from server
   useE(() => {
     fetch('/api/datasets')
       .then(r => { if (!r.ok) throw new Error(r.status.toString()); return r.json(); })
       .then(data => { window.DATASETS = data; })
-      .catch(() => { /* keep existing window.DATASETS mock */ });
+      .catch(() => { /* leave window.DATASETS as []; picker will show empty list */ });
   }, []);
 
   function handleRunComplete(final) {
@@ -680,44 +523,7 @@ function App() {
     }
   }
 
-  const sim = useRunner(speed, handleRunComplete);
-  const api = useApiRunner(handleRunComplete);
-  const { runState, start: startRun, cancel, reset } = isLive ? api : sim;
-
-  // Seed state injection (from tweak)
-  useE(() => {
-    if (tweaks.seedState === "running-slow") {
-      sim.start({
-        dataset: "2021 Census - counting persons, place of usual residence",
-        rows: ["Sex", "Age"],
-        cols: ["State"],
-        wafer: [],
-        output: "",
-      });
-      // Fast-forward simulated
-      setTimeout(() => {
-        if (window.__fastForwardToPhase) window.__fastForwardToPhase("retrieve");
-      }, 200);
-    } else if (tweaks.seedState === "success") {
-      // Fake a completed state
-      sim.start({
-        dataset: "2021 Census - counting persons, place of usual residence",
-        rows: ["Sex", "Age"],
-        cols: ["State"],
-        wafer: [],
-        output: "",
-      });
-    } else if (tweaks.seedState === "error") {
-      sim.start({
-        dataset: "2021 Census - counting persons, place of usual residence",
-        rows: ["Occupation", "Industry", "Age"],
-        cols: ["Sex"],
-        wafer: [],
-        output: "",
-      }, { injectError: "retrieve" });
-    }
-    // eslint-disable-next-line
-  }, []);
+  const { runState, start: startRun, cancel, reset } = useApiRunner(handleRunComplete);
 
   // Keyboard shortcut: ⌘↵ (or Ctrl+Enter) to run
   useE(() => {
@@ -737,13 +543,7 @@ function App() {
   }, [runState.status]);
 
   function handleRun(req) {
-    const errorMode = tweaks.failMode;
-    const injectError = errorMode === "force-fail" ? "retrieve" : null;
-    if (isLive) {
-      startRun(req);
-    } else {
-      sim.start(req, { injectError });
-    }
+    startRun(req);
   }
 
   function handleReuse(item) {
@@ -768,7 +568,7 @@ function App() {
     reset();
   }
 
-  const mainCls = "main" + (tweaks.layout === "stacked" ? " stacked" : "");
+  const mainCls = "main";
 
   return (
     <div className="app">
@@ -815,59 +615,6 @@ function App() {
         />
       </main>
 
-      {/* Tweaks panel */}
-      {window.TweaksPanel && (
-        <window.TweaksPanel title="Tweaks">
-          <window.TweakSection label="Layout" />
-          <window.TweakRadio
-            label="Panel layout"
-            value={tweaks.layout}
-            onChange={v => setTweak("layout", v)}
-            options={["split", "stacked"]}
-          />
-          <window.TweakSection label="Demo controls" />
-          <window.TweakRadio
-            label="Run speed"
-            value={tweaks.speed}
-            onChange={v => setTweak("speed", v)}
-            options={["demo", "slow", "realtime"]}
-          />
-          <window.TweakRadio
-            label="Force failure"
-            value={tweaks.failMode || "none"}
-            onChange={v => setTweak("failMode", v)}
-            options={["none", "force-fail"]}
-          />
-          <window.TweakButton label="Demo a run" onClick={() => {
-            sim.reset();
-            setFormInitial({
-              dataset: "2021 Census - counting persons, place of usual residence",
-              rows: ["Sex", "Age"],
-              cols: ["State"],
-              wafer: [],
-              output: "",
-            });
-            setTimeout(() => sim.start({
-              dataset: "2021 Census - counting persons, place of usual residence",
-              rows: ["Sex", "Age"],
-              cols: ["State"],
-              wafer: [],
-              output: "",
-            }), 50);
-          }}>Go</window.TweakButton>
-          <window.TweakButton label="Demo a failure" onClick={() => {
-            sim.reset();
-            setTimeout(() => sim.start({
-              dataset: "2021 Census - counting persons, place of usual residence",
-              rows: ["Occupation", "Industry"],
-              cols: ["Sex"],
-              wafer: [],
-              output: "",
-            }, { injectError: "retrieve" }), 50);
-          }}>Go</window.TweakButton>
-          <window.TweakButton label="Reset" onClick={() => sim.reset()}>Reset</window.TweakButton>
-        </window.TweaksPanel>
-      )}
     </div>
   );
 }

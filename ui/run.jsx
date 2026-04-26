@@ -90,88 +90,47 @@ function RunMeta({ request, elapsed, status }) {
 }
 
 function SuccessResult({ result, request }) {
-  const [showPreview, setShowPreview] = useStateR(false);
+  function copyPath() {
+    if (result.file) navigator.clipboard.writeText(result.file).catch(() => {});
+  }
   return (
-    <>
-      <div className="result result--success">
-        <div className="result__head">
-          <div>
-            <div className="result__eyebrow">● Success</div>
-            <div className="result__ttl">CSV delivered in {window.fmtDuration(result.duration)}</div>
-          </div>
-          <div className="status-pill">
-            <span className="dot"></span>
-            ABS Tablebuilder · 200 OK
-          </div>
+    <div className="result result--success">
+      <div className="result__head">
+        <div>
+          <div className="result__eyebrow">● Success</div>
+          <div className="result__ttl">CSV delivered in {window.fmtDuration(result.duration)}</div>
         </div>
-        <div className="result__grid">
-          <div className="result__kv" style={{ gridColumn: "1 / 3" }}>
-            <div className="k">Resolved dataset</div>
-            <div className="v">{result.resolvedDataset}</div>
-          </div>
-          <div className="result__kv">
-            <div className="k">Rows returned</div>
-            <div className="v v--num">{window.fmtNumber(result.rowCount)}</div>
-          </div>
-          <div className="result__kv">
-            <div className="k">File size</div>
-            <div className="v v--num">{result.fileSize}</div>
-          </div>
-          <div className="result__kv" style={{ gridColumn: "1 / 3" }}>
-            <div className="k">Output file</div>
-            <div className="v">{result.file}</div>
-          </div>
-        </div>
-        <div className="result__actions">
-          <button className="btn btn--primary">
-            <window.Icon name="download" />
-            Open CSV
-          </button>
-          <button className="btn btn--secondary">
-            <window.Icon name="folder" />
-            Reveal in Finder
-          </button>
-          <button className="btn btn--secondary" onClick={() => setShowPreview(p => !p)}>
-            {showPreview ? "Hide preview" : "Preview data"}
-            <window.Icon name="chevron" className="ico ico--12" />
-          </button>
-          <div style={{ flex: 1 }}></div>
-          <button className="btn btn--ghost">
-            <window.Icon name="copy" className="ico ico--12" />
-            Copy path
-          </button>
+        <div className="status-pill">
+          <span className="dot"></span>
+          ABS Tablebuilder · 200 OK
         </div>
       </div>
-
-      {showPreview && (
-        <div className="preview" style={{ marginBottom: 20 }}>
-          <div className="preview__head">
-            <span className="eyebrow">First 10 rows · {request.rows.join(" × ")}{request.cols.length ? ` by ${request.cols.join(", ")}` : ""}</span>
-            <span className="meta">showing 10 of {window.fmtNumber(result.rowCount)}</span>
-          </div>
-          <table className="preview__table">
-            <thead>
-              <tr>
-                <th>{request.rows.join(" · ") || "row"}</th>
-                <th>NSW</th>
-                <th>VIC</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {window.PREVIEW_ROWS.map((row, i) => (
-                <tr key={i}>
-                  <td>{row.r}</td>
-                  <td>{window.fmtNumber(row.cols[0])}</td>
-                  <td>{window.fmtNumber(row.cols[1])}</td>
-                  <td>{window.fmtNumber(row.cols[2])}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="result__grid">
+        <div className="result__kv" style={{ gridColumn: "1 / 3" }}>
+          <div className="k">Resolved dataset</div>
+          <div className="v">{result.resolvedDataset}</div>
         </div>
-      )}
-    </>
+        <div className="result__kv">
+          <div className="k">Rows returned</div>
+          <div className="v v--num">{window.fmtNumber(result.rowCount)}</div>
+        </div>
+        <div className="result__kv">
+          <div className="k">File size</div>
+          <div className="v v--num">{result.fileSize}</div>
+        </div>
+        <div className="result__kv" style={{ gridColumn: "1 / 3" }}>
+          <div className="k">Output file</div>
+          <div className="v">{result.file}</div>
+        </div>
+      </div>
+      <div className="result__actions">
+        <div style={{ flex: 1 }}></div>
+        <button className="btn btn--ghost" onClick={copyPath}>
+          <window.Icon name="copy" className="ico ico--12" />
+          Copy path
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -201,40 +160,39 @@ function ErrorResult({ result, onRetry }) {
   }
 
   return (
-    <div className=”result result--error”>
-      <div className=”result__head”>
+    <div className="result result--error">
+      <div className="result__head">
         <div>
-          <div className=”result__eyebrow”>● Failed</div>
-          <div className=”result__ttl”>Run failed at “{result.phaseLabel}”</div>
+          <div className="result__eyebrow">● Failed</div>
+          <div className="result__ttl">Run failed at "{result.phaseLabel}"</div>
         </div>
       </div>
-      <div style={{ fontSize: 13, color: “var(--rmai-fg-2)”, lineHeight: 1.55, marginTop: 4 }}>
+      <div style={{ fontSize: 13, color: "var(--rmai-fg-2)", lineHeight: 1.55, marginTop: 4 }}>
         {result.errorMsg}
       </div>
-      <div className=”result__grid”>
-        <div className=”result__kv”>
-          <div className=”k”>Failed phase</div>
-          <div className=”v”>{result.phaseId} — {result.phaseLabel}</div>
+      <div className="result__grid">
+        <div className="result__kv">
+          <div className="k">Failed phase</div>
+          <div className="v">{result.phaseId} — {result.phaseLabel}</div>
         </div>
-        <div className=”result__kv”>
-          <div className=”k”>Ran for</div>
-          <div className=”v”>{window.fmtDuration(result.duration)}</div>
+        <div className="result__kv">
+          <div className="k">Ran for</div>
+          <div className="v">{window.fmtDuration(result.duration)}</div>
         </div>
-        <div className=”result__kv” style={{ gridColumn: “1 / 3” }}>
-          <div className=”k”>HTTP status</div>
-          <div className=”v”>{result.httpStatus || “—“}</div>
+        <div className="result__kv" style={{ gridColumn: "1 / 3" }}>
+          <div className="k">HTTP status</div>
+          <div className="v">{result.httpStatus || "—"}</div>
         </div>
       </div>
-      <div className=”result__actions”>
+      <div className="result__actions">
         {onRetry && (
-          <button className=”btn btn--primary” onClick={onRetry}>
-            <window.Icon name=”rerun” />
+          <button className="btn btn--primary" onClick={onRetry}>
+            <window.Icon name="rerun" />
             Retry
           </button>
         )}
-        <button className=”btn btn--secondary”>View full log</button>
-        <button className=”btn btn--secondary” onClick={copyError}>
-          {copied ? “Copied!” : “Copy error”}
+        <button className="btn btn--secondary" onClick={copyError}>
+          {copied ? "Copied!" : "Copy error"}
         </button>
       </div>
     </div>
