@@ -616,9 +616,9 @@ function App() {
 
   const [history, setHistory] = useS(window.SEED_HISTORY);
   const [formInitial, setFormInitial] = useS({
-    dataset: "Census 2021 Persons Usual Residence",
-    rows: ["Sex", "Age"],
-    cols: ["State"],
+    dataset: "",
+    rows: [],
+    cols: [],
     wafer: [],
     output: "",
   });
@@ -688,7 +688,7 @@ function App() {
   useE(() => {
     if (tweaks.seedState === "running-slow") {
       sim.start({
-        dataset: "Census 2021 Persons Usual Residence",
+        dataset: "2021 Census - counting persons, place of usual residence",
         rows: ["Sex", "Age"],
         cols: ["State"],
         wafer: [],
@@ -701,7 +701,7 @@ function App() {
     } else if (tweaks.seedState === "success") {
       // Fake a completed state
       sim.start({
-        dataset: "Census 2021 Persons Usual Residence",
+        dataset: "2021 Census - counting persons, place of usual residence",
         rows: ["Sex", "Age"],
         cols: ["State"],
         wafer: [],
@@ -709,7 +709,7 @@ function App() {
       });
     } else if (tweaks.seedState === "error") {
       sim.start({
-        dataset: "Census 2016 Persons Usual Residence",
+        dataset: "2021 Census - counting persons, place of usual residence",
         rows: ["Occupation", "Industry", "Age"],
         cols: ["Sex"],
         wafer: [],
@@ -841,14 +841,14 @@ function App() {
           <window.TweakButton label="Demo a run" onClick={() => {
             sim.reset();
             setFormInitial({
-              dataset: "Census 2021 Persons Usual Residence",
+              dataset: "2021 Census - counting persons, place of usual residence",
               rows: ["Sex", "Age"],
               cols: ["State"],
               wafer: [],
               output: "",
             });
             setTimeout(() => sim.start({
-              dataset: "Census 2021 Persons Usual Residence",
+              dataset: "2021 Census - counting persons, place of usual residence",
               rows: ["Sex", "Age"],
               cols: ["State"],
               wafer: [],
@@ -858,7 +858,7 @@ function App() {
           <window.TweakButton label="Demo a failure" onClick={() => {
             sim.reset();
             setTimeout(() => sim.start({
-              dataset: "Census 2016 Persons Usual Residence",
+              dataset: "2021 Census - counting persons, place of usual residence",
               rows: ["Occupation", "Industry"],
               cols: ["Sex"],
               wafer: [],

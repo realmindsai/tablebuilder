@@ -80,7 +80,7 @@ function DatasetPicker({ value, onChange, disabled }) {
     <div className="ac" ref={ref}>
       <input
         className="input"
-        placeholder="Search e.g. Census 2021 Persons…"
+        placeholder="Search e.g. 2021 Census persons…"
         value={q}
         disabled={disabled}
         onChange={e => { setQ(e.target.value); onChange(e.target.value); setOpen(true); setHi(0); }}

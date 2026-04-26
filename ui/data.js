@@ -1,17 +1,9 @@
-/* Tablebuilder — mock data + helpers */
+/* Tablebuilder — UI helpers + variable/phase reference data */
 
-// Known ABS datasets (fuzzy-matched)
-const DATASETS = [
-  { id: "2016.P.UR",  name: "Census 2016 Persons Usual Residence",   code: "2016.P.UR",  tag: "Persons",  year: 2016 },
-  { id: "2016.P.PP",  name: "Census 2016 Persons Place of Enumeration", code: "2016.P.PP", tag: "Persons", year: 2016 },
-  { id: "2016.H.UR",  name: "Census 2016 Household Usual Residence", code: "2016.H.UR",  tag: "Household", year: 2016 },
-  { id: "2016.F.UR",  name: "Census 2016 Families Usual Residence",  code: "2016.F.UR",  tag: "Families", year: 2016 },
-  { id: "2021.P.UR",  name: "Census 2021 Persons Usual Residence",   code: "2021.P.UR",  tag: "Persons",  year: 2021 },
-  { id: "2021.P.PP",  name: "Census 2021 Persons Place of Enumeration", code: "2021.P.PP", tag: "Persons", year: 2021 },
-  { id: "2021.H.UR",  name: "Census 2021 Household Usual Residence", code: "2021.H.UR",  tag: "Household", year: 2021 },
-  { id: "2021.F.UR",  name: "Census 2021 Families Usual Residence",  code: "2021.F.UR",  tag: "Families", year: 2021 },
-  { id: "2021.D.UR",  name: "Census 2021 Dwellings Usual Residence",  code: "2021.D.UR", tag: "Dwellings", year: 2021 },
-];
+// Datasets are hydrated at runtime from GET /api/datasets (real ABS catalogue
+// names from dictionary.db). Starts empty so no stale mock names ever leak
+// into the picker, history, or fuzzy matcher.
+const DATASETS = [];
 
 // Known variables (all buckets share this pool)
 const VARIABLES = [
@@ -62,71 +54,8 @@ const PREVIEW_ROWS = [
   { r: "Female · 75+",  cols: [498711,  602448, 1101159] },
 ];
 
-// Seed history (3 items)
-const SEED_HISTORY = [
-  {
-    id: "run_4821",
-    status: "success",
-    dataset: "Census 2021 Persons Usual Residence",
-    rows: ["Sex", "Age"],
-    cols: ["State"],
-    wafer: [],
-    duration: 94,
-    file: "~/tablebuilder/persons_age_sex_by_state_20260423.csv",
-    ts: "Apr 23 · 14:02",
-    rowCount: 189,
-  },
-  {
-    id: "run_4819",
-    status: "success",
-    dataset: "Census 2021 Household Usual Residence",
-    rows: ["Household Income", "Tenure Type"],
-    cols: ["Family Composition"],
-    wafer: ["State"],
-    duration: 186,
-    file: "~/tablebuilder/hh_income_tenure_20260422.csv",
-    ts: "Apr 22 · 11:47",
-    rowCount: 1242,
-  },
-  {
-    id: "run_4816",
-    status: "error",
-    dataset: "Census 2016 Persons Usual Residence",
-    rows: ["Occupation", "Industry", "Age"],
-    cols: ["Sex"],
-    wafer: [],
-    duration: 72,
-    file: null,
-    ts: "Apr 21 · 16:30",
-    rowCount: null,
-    errorPhase: "retrieve",
-    errorMsg: "ABS session expired while computing table. Retry recommended.",
-  },
-  {
-    id: "run_4813",
-    status: "success",
-    dataset: "Census 2021 Persons Usual Residence",
-    rows: ["Country of Birth"],
-    cols: ["English Proficiency"],
-    wafer: [],
-    duration: 62,
-    file: "~/tablebuilder/cob_english_20260420.csv",
-    ts: "Apr 20 · 09:14",
-    rowCount: 48,
-  },
-  {
-    id: "run_4810",
-    status: "cancelled",
-    dataset: "Census 2021 Families Usual Residence",
-    rows: ["Family Composition"],
-    cols: ["Number of Children"],
-    wafer: [],
-    duration: 18,
-    file: null,
-    ts: "Apr 18 · 15:22",
-    rowCount: null,
-  },
-];
+// History is built up from real runs at runtime — no seeded mock entries.
+const SEED_HISTORY = [];
 
 // Format helpers
 function fmtDuration(secs) {
