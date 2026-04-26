@@ -628,6 +628,14 @@ function App() {
   // (Localhost-only simulation was wrong — the real server runs everywhere.)
   const isLive = true;
 
+  // Hydrate dataset picker with real names from server; keep mock DATASETS on failure
+  useE(() => {
+    fetch('/api/datasets')
+      .then(r => { if (!r.ok) throw new Error(r.status.toString()); return r.json(); })
+      .then(data => { window.DATASETS = data; })
+      .catch(() => { /* keep existing window.DATASETS mock */ });
+  }, []);
+
   function handleRunComplete(final) {
     if (final.status === "success") {
       setHistory(h => [{
