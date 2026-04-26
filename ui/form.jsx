@@ -38,7 +38,7 @@ function DatasetPicker({ value, onChange, disabled }) {
     const needle = q.trim();
     if (!needle) return window.DATASETS.slice(0, 6);
     return window.DATASETS
-      .map(d => ({ d, s: window.fuzzyScore(needle, d.name) + window.fuzzyScore(needle, d.code) * 0.5 }))
+      .map(d => ({ d, s: window.fuzzyScore(needle, d.name) + window.fuzzyScore(needle, d.code ?? '') * 0.5 }))
       .filter(x => x.s > 0)
       .sort((a, b) => b.s - a.s)
       .slice(0, 6)
@@ -99,7 +99,7 @@ function DatasetPicker({ value, onChange, disabled }) {
               onMouseDown={e => { e.preventDefault(); pick(d); }}
             >
               <span className="t">{highlight(d.name, q)}</span>
-              <span className="s">{d.code} · {d.tag} · {d.year}</span>
+              {d.code && <span className="s">{d.code} · {d.tag} · {d.year}</span>}
             </div>
           ))}
         </div>
