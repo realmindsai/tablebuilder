@@ -1,0 +1,206 @@
+/* ============================================================
+   RMAI Design System — Colors & Type
+   Palette locked 15 March 2026
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* -------- Brand palette (3 brand colours, 3 jobs) -------- */
+  --rmai-purple:        #A77ACD;   /* Signature — headings, wordmark, badges, borders, trust numbers */
+  --rmai-orange:        #F26541;   /* Action — CTA buttons ONLY */
+  --rmai-green:         #22C55E;   /* Status — availability dots, live metrics ONLY */
+
+  /* -------- Neutrals / backgrounds -------- */
+  --rmai-bg:            #FAFAFA;   /* Page background (near-white) */
+  --rmai-white:         #FFFFFF;   /* Cards */
+  --rmai-stone:         #EDEBE8;   /* Callouts / section blocks */
+  --rmai-lavender:      #F0EBF4;   /* Accent background (soft purple wash) */
+
+  /* -------- Text -------- */
+  --rmai-fg-1:          #1A1B25;   /* Primary body + headings */
+  --rmai-fg-2:          #555555;   /* Secondary / H3 */
+  --rmai-fg-mut:        #8D8D92;   /* Muted / labels / captions / tagline */
+
+  /* -------- Lines -------- */
+  --rmai-border:        #E8E8EB;   /* Dividers, card borders, gridlines */
+
+  /* -------- Chart series (apply in order, max 5) -------- */
+  --rmai-series-1:      #A77ACD;   /* Lilac (primary) */
+  --rmai-series-2:      #22C55E;   /* Green */
+  --rmai-series-3:      #F26541;   /* Orange */
+  --rmai-series-4:      #8D8D92;   /* Muted grey */
+  --rmai-series-5:      #555555;   /* Secondary text */
+
+  /* -------- Typography -------- */
+  --rmai-font-sans: 'Epilogue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --rmai-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* -------- Font sizes (screen) -------- */
+  --rmai-fs-h1:    32px;   /* 28–32pt */
+  --rmai-fs-h2:    22px;   /* 20–24pt */
+  --rmai-fs-h3:    17px;   /* 16–18pt */
+  --rmai-fs-body:  15px;   /* 11–12pt print ≈ 14–16px screen */
+  --rmai-fs-small: 13px;
+  --rmai-fs-cap:   11px;   /* 9–10pt */
+
+  /* -------- Weights -------- */
+  --rmai-fw-wordmark: 800;
+  --rmai-fw-bold:     700;
+  --rmai-fw-semibold: 600;
+  --rmai-fw-medium:   500;
+  --rmai-fw-regular:  400;
+
+  /* -------- Line heights -------- */
+  --rmai-lh-tight:  1.15;   /* wordmark / display */
+  --rmai-lh-heading:1.25;
+  --rmai-lh-body:   1.45;   /* 1.35–1.5 */
+
+  /* -------- Letter spacing -------- */
+  --rmai-ls-wordmark: -0.02em;   /* both wordmark lines */
+  --rmai-ls-tagline:   0.06em;   /* "wisdom, amplified" */
+  --rmai-ls-eyebrow:   0.12em;   /* UPPERCASE eyebrows / TAGS */
+
+  /* -------- Spacing scale (8pt base) -------- */
+  --rmai-space-1:   4px;
+  --rmai-space-2:   8px;
+  --rmai-space-3:  12px;
+  --rmai-space-4:  16px;
+  --rmai-space-5:  20px;
+  --rmai-space-6:  24px;
+  --rmai-space-8:  32px;
+  --rmai-space-10: 40px;
+  --rmai-space-12: 48px;
+
+  /* -------- Radii -------- */
+  --rmai-radius-xs:  2px;
+  --rmai-radius-sm:  4px;   /* chart bars, tag chips */
+  --rmai-radius-md:  6px;
+  --rmai-radius-lg:  10px;  /* cards */
+  --rmai-radius-xl:  16px;
+  --rmai-radius-pill: 999px;
+
+  /* -------- Elevation (restrained — no heavy shadows) -------- */
+  --rmai-shadow-none: none;
+  --rmai-shadow-1:    0 1px 2px rgba(26, 27, 37, 0.04);
+  --rmai-shadow-2:    0 1px 8px rgba(26, 27, 37, 0.06);  /* cards on screen */
+  --rmai-shadow-3:    0 2px 16px rgba(26, 27, 37, 0.08);
+
+  /* -------- Motion -------- */
+  --rmai-ease:        cubic-bezier(0.4, 0, 0.2, 1);
+  --rmai-dur-fast:    120ms;
+  --rmai-dur-base:    180ms;
+  --rmai-dur-slow:    240ms;
+}
+
+/* ============================================================
+   Semantic base — elements styled to match the scale
+   ============================================================ */
+
+.rmai-body {
+  font-family: var(--rmai-font-sans);
+  font-size: var(--rmai-fs-body);
+  font-weight: var(--rmai-fw-regular);
+  line-height: var(--rmai-lh-body);
+  color: var(--rmai-fg-1);
+  background: var(--rmai-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings */
+.rmai-h1 {
+  font-family: var(--rmai-font-sans);
+  font-size: var(--rmai-fs-h1);
+  font-weight: var(--rmai-fw-bold);
+  line-height: var(--rmai-lh-heading);
+  color: var(--rmai-fg-1);
+  letter-spacing: -0.01em;
+}
+.rmai-h1--accent { color: var(--rmai-purple); }
+
+.rmai-h2 {
+  font-family: var(--rmai-font-sans);
+  font-size: var(--rmai-fs-h2);
+  font-weight: var(--rmai-fw-bold);
+  line-height: var(--rmai-lh-heading);
+  color: var(--rmai-fg-1);
+}
+
+.rmai-h3 {
+  font-family: var(--rmai-font-sans);
+  font-size: var(--rmai-fs-h3);
+  font-weight: var(--rmai-fw-semibold);
+  line-height: var(--rmai-lh-heading);
+  color: var(--rmai-fg-2);
+}
+
+.rmai-p {
+  font-size: var(--rmai-fs-body);
+  line-height: var(--rmai-lh-body);
+  color: var(--rmai-fg-1);
+}
+
+.rmai-caption {
+  font-size: var(--rmai-fs-cap);
+  line-height: 1.4;
+  color: var(--rmai-fg-2);
+}
+
+.rmai-mut {
+  color: var(--rmai-fg-mut);
+}
+
+/* Eyebrow / small-caps tag — uppercase, tracked */
+.rmai-eyebrow {
+  font-size: 10px;
+  font-weight: var(--rmai-fw-bold);
+  letter-spacing: var(--rmai-ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--rmai-purple);
+}
+
+/* Tagline — "wisdom, amplified" */
+.rmai-tagline {
+  font-family: var(--rmai-font-sans);
+  font-size: 13px;
+  font-weight: var(--rmai-fw-regular);
+  font-style: italic;
+  letter-spacing: var(--rmai-ls-tagline);
+  color: var(--rmai-fg-mut);
+}
+
+/* Monospace — terminal / metrics / file paths */
+.rmai-mono {
+  font-family: var(--rmai-font-mono);
+  font-size: 13px;
+  font-weight: var(--rmai-fw-regular);
+}
+
+/* Code chip */
+.rmai-code {
+  font-family: var(--rmai-font-mono);
+  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: var(--rmai-radius-xs);
+  background: var(--rmai-stone);
+  color: var(--rmai-fg-1);
+}
+
+/* Links */
+.rmai-link {
+  color: var(--rmai-purple);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.rmai-link:hover { color: var(--rmai-fg-1); }
+
+/* Dividers */
+.rmai-hr {
+  border: 0;
+  height: 1px;
+  background: var(--rmai-border);
+  margin: var(--rmai-space-6) 0;
+}

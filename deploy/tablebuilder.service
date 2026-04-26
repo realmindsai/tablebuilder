@@ -1,0 +1,14 @@
+[Unit]
+Description=Tablebuilder UI — RMAI
+After=network.target
+
+[Service]
+User=dewoller
+WorkingDirectory=/opt/tablebuilder
+ExecStart=/home/dewoller/.volta/tools/image/node/22.22.1/bin/node dist/src/server.js
+Restart=always
+RestartSec=5
+EnvironmentFile=/opt/tablebuilder/.env
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · Tablebuilder · RMAI</title>
+  <meta name="color-scheme" content="light">
+  <meta name="darkreader-lock">
+  <link rel="stylesheet" href="assets/rmai.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; background: #FAFAFA; }
+    body { font-family: var(--rmai-font-sans); -webkit-font-smoothing: antialiased; }
+
+    .shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--rmai-border);
+      border-radius: 12px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--rmai-shadow-2);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 28px;
+    }
+    .brand__a { font-size: 11px; font-weight: 500; color: var(--rmai-fg-mut); text-transform: lowercase; }
+    .brand__b { font-size: 16px; font-weight: 800; color: var(--rmai-fg-1); text-transform: lowercase; }
+    .brand__app { font-size: 20px; font-weight: 700; color: var(--rmai-fg-1); margin-top: 10px; letter-spacing: -0.01em; }
+
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: var(--rmai-fg-1); margin-bottom: 6px; }
+    .field input[type=text],
+    .field input[type=password],
+    .field input[type=email] {
+      width: 100%;
+      font-family: var(--rmai-font-sans);
+      font-size: 14px;
+      color: var(--rmai-fg-1);
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid var(--rmai-border);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 120ms, box-shadow 120ms;
+    }
+    .field input:focus {
+      border-color: var(--rmai-purple);
+      box-shadow: 0 0 0 2px rgba(167,122,205,0.18);
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--rmai-fg-2);
+      cursor: pointer;
+    }
+    .check-row input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--rmai-purple); }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--rmai-purple);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--rmai-font-sans);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 120ms;
+    }
+    .btn-submit:hover { background: #9366bd; }
+
+    .error-msg {
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: rgba(242,101,65,0.08);
+      border: 1px solid rgba(242,101,65,0.3);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--rmai-orange);
+      display: none;
+    }
+    .hint {
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--rmai-fg-mut);
+      text-align: center;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card">
+      <div class="brand">
+        <span class="brand__a">real minds,</span>
+        <span class="brand__b">artificial intelligence</span>
+        <span class="brand__app">tablebuilder</span>
+      </div>
+
+      <form id="loginForm" method="POST" action="/login">
+        <div class="field">
+          <label for="userId">ABS Username</label>
+          <input type="text" id="userId" name="userId" required
+                 autocomplete="username" placeholder="e.g. 1207475" />
+        </div>
+        <div class="field">
+          <label for="password">ABS Password</label>
+          <input type="password" id="password" name="password" required
+                 autocomplete="current-password" placeholder="••••••••" />
+        </div>
+        <label class="check-row">
+          <input type="checkbox" name="remember" id="remember" checked />
+          Remember me for 30 days
+        </label>
+        <button type="submit" class="btn-submit">Sign in to ABS Tablebuilder</button>
+      </form>
+
+      <div class="error-msg" id="errorMsg">
+        ABS username and password are required.
+      </div>
+
+      <p class="hint">
+        Your ABS credentials are encrypted in your browser and<br>
+        never stored on this server.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('error') === '1') {
+        document.getElementById('errorMsg').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
