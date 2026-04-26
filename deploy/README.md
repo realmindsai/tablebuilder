@@ -17,6 +17,8 @@ npm run build
 
 ### 2. Sync to Totoro
 
+Run from `~/code/rmai/tablebuilder/`:
+
 ```bash
 rsync -avz --exclude node_modules --exclude .env \
   . ubuntu@totoro:/opt/tablebuilder/
