@@ -89,8 +89,7 @@ describe('expandVariableGroups', () => {
     expect(expanded._click).not.toHaveBeenCalled();
   });
 
-  it('does not click collapsed nodes in SKIP_GROUPS (seifa, my saved tables)', async () => {
-    // 'geographical' is intentionally NOT in SKIP_GROUPS so State/Territory is findable.
+  it('does not click collapsed nodes in SKIP_GROUPS', async () => {
     const geo   = makeNode('Geographical Areas (Usual Residence)', 'collapsed');
     const seifa = makeNode('SEIFA Index 2021', 'collapsed');
     const saved = makeNode('My Saved Tables', 'collapsed');
@@ -98,7 +97,9 @@ describe('expandVariableGroups', () => {
 
     await expandVariableGroups(page as any, noopReporter, new AbortController().signal);
 
-    expect(geo._click).toHaveBeenCalledOnce(); // geographic group IS expanded now
+    // Geographic group is skipped by expandVariableGroups — tryExpandGeographic
+    // handles it surgically inside checkVariableCategories when needed.
+    expect(geo._click).not.toHaveBeenCalled();
     expect(seifa._click).not.toHaveBeenCalled();
     expect(saved._click).not.toHaveBeenCalled();
   });

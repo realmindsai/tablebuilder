@@ -4,9 +4,7 @@ import type { Axis } from './types.js';
 import { submitJsfForm } from './jsf.js';
 import { noopReporter, NEVER_ABORT, CancelledError, type PhaseReporter } from './reporter.js';
 
-// 'geographical' intentionally omitted: geographic variable nodes (STRD, SA2…) all
-// match isVarNode so expansion stops after one level, and State/Territory lives here.
-const SKIP_GROUPS = ['my saved tables', 'seifa'];
+const SKIP_GROUPS = ['geographical', 'my saved tables', 'seifa'];
 const isVarNode = (t: string) =>
   /^[A-Z][A-Z0-9]{3,}\s/.test(t) ||
   /^[A-Z][A-Z0-9]{2,}\s.+\(\d+\)\s*$/.test(t);
@@ -205,30 +203,62 @@ async function searchVariable(page: Page, varName: string): Promise<void> {
   console.log(`searchVariable '${varName}': ${allLabels.length} nodes. Labels:`, allLabels.slice(0, 50));
 }
 
+// One-shot: expand the first collapsed geographic group node so variables like
+// State/Territory (STRD) become visible. Does NOT recurse — callers must not
+// call expandVariableGroups afterwards or the SA4 regional hierarchy will cascade.
+async function tryExpandGeographic(page: Page): Promise<boolean> {
+  const nodes = await page.locator('.treeNodeElement').all();
+  for (const node of nodes) {
+    const rawText = (await node.locator('.label').first().textContent().catch(() => ''))?.trim() ?? '';
+    const cls = await node.locator('.treeNodeExpander').first().getAttribute('class').catch(() => '') ?? '';
+    if (cls.includes('collapsed') && rawText.toLowerCase().includes('geographical')) {
+      console.log(`tryExpandGeographic: expanding '${rawText}'`);
+      await node.locator('.treeNodeExpander').first().click();
+      await new Promise(r => setTimeout(r, 2000));
+      return true;
+    }
+  }
+  return false;
+}
+
 async function checkVariableCategories(page: Page, varName: string): Promise<number> {
   // Use Playwright's native click for expander and checkboxes — required to trigger
   // PrimeFaces AJAX event handlers. JavaScript el.click() bypasses these handlers.
   const vl = varName.toLowerCase();
   const vu = varName.toUpperCase();
 
-  // Find and expand the target variable node using Playwright click
-  const allNodes = await page.locator('.treeNodeElement').all();
+  // Two attempts: if the variable is not found on the first scan, expand the
+  // geographic group (for variables like State/Territory) and retry once.
+  let allNodes = await page.locator('.treeNodeElement').all();
   let targetIdx = -1;
-  for (let i = 0; i < allNodes.length; i++) {
-    const text = (await allNodes[i].locator('.label').first().textContent().catch(() => ''))?.trim() ?? '';
-    const cls = await allNodes[i].locator('.treeNodeExpander').first().getAttribute('class').catch(() => '') ?? '';
-    if (cls.includes('leaf')) continue;
-    const tl = text.toLowerCase();
-    const si = text.indexOf(' ');
-    const ac = si > 0 ? text.slice(si + 1).toLowerCase() : '';
-    if (tl === vl || ac === vl || ac.startsWith(vl + ' ') || ac.startsWith(vl + '(') || text.toUpperCase().startsWith(vu + ' ')) {
-      targetIdx = i;
-      if (cls.includes('collapsed')) {
-        console.log(`checkVariableCategories: expanding '${varName}' via Playwright click`);
-        await allNodes[i].locator('.treeNodeExpander').first().click();
-        await new Promise(r => setTimeout(r, 2000));
+
+  for (let attempt = 0; attempt < 2; attempt++) {
+    targetIdx = -1;
+    for (let i = 0; i < allNodes.length; i++) {
+      const text = (await allNodes[i].locator('.label').first().textContent().catch(() => ''))?.trim() ?? '';
+      const cls = await allNodes[i].locator('.treeNodeExpander').first().getAttribute('class').catch(() => '') ?? '';
+      if (cls.includes('leaf')) continue;
+      const tl = text.toLowerCase();
+      const si = text.indexOf(' ');
+      const ac = si > 0 ? text.slice(si + 1).toLowerCase() : '';
+      if (tl === vl || ac === vl || ac.startsWith(vl + ' ') || ac.startsWith(vl + '(') || text.toUpperCase().startsWith(vu + ' ')) {
+        targetIdx = i;
+        if (cls.includes('collapsed')) {
+          console.log(`checkVariableCategories: expanding '${varName}' via Playwright click`);
+          await allNodes[i].locator('.treeNodeExpander').first().click();
+          await new Promise(r => setTimeout(r, 2000));
+        }
+        break;
       }
-      break;
+    }
+
+    if (targetIdx >= 0) break;
+
+    if (attempt === 0) {
+      // Variable not visible — try exposing geographic variables (State, SA2, LGA…)
+      const expanded = await tryExpandGeographic(page);
+      if (!expanded) break;
+      allNodes = await page.locator('.treeNodeElement').all();
     }
   }
 
