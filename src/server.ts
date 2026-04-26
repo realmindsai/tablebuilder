@@ -12,6 +12,7 @@ import { isRunActive, setRunActive, enqueue, dequeueNext, removeFromQueue, type 
 import { logRun, pruneOldLogs, type AuditEntry } from './logger.js';
 import { CancelledError } from './shared/abs/reporter.js';
 import type { Credentials, Input } from './shared/abs/types.js';
+import Database from 'better-sqlite3';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // Find the project root by looking for ui/ directory.
@@ -20,6 +21,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ui1 = join(__dirname, '..', 'ui');
 const UI_DIR = existsSync(ui1) ? ui1 : join(__dirname, '..', '..', 'ui');
 const PORT = Number(process.env.PORT ?? 3000);
+const dictDb1 = join(__dirname, '..', 'docs', 'explorer', 'data', 'dictionary.db');
+const dictDb2 = join(__dirname, '..', '..', 'docs', 'explorer', 'data', 'dictionary.db');
+const DICT_DB = existsSync(dictDb1) ? dictDb1 : existsSync(dictDb2) ? dictDb2 : null;
+const dictDb = DICT_DB ? new Database(DICT_DB, { readonly: true }) : null;
 const COOKIE_SECRET = process.env.COOKIE_SECRET ?? '';
 
 if (!COOKIE_SECRET && process.env.NODE_ENV === 'production') {
@@ -179,6 +184,13 @@ export async function createServer(): Promise<express.Express> {
   // Health check (no auth) — must be registered before protected static middleware
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true });
+  });
+
+  // Dataset list (no auth) — serves real ABS names from dictionary.db for the UI picker
+  app.get('/api/datasets', (_req, res) => {
+    if (!dictDb) { res.status(503).json({ error: 'Dataset dictionary unavailable' }); return; }
+    const rows = dictDb.prepare('SELECT id, name FROM datasets ORDER BY name').all() as Array<{ id: number; name: string }>;
+    res.json(rows.map(r => ({ id: r.id, name: r.name, code: null, tag: null, year: null })));
   });
 
   // SSE run endpoint
