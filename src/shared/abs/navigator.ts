@@ -4,7 +4,9 @@ import type { Axis } from './types.js';
 import { submitJsfForm } from './jsf.js';
 import { noopReporter, NEVER_ABORT, CancelledError, type PhaseReporter } from './reporter.js';
 
-const SKIP_GROUPS = ['geographical', 'my saved tables', 'seifa'];
+// 'geographical' intentionally omitted: geographic variable nodes (STRD, SA2…) all
+// match isVarNode so expansion stops after one level, and State/Territory lives here.
+const SKIP_GROUPS = ['my saved tables', 'seifa'];
 const isVarNode = (t: string) =>
   /^[A-Z][A-Z0-9]{3,}\s/.test(t) ||
   /^[A-Z][A-Z0-9]{2,}\s.+\(\d+\)\s*$/.test(t);
