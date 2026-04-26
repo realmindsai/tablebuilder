@@ -497,7 +497,7 @@ function RunPanel({ runState, onCancel, onNew }) {
           <RunMeta request={request} elapsed={totalElapsed} status={status} />
 
           {status === "success" && <SuccessResult result={result} request={request} />}
-          {status === "error"   && <ErrorResult result={result} />}
+          {status === "error"   && <ErrorResult result={result} onRetry={() => { reset(); startRun(request); }} />}
           {status === "cancelled" && <CancelResult result={result} />}
 
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--rmai-fg-mut)", marginBottom: 12 }}>
