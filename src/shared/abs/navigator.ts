@@ -297,6 +297,12 @@ export async function expandVariableGroups(
   reporter: PhaseReporter = noopReporter,
   signal: AbortSignal = NEVER_ABORT,
 ): Promise<void> {
+  // Wait for at least one tree node to be in the DOM before scanning.
+  // The JSF tree is rendered via AJAX; waitForLoadState('load') in submitJsfForm
+  // does not guarantee nodes are present yet. Callers that need full count-
+  // stability (e.g. post-submitJsfForm) must stabilise the tree before calling.
+  await page.waitForSelector('.treeNodeElement', { timeout: 30000 }).catch(() => null);
+
   // Track labels already clicked this call — prevents re-clicking the same node
   // in subsequent rounds when the DOM hasn't updated yet (e.g. slow AJAX).
   const alreadyExpanded = new Set<string>();
@@ -418,8 +424,20 @@ export async function selectVariables(
     }
 
     // Re-expand the variable tree after page reload so the next variable is findable.
-    // submitJsfForm already awaits waitForLoadState('load') so the DOM is stable here.
+    // submitJsfForm awaits waitForLoadState('load'), but the JSF tree renders via
+    // AJAX after load fires. Wait here for the node count to stabilise before
+    // calling expandVariableGroups (which only waits for the first node to appear).
     if (i < assignments.length - 1) {
+      await page.waitForSelector('.treeNodeElement', { timeout: 30000 }).catch(() => null);
+      let prevTreeCount = -1;
+      for (let j = 0; j < 8; j++) {
+        if (signal.aborted) throw new CancelledError();
+        const count = await page.locator('.treeNodeElement').count();
+        console.log(`selectVariables: post-submit tree stability wait ${j}, count=${count}`);
+        if (count === prevTreeCount && count > 0) break;
+        prevTreeCount = count;
+        await new Promise(r => setTimeout(r, 2000));
+      }
       await expandVariableGroups(page, reporter, signal);
     }
   }

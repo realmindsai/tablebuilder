@@ -69,6 +69,8 @@ function makePage(nodes: ReturnType<typeof makeNode>[]) {
   const stableLocator = { all: allFn, count: countFn };
   return {
     locator: (_sel: string) => stableLocator,
+    // waitForSelector resolves immediately — nodes are "already present" in mock land
+    waitForSelector: vi.fn().mockResolvedValue(undefined),
     _allFn: allFn,
   };
 }
