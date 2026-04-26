@@ -4,6 +4,11 @@ import type { Axis } from './types.js';
 import { submitJsfForm } from './jsf.js';
 import { noopReporter, NEVER_ABORT, CancelledError, type PhaseReporter } from './reporter.js';
 
+const SKIP_GROUPS = ['geographical', 'my saved tables', 'seifa'];
+const isVarNode = (t: string) =>
+  /^[A-Z][A-Z0-9]{3,}\s/.test(t) ||
+  /^[A-Z][A-Z0-9]{2,}\s.+\(\d+\)\s*$/.test(t);
+
 // ---------------------------------------------------------------------------
 // Fuzzy match (pure function — no browser)
 // ---------------------------------------------------------------------------
@@ -287,6 +292,40 @@ async function expandTargetVariable(page: Page, varName: string): Promise<void> 
   }
 }
 
+export async function expandVariableGroups(
+  page: Page,
+  reporter: PhaseReporter = noopReporter,
+  signal: AbortSignal = NEVER_ABORT,
+): Promise<void> {
+  // Track labels already clicked this call — prevents re-clicking the same node
+  // in subsequent rounds when the DOM hasn't updated yet (e.g. slow AJAX).
+  const alreadyExpanded = new Set<string>();
+  for (let round = 0; round < 5; round++) {
+    if (signal.aborted) throw new CancelledError();
+    const nodes = await page.locator('.treeNodeElement').all();
+    let anyExpanded = false;
+    for (const node of nodes) {
+      if (signal.aborted) throw new CancelledError();
+      const rawText = (await node.locator('.label').first().textContent().catch(() => ''))?.trim() ?? '';
+      const text = rawText.toLowerCase();
+      if (alreadyExpanded.has(rawText)) continue;
+      const expander = node.locator('.treeNodeExpander').first();
+      const cls = await expander.getAttribute('class').catch(() => '') ?? '';
+      if (cls.includes('collapsed') && !SKIP_GROUPS.some(k => text.includes(k)) && !isVarNode(rawText)) {
+        console.log(`expandVariableGroups: round ${round} expanding group '${rawText}'`);
+        reporter({ type: 'log', level: 'info', message: `  expanded ${rawText}` });
+        await expander.click();
+        await new Promise(r => setTimeout(r, 1500));
+        alreadyExpanded.add(rawText);
+        anyExpanded = true;
+      }
+    }
+    const total = await page.locator('.treeNodeElement').count();
+    console.log(`expandVariableGroups: round ${round} done, total DOM nodes: ${total}`);
+    if (!anyExpanded) break;
+  }
+}
+
 export async function selectVariables(
   page: Page,
   vars: { rows: string[]; columns: string[]; wafers?: string[] },
@@ -327,33 +366,7 @@ export async function selectVariables(
   );
   console.log(`selectVariables: tree stable (${topGroupLabels.length} nodes):`, topGroupLabels.slice(0, 20));
 
-  const SKIP_GROUPS = ['geographical', 'my saved tables', 'seifa'];
-  const isVarNode = (t: string) =>
-    /^[A-Z][A-Z0-9]{3,}\s/.test(t) ||
-    /^[A-Z][A-Z0-9]{2,}\s.+\(\d+\)\s*$/.test(t);
-
-  for (let round = 0; round < 5; round++) {
-    if (signal.aborted) throw new CancelledError();
-    const nodes = await page.locator('.treeNodeElement').all();
-    let anyExpanded = false;
-    for (const node of nodes) {
-      if (signal.aborted) throw new CancelledError();
-      const rawText = (await node.locator('.label').first().textContent().catch(() => ''))?.trim() ?? '';
-      const text = rawText.toLowerCase();
-      const expander = node.locator('.treeNodeExpander').first();
-      const cls = await expander.getAttribute('class').catch(() => '') ?? '';
-      if (cls.includes('collapsed') && !SKIP_GROUPS.some(k => text.includes(k)) && !isVarNode(rawText)) {
-        console.log(`selectVariables: round ${round} expanding group '${rawText}'`);
-        reporter({ type: 'log', level: 'info', message: `  expanded ${rawText}` });
-        await expander.click();
-        await new Promise(r => setTimeout(r, 1500));
-        anyExpanded = true;
-      }
-    }
-    const total = await page.locator('.treeNodeElement').count();
-    console.log(`selectVariables: round ${round} done, total DOM nodes: ${total}`);
-    if (!anyExpanded) break;
-  }
+  await expandVariableGroups(page, reporter, signal);
 
   reporter({ type: 'log', level: 'ok', message: `  ✓ variable groups expanded` });
   reporter({ type: 'phase_complete', phaseId: 'tree', elapsed: (Date.now() - treeStart) / 1000 });
@@ -377,7 +390,8 @@ export async function selectVariables(
   let submitStart = 0;
   let firstSubmit = true;
 
-  for (const { name, axis } of assignments) {
+  for (let i = 0; i < assignments.length; i++) {
+    const { name, axis } = assignments[i];
     if (signal.aborted) throw new CancelledError();
 
     const checked = await checkVariableCategories(page, name);
@@ -401,6 +415,12 @@ export async function selectVariables(
     const bodyText = await page.evaluate(() => document.body.innerText.substring(0, 500)).catch(() => '');
     if (bodyText.includes('Your table is empty')) {
       throw new Error(`Failed to add '${name}' to ${axis} — table still empty after submission.`);
+    }
+
+    // Re-expand the variable tree after page reload so the next variable is findable.
+    // submitJsfForm already awaits waitForLoadState('load') so the DOM is stable here.
+    if (i < assignments.length - 1) {
+      await expandVariableGroups(page, reporter, signal);
     }
   }
 
