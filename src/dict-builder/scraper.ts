@@ -54,6 +54,37 @@ export function splitGeographyAndVariables(nodes: RawNode[]): {
 } {
   if (nodes.length === 0) return { geographies: [], varNodes: [] };
 
+  // Two distinct cases by page type:
+  //
+  // (a) CATALOGUE page — dataset names are leaf nodes after a header section
+  //     of leaf nodes that have NO checkbox (those are the geographic
+  //     classifications, listed once at the top before the dataset tree
+  //     starts). Detect by: any leaf without a checkbox appearing before
+  //     any node with a checkbox.
+  //
+  // (b) DATASET tableView page — the schema tree is rooted at top-level
+  //     groups including "Geographical Areas (Usual Residence)" or
+  //     "Geographical Areas (Place of Enumeration)". The classification
+  //     names are this group's IMMEDIATE children (depth = group.depth + 1).
+  //     Variables and categories live alongside in the demographic groups.
+  //
+  // We always return ALL nodes as varNodes for the classifier to walk. The
+  // geographies_json list populates from whichever case matches.
+
+  // Case (b): dataset schema tree
+  for (let i = 0; i < nodes.length; i++) {
+    if (/Geographical Areas/i.test(nodes[i].label) && !nodes[i].is_leaf) {
+      const parentDepth = nodes[i].depth;
+      const geos: string[] = [];
+      for (let j = i + 1; j < nodes.length; j++) {
+        if (nodes[j].depth <= parentDepth) break;
+        if (nodes[j].depth === parentDepth + 1) geos.push(nodes[j].label);
+      }
+      if (geos.length > 0) return { geographies: geos, varNodes: nodes };
+    }
+  }
+
+  // Case (a): catalogue page — no-checkbox leaves before first checkbox
   let firstCheckIdx = -1;
   for (let i = 0; i < nodes.length; i++) {
     if (nodes[i].has_checkbox) { firstCheckIdx = i; break; }
@@ -64,27 +95,121 @@ export function splitGeographyAndVariables(nodes: RawNode[]): {
       varNodes: [],
     };
   }
-
   const minDepth = Math.min(...nodes.map(n => n.depth));
   let varStartIdx = firstCheckIdx;
   for (let i = firstCheckIdx - 1; i >= 0; i--) {
     if (nodes[i].depth === minDepth) { varStartIdx = i; break; }
   }
-
   const geos = nodes.slice(0, varStartIdx).filter(n => n.is_leaf).map(n => n.label);
   return { geographies: geos, varNodes: nodes.slice(varStartIdx) };
 }
 
+// Split a variable label like "STRD State/Territory of Usual Residence" into
+// {code: "STRD", label: "State/Territory of Usual Residence"}. The first
+// whitespace-delimited token is treated as the code only if it is ALL-UPPERCASE
+// (digits and underscores allowed) and ≤ 16 chars. Otherwise code is empty
+// and the entire label stays as the label. Matches legacy Python behaviour
+// for dataset-tree variables, which (unlike catalogue dataset names) lack a
+// trailing "(N)" suffix.
+function splitCodeAndLabel(raw: string): { code: string; label: string } {
+  // Strip a trailing " (N)" if present — catalogue labels include the count
+  // ("SEXP Sex (2)") but dataset-tree labels usually don't ("SEXP Sex").
+  // Either way, the count belongs in `category_count`, not the visible label.
+  const stripped = raw.replace(/\s+\(\d+\)\s*$/, '').trim();
+  const idx = stripped.indexOf(' ');
+  if (idx < 0) return { code: '', label: stripped };
+  const candidate = stripped.slice(0, idx);
+  if (candidate.length <= 16 && /^[A-Z][A-Z0-9_]*$/.test(candidate)) {
+    return { code: candidate, label: stripped.slice(idx + 1).trim() };
+  }
+  return { code: '', label: stripped };
+}
+
+type Role = 'group' | 'variable' | 'category';
+
+// Variables in the ABS schema tree have a stable label format: an ALL-UPPERCASE
+// code (3-16 chars, digits and underscores allowed) followed by a space and the
+// human-readable name. Examples: "SEXP Sex", "AGE5P Age in Five Year Groups",
+// "STRD State/Territory of Usual Residence", "SA1MAIN_2021 SA1 by Main ASGS".
+// Categories, classification-release groups, and structural groups don't follow
+// this pattern.
+//
+// We previously tried structural classification (variable = non-leaf with leaf
+// children) but it failed on two real cases:
+//   1. Hierarchical category bins (e.g. "Postal Areas" → "New South Wales POAs"
+//      → individual postcodes) were tagged as variables because they had leaf
+//      grandchildren.
+//   2. Variables whose categories form their OWN sub-tree (e.g. BPMP Country of
+//      Birth of Father → "Asia" → "South Asia" → "India") have NO leaf children
+//      at depth+1, so they were tagged as groups, and child variables ended up
+//      with corrupted paths like "Cultural Diversity > BPMP > Not stated > ENGLP".
+//
+// Label-based classification doesn't have either problem.
+// Two requirements distinguish real variable labels from classification-
+// release group labels:
+// 1) Code is at LEAST 4 chars. Real ABS variable codes are 4+ chars (SEXP,
+//    AGEP, STRD, BPLP, LGA_2021, SA1MAIN_2021). 3-char strings like SA1, SA2,
+//    LGA, POA are classification-release name prefixes — they head groups
+//    like "SA1 by Main ASGS", "LGA (2021 Boundaries)", "POA Postcode" — not
+//    variables.
+// 2) After the code + space, the label must start with a LETTER. This
+//    excludes "LGA (2021 Boundaries)" where the post-code part starts with
+//    a paren.
+const VAR_LABEL_FULL_RE = /^([A-Z][A-Z0-9_]{3,15})\s+[A-Za-z]/;
+
+function classifyNodes(nodes: RawNode[]): Role[] {
+  const roles: Role[] = new Array(nodes.length);
+  // First pass: variables (label match) and groups (everything else non-leaf,
+  // non-categorised). Then a second pass marks anything inside a variable's
+  // subtree as a category.
+  let varDepth = -1;  // depth of the enclosing variable, or -1 if not in one
+  for (let i = 0; i < nodes.length; i++) {
+    const n = nodes[i];
+
+    // Step out of the previous variable's subtree?
+    if (varDepth >= 0 && n.depth <= varDepth) varDepth = -1;
+
+    const looksLikeVariable = !n.is_leaf && VAR_LABEL_FULL_RE.test(n.label);
+
+    if (looksLikeVariable) {
+      roles[i] = 'variable';
+      varDepth = n.depth;
+    } else if (varDepth >= 0) {
+      roles[i] = 'category';
+    } else {
+      roles[i] = n.is_leaf ? 'category' : 'group';
+    }
+  }
+  return roles;
+}
+
+// Count the IMMEDIATE children of a non-leaf node (the "category buckets" of a
+// variable, leaf or non-leaf). For the >100 threshold we count direct children,
+// not all descendants — a postcode-style variable with 9 state buckets each
+// containing thousands of leaves is best summarised as 9 categories.
+function countDirectChildren(nodes: RawNode[], i: number): number {
+  const parent = nodes[i];
+  let count = 0;
+  for (let j = i + 1; j < nodes.length; j++) {
+    if (nodes[j].depth <= parent.depth) break;
+    if (nodes[j].depth === parent.depth + 1) count++;
+  }
+  return count;
+}
+
 export function classifyAndBuildGroups(
   varNodes: RawNode[],
-  warn: (msg: string) => void,
+  _warn: (msg: string) => void,
 ): ExtractedGroup[] {
   if (varNodes.length === 0) return [];
 
+  const roles = classifyNodes(varNodes);
   const groups: ExtractedGroup[] = [];
   const groupStack: Map<number, string> = new Map();
   let currentGroup: ExtractedGroup | null = null;
   let currentVar: ExtractedVariable | null = null;
+  let currentVarDepth = -1;
+  let captureCategories = false;
   let lastPath = '';
 
   const flushVar = () => {
@@ -92,6 +217,7 @@ export function classifyAndBuildGroups(
       currentGroup.variables.push(currentVar);
       currentVar = null;
     }
+    captureCategories = false;
   };
   const flushGroup = () => {
     flushVar();
@@ -99,28 +225,12 @@ export function classifyAndBuildGroups(
     currentGroup = null;
   };
 
-  for (const node of varNodes) {
-    const parsed = parseVariableLabel(node.label);
+  for (let i = 0; i < varNodes.length; i++) {
+    const node = varNodes[i];
+    const role = roles[i];
 
-    if (parsed) {
-      // VARIABLE
-      flushVar();
-      if (currentGroup === null) {
-        currentGroup = { label: '(ungrouped)', path: '(ungrouped)', variables: [] };
-        lastPath = '(ungrouped)';
-      }
-      currentVar = {
-        code: parsed.code,
-        label: parsed.label,
-        category_count: parsed.category_count,
-        categories: [],
-      };
-    } else if (!node.is_leaf) {
-      // GROUP (or malformed label that lacks "(N)" — treat as group, warn)
-      if (!parseVariableLabel(node.label) && /\(\d+\)/.test(node.label)) {
-        // Has parens with digits but didn't match — likely malformed
-        warn(`malformed group-like label (treating as group): ${node.label}`);
-      }
+    if (role === 'group') {
+      // Update the path stack to this depth and emit a new group if it changed
       groupStack.set(node.depth, node.label);
       for (const d of [...groupStack.keys()]) {
         if (d > node.depth) groupStack.delete(d);
@@ -133,11 +243,34 @@ export function classifyAndBuildGroups(
         currentGroup = { label: node.label, path, variables: [] };
         lastPath = path;
       }
-    } else if (node.is_leaf && currentVar !== null && shouldExpandVariable(currentVar.category_count)) {
-      // CATEGORY (leaf under an expanded variable)
-      currentVar.categories.push(node.label);
+    } else if (role === 'variable') {
+      flushVar();
+      // Variables can appear at any depth (e.g. STRD at depth 2 directly under
+      // "Geographical Areas"), with or without a parent group. Synthesise an
+      // (ungrouped) bucket if we don't have one yet.
+      if (currentGroup === null) {
+        currentGroup = { label: '(ungrouped)', path: '(ungrouped)', variables: [] };
+        lastPath = '(ungrouped)';
+      }
+      const { code, label } = splitCodeAndLabel(node.label);
+      const childCount = countDirectChildren(varNodes, i);
+      currentVar = {
+        code,
+        label,
+        category_count: childCount,
+        categories: [],
+      };
+      currentVarDepth = node.depth;
+      captureCategories = shouldExpandVariable(childCount);
+    } else if (role === 'category') {
+      // Only capture immediate (depth = varDepth + 1) children. Deeper nodes
+      // are sub-categories of categories — they'd duplicate or pollute the
+      // category list (e.g. BPMP Country of Birth → "Asia" → "India" → "Mumbai"
+      // — only "Asia" belongs in the variable's category list).
+      if (currentVar && captureCategories && node.depth === currentVarDepth + 1) {
+        currentVar.categories.push(node.label);
+      }
     }
-    // else: orphan leaf or category under an unexpanded variable — skip
   }
 
   flushGroup();
@@ -150,27 +283,81 @@ async function fetchRawTree(page: Page): Promise<RawNode[]> {
   return await page.evaluate(TREE_EXTRACT_JS) as RawNode[];
 }
 
+// Maximum tree depth to expand into. Variables we care about live at depth
+// 1-3 (top-level group → optional sub-group → variable). Beyond that we're
+// walking the geographic regional hierarchy (Greater Sydney → Eastern Suburbs
+// → ... → SA1 codes) which has nothing useful for a dictionary — those leaves
+// are categories of variables we already captured at depth 2 or 3.
+export const MAX_EXPAND_DEPTH = 3;
+
 async function expandTreeForExtraction(page: Page): Promise<void> {
-  // Repeatedly expand collapsed nodes that are EITHER groups (no variable
-  // pattern in label) OR variables with category_count <= 100. Stop when
-  // a round produces no new expansions OR after 30 rounds (safety cap).
-  for (let round = 0; round < 30; round++) {
+  // Expand collapsed nodes that are: (a) at depth <= MAX_EXPAND_DEPTH, and (b)
+  // either a group (no variable pattern in label) OR a variable with
+  // category_count <= 100.
+  //
+  // CRITICAL: re-fetch the raw tree after EVERY click. Earlier versions used
+  // a per-round fetch and a `for i in nodes` click loop with `locator(...).nth(i)`
+  // — but `.nth(i)` re-evaluates against the live DOM, so once an earlier click
+  // expanded a node and inserted children, the nth(i) handle pointed at a
+  // different element than `nodes[i]`. The classic symptom: a click meant for
+  // a small group accidentally hit a large variable's expander, exploding the
+  // tree from ~600 nodes to ~7000 in one round.
+  //
+  // Per-click fetch is slower (≈100 ms × N nodes per round) but correct: the
+  // nth-index is always valid for THIS click because no other clicks have
+  // happened since the fetch.
+  //
+  // Termination: deadline (10 min), iteration cap (1000 clicks safety net),
+  // or "tried this label at this depth before" (skip — node either expanded
+  // and lost its `.collapsed` class or click failed unrecoverably).
+  const deadline = Date.now() + 10 * 60 * 1000;
+  const triedKeys = new Set<string>();
+  let round = 0;
+  let lastNodeCount = -1;
+
+  for (let click = 0; click < 1000; click++) {
+    if (Date.now() > deadline) {
+      console.warn(`expandTreeForExtraction: deadline exceeded after ${click} clicks`);
+      break;
+    }
     const nodes = await fetchRawTree(page);
-    let didExpand = false;
+
+    // Round-style log when the tree size changes meaningfully
+    if (nodes.length !== lastNodeCount) {
+      const remaining = nodes.filter(n => {
+        if (!n.is_collapsed) return false;
+        if (n.depth > MAX_EXPAND_DEPTH) return false;
+        const p = parseVariableLabel(n.label);
+        if (p && !shouldExpandVariable(p.category_count)) return false;
+        return !triedKeys.has(`${n.depth}:${n.label}`);
+      }).length;
+      console.log(`expandTreeForExtraction: round ${round++}, ${nodes.length} nodes, ${remaining} to expand`);
+      lastNodeCount = nodes.length;
+    }
+
+    // Find the first eligible-and-untried collapsed node
+    let targetIdx = -1;
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
       if (!n.is_collapsed) continue;
+      if (n.depth > MAX_EXPAND_DEPTH) continue;
       const parsed = parseVariableLabel(n.label);
-      if (parsed && !shouldExpandVariable(parsed.category_count)) continue; // big variable, skip
-      // Click expander on the i-th element
-      const expander = page.locator('.treeNodeElement').nth(i).locator('.treeNodeExpander').first();
-      try {
-        await expander.click();
-        await new Promise(r => setTimeout(r, 300));
-        didExpand = true;
-      } catch { /* stale handle, next round will retry */ }
+      if (parsed && !shouldExpandVariable(parsed.category_count)) continue;
+      const key = `${n.depth}:${n.label}`;
+      if (triedKeys.has(key)) continue;
+      targetIdx = i;
+      triedKeys.add(key);
+      break;
     }
-    if (!didExpand) break;
+    if (targetIdx === -1) break;
+
+    // Click using nth(targetIdx) — this is safe because we just fetched the
+    // tree and no other Playwright actions have happened since.
+    const expander = page.locator('.treeNodeElement').nth(targetIdx).locator('.treeNodeExpander').first();
+    try {
+      await expander.click({ timeout: 10000 });
+      await new Promise(r => setTimeout(r, 300));
+    } catch { /* skip — already added to triedKeys, won't retry */ }
   }
 }
 

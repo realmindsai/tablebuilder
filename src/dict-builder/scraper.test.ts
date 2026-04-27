@@ -72,33 +72,44 @@ describe('classifyAndBuildGroups', () => {
   });
 
   it('builds " > "-joined paths through nested groups', () => {
+    // LGA_2021 must have leaf children at depth+1 to be classified as a
+    // variable under the structural-classification scheme. Use 565 fake
+    // leaves to also exercise the >100 threshold (no categories captured).
+    const lgaCategories = Array.from({ length: 565 }, (_, k) =>
+      node(`LGA_${k}`, 3, true, false, true)
+    );
     const nodes = [
       node('Geographical Areas (Usual Residence)', 0, false, false, false),
       node('LGA (2021 Boundaries)',                1, false, false, false),
-      node('LGA_2021 Local Government Area 2021 (565)', 2, false, false, true),
+      node('LGA_2021 Local Government Area 2021',  2, false, false, true),
+      ...lgaCategories,
     ];
     const groups = classifyAndBuildGroups(nodes, () => {});
     expect(groups).toHaveLength(1);
     expect(groups[0].path).toBe('Geographical Areas (Usual Residence) > LGA (2021 Boundaries)');
     expect(groups[0].variables[0].code).toBe('LGA_2021');
     expect(groups[0].variables[0].category_count).toBe(565);
-    expect(groups[0].variables[0].categories).toEqual([]); // > 100, not expanded
+    expect(groups[0].variables[0].categories).toEqual([]); // > 100, not captured
   });
 
   it('captures categories only for variables with count <= 100', () => {
+    // SEXP has 2 leaf children (captured); SA1MAIN_2021 has 101 (not captured).
+    const sa1Categories = Array.from({ length: 101 }, (_, k) =>
+      node(`SA1_${k}`, 2, true, false, true)
+    );
     const nodes = [
-      node('Group',                                 0, false, false, false),
-      node('SEXP Sex (2)',                          1, false, false, true),
-      node('Male',                                  2, true,  false, true),
-      node('Female',                                2, true,  false, true),
-      node('SA1MAIN_2021 SA1 by Main ASGS (61845)', 1, false, false, true),
-      // Even if the DOM happened to have leaves under SA1, the scraper
-      // would not expand it; here we omit those leaves.
+      node('Group',                       0, false, false, false),
+      node('SEXP Sex',                    1, false, false, true),
+      node('Male',                        2, true,  false, true),
+      node('Female',                      2, true,  false, true),
+      node('SA1MAIN_2021 SA1 by Main ASGS', 1, false, false, true),
+      ...sa1Categories,
     ];
     const groups = classifyAndBuildGroups(nodes, () => {});
     expect(groups[0].variables[0].categories).toEqual(['Male', 'Female']);
+    expect(groups[0].variables[0].category_count).toBe(2);
     expect(groups[0].variables[1].categories).toEqual([]);
-    expect(groups[0].variables[1].category_count).toBe(61845);
+    expect(groups[0].variables[1].category_count).toBe(101);
   });
 
   it('treats malformed group-like labels as groups and reports a warning', () => {
