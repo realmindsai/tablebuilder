@@ -85,10 +85,20 @@ function parseArgs(argv: string[]): Args {
 }
 
 async function navigateToCatalogue(page: Page): Promise<void> {
-  await page.goto(CATALOGUE_URL, { waitUntil: 'load' });
+  // Use networkidle (matches legacy Python builder) so JSF's AJAX has time to
+  // populate the catalogue tree — `load` fires too early and the Census
+  // subtree is missing from the result. Fall back to load if networkidle
+  // doesn't settle in time (some JSF flows long-poll forever).
+  try {
+    await page.goto(CATALOGUE_URL, { waitUntil: 'networkidle', timeout: 60000 });
+  } catch {
+    await page.waitForLoadState('load').catch(() => null);
+  }
   if (page.url().includes('login.xhtml')) {
     throw new Error('Session expired — re-login required');
   }
+  await page.waitForSelector('.treeNodeElement', { timeout: 30000 }).catch(() => null);
+  await new Promise(r => setTimeout(r, 2000));  // let any tail-end JSF AJAX settle
 }
 
 async function scrapeOne(page: Page, datasetName: string, cacheDir: string): Promise<void> {
