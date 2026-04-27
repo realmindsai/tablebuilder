@@ -92,7 +92,7 @@ async function expandAllCollapsed(page: Page, maxMs = 30000, signal: AbortSignal
 }
 
 export async function listDatasets(page: Page, signal: AbortSignal = NEVER_ABORT): Promise<string[]> {
-  await page.waitForSelector('.treeNodeElement', { timeout: 15000 });
+  await page.waitForSelector('.treeNodeElement', { timeout: 45000 });
   await expandAllCollapsed(page, 30000, signal);
   const nodes = await page.locator('.treeNodeElement').all();
   const names: string[] = [];

@@ -16,7 +16,7 @@ export interface RawNode {
 // JS evaluated inside the page. Walks the schema tree and returns a flat
 // array of raw node descriptors with accurate depth.
 const TREE_EXTRACT_JS = `
-() => {
+(() => {
   const container = document.querySelector('#tableViewSchemaTree')
                   || document.querySelector('.treeControl');
   if (!container) return [];
@@ -43,7 +43,7 @@ const TREE_EXTRACT_JS = `
       has_checkbox: !!checkbox,
     };
   });
-}
+})()
 `;
 
 // ── Pure helpers ────────────────────────────────────────────────────────────

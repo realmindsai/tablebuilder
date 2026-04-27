@@ -33,7 +33,7 @@ import { build as assembleDb } from '../src/dict-builder/assembler.js';
 import { slugify } from '../src/dict-builder/walker.js';
 import type { ScrapeError, RunSummary } from '../src/dict-builder/types.js';
 
-const CATALOGUE_URL = 'https://tablebuilder.abs.gov.au/dataCatalogueExplorer.xhtml';
+const CATALOGUE_URL = 'https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
