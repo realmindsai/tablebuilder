@@ -178,7 +178,13 @@ export async function extract(page: Page, datasetName: string): Promise<Extracte
   await page.waitForSelector('.treeNodeElement', { timeout: 30000 }).catch(() => null);
   await expandTreeForExtraction(page);
   const raw = await fetchRawTree(page);
+  const mid = Math.floor(raw.length / 2);
+  console.log(`[extract] raw nodes: ${raw.length}`);
+  console.log(`[extract] first 3:`, JSON.stringify(raw.slice(0, 3)));
+  console.log(`[extract] mid (${mid}-${mid+3}):`, JSON.stringify(raw.slice(mid, mid + 3)));
+  console.log(`[extract] last 3:`, JSON.stringify(raw.slice(-3)));
   const { geographies, varNodes } = splitGeographyAndVariables(raw);
+  console.log(`[extract] geographies: ${geographies.length}, varNodes: ${varNodes.length}`);
   const groups = classifyAndBuildGroups(varNodes, msg => console.warn(`[${datasetName}] ${msg}`));
   return {
     dataset_name: datasetName,

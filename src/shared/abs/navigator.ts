@@ -71,16 +71,46 @@ export function fuzzyMatchDataset(query: string, available: string[]): string {
 
 async function expandAllCollapsed(page: Page, maxMs = 30000, signal: AbortSignal = NEVER_ABORT): Promise<void> {
   const deadline = Date.now() + maxMs;
-  let prevCount = -1;
+  let prevCollapsed = -1;
   for (let round = 0; round < 50; round++) {
+    const elapsed = Date.now() - (deadline - 120000);
+    console.log(`  [r${round}] top of round, elapsed=${elapsed}ms deadline_ok=${Date.now() <= deadline}`);
     if (Date.now() > deadline) break;
     if (signal.aborted) throw new CancelledError();
-    const collapsed = await page.locator('.treeNodeExpander.collapsed').all();
-    if (collapsed.length === 0) break;
-    if (collapsed.length === prevCount) break;
-    prevCount = collapsed.length;
-    console.log(`expandAllCollapsed: round ${round}, ${collapsed.length} nodes`);
-    for (const expander of collapsed) {
+
+    // JSF adds .collapsed class asynchronously — poll until either a non-zero
+    // stable count is seen or we've had 10 s of unbroken zeros.
+    // page.evaluate is used instead of page.locator because locator can
+    // return stale results during active JSF AJAX processing.
+    let collapsedCount = 0;
+    let stableZeroFor = 0;
+    while (true) {
+      await new Promise(r => setTimeout(r, 300));
+      if (Date.now() > deadline) break;
+      const c = await page.evaluate(() =>
+        document.querySelectorAll('.treeNodeExpander.collapsed').length
+      );
+      if (round > 0) console.log(`  r${round} poll: collapsed=${c} stableZeroFor=${stableZeroFor}`);
+      if (c === 0) {
+        stableZeroFor++;
+        if (stableZeroFor >= 33) break; // ~10 s of zeros — give up
+      } else if (c === collapsedCount && collapsedCount > 0) {
+        break; // non-zero and stable
+      } else {
+        stableZeroFor = 0;
+        collapsedCount = c;
+      }
+    }
+
+    if (collapsedCount === 0) break;
+    if (collapsedCount === prevCollapsed) break;
+    prevCollapsed = collapsedCount;
+    console.log(`expandAllCollapsed: round ${round}, ${collapsedCount} nodes`);
+
+    // Disable CSS transitions so Playwright's actionability check returns fast.
+    await page.addStyleTag({ content: '* { animation:none!important; transition:none!important; }' }).catch(() => null);
+    const expanders = await page.locator('.treeNodeExpander.collapsed').all();
+    for (const expander of expanders) {
       if (Date.now() > deadline) break;
       if (signal.aborted) throw new CancelledError();
       try {
@@ -88,12 +118,28 @@ async function expandAllCollapsed(page: Page, maxMs = 30000, signal: AbortSignal
         await new Promise(r => setTimeout(r, 300));
       } catch { /* stale handle — skip */ }
     }
+
+    // Wait for node count to stabilise after clicking (children load async).
+    let lastCount = await page.locator('.treeNodeElement').count();
+    let sameFor = 0;
+    const stableDeadline = Date.now() + 15000;
+    while (Date.now() < stableDeadline) {
+      await new Promise(r => setTimeout(r, 500));
+      const nowCount = await page.locator('.treeNodeElement').count();
+      if (nowCount === lastCount) {
+        sameFor++;
+        if (sameFor >= 3) break; // stable for 1.5 s
+      } else {
+        sameFor = 0;
+        lastCount = nowCount;
+      }
+    }
   }
 }
 
 export async function listDatasets(page: Page, signal: AbortSignal = NEVER_ABORT): Promise<string[]> {
   await page.waitForSelector('.treeNodeElement', { timeout: 45000 });
-  await expandAllCollapsed(page, 30000, signal);
+  await expandAllCollapsed(page, 600000, signal);
   const nodes = await page.locator('.treeNodeElement').all();
   const names: string[] = [];
   for (const node of nodes) {
