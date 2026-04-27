@@ -46,14 +46,28 @@ console.log(`[build-dict] catalogue listing 1: ${firstListing.length} datasets`)
 
 // The first listDatasets call after a fresh navigation has been observed to
 // under-report by ~30 datasets (168 vs 200). Subsequent calls return the full
-// set. Re-navigate and list again, then take the union — cheap insurance against
-// either listing missing entries.
-await navigateToCatalogue(page);
-const secondListing = await listDatasets(page);
-console.log(`[build-dict] catalogue listing 2: ${secondListing.length} datasets`);
+// set. Re-navigate and list again, then take the union — cheap insurance
+// against either listing missing entries.
+//
+// Fresh page.goto is REQUIRED here, not goBack — the under-counting is
+// specifically a "very first listing on a freshly navigated catalogue" race,
+// and we need a second go through that same code path. (navigateToCatalogue
+// uses goBack only when leaving tableView; here URL is already the catalogue
+// so it falls through to a fresh page.goto, which is exactly what we want.)
+let secondListing: string[] = [];
+try {
+  await navigateToCatalogue(page);
+  secondListing = await listDatasets(page);
+  console.log(`[build-dict] catalogue listing 2: ${secondListing.length} datasets`);
+} catch (e) {
+  // If the second pass fails entirely (network blip, session loss, etc.),
+  // don't throw away the 5-10 min already invested in listing #1 — fall back
+  // to it. The user can always re-run with --clear-cache later.
+  console.warn(`[build-dict] catalogue listing 2 failed: ${(e as Error).message} — falling back to listing 1`);
+}
 
 queue = Array.from(new Set([...firstListing, ...secondListing]));
-if (firstListing.length !== secondListing.length) {
+if (secondListing.length > 0 && firstListing.length !== secondListing.length) {
   console.warn(
     `[build-dict] catalogue counts differed (${firstListing.length} vs ${secondListing.length}); ` +
     `using union of ${queue.length}`,
@@ -63,6 +77,8 @@ console.log(`[build-dict] catalogue: ${queue.length} datasets (queue size)`);
 ```
 
 **Union, not just second-trust.** If some run-to-run flakiness happens the other direction (second listing drops a dataset the first had), we don't lose it. The set deduplicates exact-name matches.
+
+**Try/catch around the second pass.** A network blip or session timeout between the two listings shouldn't abort the entire scrape — listing #1 is already a strict improvement over today's behaviour even in the worst case (it returns the same 168 we'd have gotten before this fix).
 
 ---
 
