@@ -73,36 +73,35 @@ async function expandAllCollapsed(page: Page, maxMs = 30000, signal: AbortSignal
   const deadline = Date.now() + maxMs;
   let prevCollapsed = -1;
   for (let round = 0; round < 50; round++) {
-    const elapsed = Date.now() - (deadline - 120000);
-    console.log(`  [r${round}] top of round, elapsed=${elapsed}ms deadline_ok=${Date.now() <= deadline}`);
     if (Date.now() > deadline) break;
     if (signal.aborted) throw new CancelledError();
 
-    // JSF adds .collapsed class asynchronously — poll until either a non-zero
-    // stable count is seen or we've had 10 s of unbroken zeros.
-    // page.evaluate is used instead of page.locator because locator can
-    // return stale results during active JSF AJAX processing.
-    let collapsedCount = 0;
-    let stableZeroFor = 0;
-    while (true) {
-      await new Promise(r => setTimeout(r, 300));
-      if (Date.now() > deadline) break;
-      const c = await page.evaluate(() =>
+    // JSF mounts .collapsed asynchronously, so poll until the count is stable
+    // for two consecutive readings. This handles all three cases:
+    //   - 0 stable: we're done (break round loop)
+    //   - non-zero stable: this round's batch is ready to click
+    //   - still changing: keep polling until it settles or deadline
+    // page.evaluate is used instead of page.locator because the locator can
+    // return stale results during active JSF AJAX processing. `?? 0` coerces
+    // null/undefined (e.g. test mocks) to a safe numeric value.
+    let collapsedCount = -1;
+    let stableFor = 0;
+    const settleDeadline = Math.min(deadline, Date.now() + 3000);
+    while (Date.now() < settleDeadline) {
+      const c = (await page.evaluate(() =>
         document.querySelectorAll('.treeNodeExpander.collapsed').length
-      );
-      if (round > 0) console.log(`  r${round} poll: collapsed=${c} stableZeroFor=${stableZeroFor}`);
-      if (c === 0) {
-        stableZeroFor++;
-        if (stableZeroFor >= 33) break; // ~10 s of zeros — give up
-      } else if (c === collapsedCount && collapsedCount > 0) {
-        break; // non-zero and stable
+      )) ?? 0;
+      if (c === collapsedCount) {
+        stableFor++;
+        if (stableFor >= 2) break;
       } else {
-        stableZeroFor = 0;
+        stableFor = 0;
         collapsedCount = c;
       }
+      await new Promise(r => setTimeout(r, 300));
     }
 
-    if (collapsedCount === 0) break;
+    if (collapsedCount <= 0) break;
     if (collapsedCount === prevCollapsed) break;
     prevCollapsed = collapsedCount;
     console.log(`expandAllCollapsed: round ${round}, ${collapsedCount} nodes`);
@@ -119,16 +118,18 @@ async function expandAllCollapsed(page: Page, maxMs = 30000, signal: AbortSignal
       } catch { /* stale handle — skip */ }
     }
 
-    // Wait for node count to stabilise after clicking (children load async).
+    // Wait briefly for node count to stabilise after clicking (children load
+    // async via JSF AJAX). 5s ceiling — if children haven't loaded by then,
+    // we'll catch them on the next outer round.
     let lastCount = await page.locator('.treeNodeElement').count();
     let sameFor = 0;
-    const stableDeadline = Date.now() + 15000;
+    const stableDeadline = Date.now() + 5000;
     while (Date.now() < stableDeadline) {
       await new Promise(r => setTimeout(r, 500));
       const nowCount = await page.locator('.treeNodeElement').count();
       if (nowCount === lastCount) {
         sameFor++;
-        if (sameFor >= 3) break; // stable for 1.5 s
+        if (sameFor >= 3) break;
       } else {
         sameFor = 0;
         lastCount = nowCount;

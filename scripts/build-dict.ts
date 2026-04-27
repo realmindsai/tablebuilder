@@ -85,10 +85,28 @@ function parseArgs(argv: string[]): Args {
 }
 
 async function navigateToCatalogue(page: Page): Promise<void> {
-  // Use networkidle (matches legacy Python builder) so JSF's AJAX has time to
-  // populate the catalogue tree — `load` fires too early and the Census
-  // subtree is missing from the result. Fall back to load if networkidle
-  // doesn't settle in time (some JSF flows long-poll forever).
+  // Optimisation: if we're currently on tableView (just finished extracting a
+  // dataset), use the browser back button instead of page.goto. goBack restores
+  // the previous catalogue page including its expanded tree state — saving the
+  // ~5-10 minutes of re-expansion that page.goto would otherwise force on every
+  // dataset. Across 200 datasets that's a difference of ~30 hours.
+  if (page.url().includes('tableView.xhtml')) {
+    try {
+      await page.goBack({ waitUntil: 'load', timeout: 30000 });
+      if (page.url().includes('dataCatalogueExplorer.xhtml')) {
+        // Successfully restored. Treat the existing tree state as expanded —
+        // expandAllCollapsed will be a no-op if there's nothing left to click.
+        await page.waitForSelector('.treeNodeElement', { timeout: 15000 }).catch(() => null);
+        return;
+      }
+    } catch { /* fall through to fresh navigation */ }
+  }
+
+  // First navigation, or goBack failed to land on the catalogue. Use networkidle
+  // (matches legacy Python builder) so JSF's AJAX has time to populate the
+  // catalogue tree — `load` fires too early and the Census subtree is missing
+  // from the result. Fall back to load if networkidle doesn't settle in time
+  // (some JSF flows long-poll forever).
   try {
     await page.goto(CATALOGUE_URL, { waitUntil: 'networkidle', timeout: 60000 });
   } catch {
