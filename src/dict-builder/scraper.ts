@@ -159,14 +159,12 @@ const VAR_LABEL_FULL_RE = /^([A-Z][A-Z0-9_]{3,15})\s+[A-Za-z]/;
 
 function classifyNodes(nodes: RawNode[]): Role[] {
   const roles: Role[] = new Array(nodes.length);
-  // First pass: variables (label match) and groups (everything else non-leaf,
-  // non-categorised). Then a second pass marks anything inside a variable's
-  // subtree as a category.
-  let varDepth = -1;  // depth of the enclosing variable, or -1 if not in one
+  // Pass 1: label-based — works for ABS census/social datasets that name
+  // variables with code prefixes (SEXP, AGEP, STRD, …).
+  let varDepth = -1;
+  let labelMatchedAny = false;
   for (let i = 0; i < nodes.length; i++) {
     const n = nodes[i];
-
-    // Step out of the previous variable's subtree?
     if (varDepth >= 0 && n.depth <= varDepth) varDepth = -1;
 
     const looksLikeVariable = !n.is_leaf && VAR_LABEL_FULL_RE.test(n.label);
@@ -174,11 +172,31 @@ function classifyNodes(nodes: RawNode[]): Role[] {
     if (looksLikeVariable) {
       roles[i] = 'variable';
       varDepth = n.depth;
+      labelMatchedAny = true;
     } else if (varDepth >= 0) {
       roles[i] = 'category';
     } else {
       roles[i] = n.is_leaf ? 'category' : 'group';
     }
+  }
+  if (labelMatchedAny) return roles;
+
+  // Pass 2 (fallback): structural — for datasets with plain-English variable
+  // labels (e.g. Motor Vehicle Use, Crime Victimisation surveys). A non-leaf
+  // is a variable when its IMMEDIATE depth+1 children are leaves; otherwise
+  // it's a structural group. Only kicks in when label-based finds NOTHING in
+  // the entire tree, so it can't regress census datasets where hierarchical
+  // category bins (Postal Areas → state buckets → postcodes) live alongside
+  // real code-prefixed variables.
+  for (let i = 0; i < nodes.length; i++) {
+    const n = nodes[i];
+    if (n.is_leaf) { roles[i] = 'category'; continue; }
+    let hasLeafChild = false;
+    for (let j = i + 1; j < nodes.length; j++) {
+      if (nodes[j].depth <= n.depth) break;
+      if (nodes[j].depth === n.depth + 1 && nodes[j].is_leaf) { hasLeafChild = true; break; }
+    }
+    roles[i] = hasLeafChild ? 'variable' : 'group';
   }
   return roles;
 }
