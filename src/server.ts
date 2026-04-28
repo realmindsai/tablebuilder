@@ -141,7 +141,12 @@ function requireAuth(req: Request, res: Response, next: NextFunction): void {
   next();
 }
 
-const RUN_TIMEOUT_MS = 5 * 60 * 1000; // 5-minute hard deadline per run
+// Server-side hard deadline. Configurable via RUN_TIMEOUT_MS env var.
+// Default 25 min: ABS catalogue expansion (selectDataset → listDatasets →
+// expandAllCollapsed) routinely takes 5-20 min on the runtime path. Setting
+// this lower than the realistic finish time means runs are killed before
+// they ever reach the variable-selection phase.
+const RUN_TIMEOUT_MS = Number(process.env.RUN_TIMEOUT_MS) || 25 * 60 * 1000;
 
 async function tryProcessNext(): Promise<void> {
   console.log(`[queue] tryProcessNext — runActive=${isRunActive()} queueLen=${isRunActive() ? '?' : 'checking'}`);
