@@ -6,10 +6,10 @@
 // for phaseId → index mapping; it matches the order in data.js exactly.
 
 // Static index lookup — avoids needing PHASES array at runtime or in tests.
-// Order must match window.PHASES in data.js: login(0) dataset(1) tree(2) check(3)
-// submit(4) retrieve(5) download(6)
+// Order must match window.PHASES in data.js: login(0) dataset(1) geography(2)
+// tree(3) check(4) submit(5) retrieve(6) download(7)
 const PHASE_INDEX = {
-  login: 0, dataset: 1, tree: 2, check: 3, submit: 4, retrieve: 5, download: 6,
+  login: 0, dataset: 1, geography: 2, tree: 3, check: 4, submit: 5, retrieve: 6, download: 7,
 };
 
 export function fmtTimestamp(totalElapsed) {

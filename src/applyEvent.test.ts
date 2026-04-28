@@ -40,7 +40,7 @@ describe('applyEvent', () => {
     });
     expect(s.status).toBe('error');
     expect(s.errorSeen).toBe(true);
-    expect(s.phaseIndex).toBe(5); // retrieve=5 per PHASE_INDEX in applyEvent.js
+    expect(s.phaseIndex).toBe(6); // retrieve=6 per PHASE_INDEX in applyEvent.js (after geography insert at 2)
   });
 
   it('error after phase_error: only updates errorMsg, does not change status again', () => {

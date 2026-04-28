@@ -9,6 +9,7 @@ const DATASETS = [];
 const PHASES = [
   { id: "login",    label: "Logging in",                 sub: "auth · tablebuilder.abs.gov.au", est: 2.5  },
   { id: "dataset",  label: "Selecting dataset",          sub: "resolving dataset from catalog",  est: 3.0  },
+  { id: "geography", label: "Selecting geography",       sub: "navigating classification release", est: 4.0 },
   { id: "tree",     label: "Expanding variable tree",    sub: "walking classification nodes",    est: 6.0  },
   { id: "check",    label: "Checking categories",        sub: "selecting leaf categories",       est: 4.5  },
   { id: "submit",   label: "Submitting table dimensions", sub: "POST /table/layout",             est: 2.0  },
