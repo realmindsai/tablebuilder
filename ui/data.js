@@ -5,30 +5,6 @@
 // into the picker, history, or fuzzy matcher.
 const DATASETS = [];
 
-// Known variables (all buckets share this pool)
-const VARIABLES = [
-  { v: "Sex",                  desc: "SEXP — 2 categories" },
-  { v: "Age",                  desc: "AGEP — 5-year groups (21)" },
-  { v: "State",                desc: "STATE — 9 categories" },
-  { v: "Country of Birth",     desc: "BPLP — 8 categories" },
-  { v: "Year of Arrival",      desc: "YARP — banded" },
-  { v: "English Proficiency",  desc: "ENGLP — 5 categories" },
-  { v: "Indigenous Status",    desc: "INGP — 4 categories" },
-  { v: "Marital Status",       desc: "MSTP — 5 categories" },
-  { v: "Highest Qualification", desc: "QALLP — 10 categories" },
-  { v: "Labour Force Status",  desc: "LFSP — 6 categories" },
-  { v: "Industry",             desc: "INDP — ANZSIC divisions" },
-  { v: "Occupation",           desc: "OCCP — ANZSCO 1-digit" },
-  { v: "Household Income",     desc: "HIND — 18 bands" },
-  { v: "Personal Income",      desc: "INCP — 17 bands" },
-  { v: "Hours Worked",         desc: "HRSP — banded" },
-  { v: "Tenure Type",          desc: "TEND — 6 categories" },
-  { v: "Dwelling Structure",   desc: "STRD — 5 categories" },
-  { v: "Family Composition",   desc: "FMCF — 8 categories" },
-  { v: "Religion",             desc: "RELP — major groups" },
-  { v: "Method of Travel to Work", desc: "MTWP — 15 modes" },
-];
-
 // Canonical phase list
 const PHASES = [
   { id: "login",    label: "Logging in",                 sub: "auth · tablebuilder.abs.gov.au", est: 2.5  },
@@ -80,6 +56,6 @@ function fuzzyScore(query, target) {
 }
 
 Object.assign(window, {
-  DATASETS, VARIABLES, PHASES, SEED_HISTORY,
+  DATASETS, PHASES, SEED_HISTORY,
   fmtDuration, fmtDurationTicker, fmtNumber, fuzzyScore,
 });

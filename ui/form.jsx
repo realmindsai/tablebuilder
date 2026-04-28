@@ -26,7 +26,9 @@ function Icon({ name, className = "ico" }) {
 }
 
 // ---------- Dataset search (fuzzy, autocomplete) ----------
-function DatasetPicker({ value, onChange, disabled }) {
+// onChange(name) — fires on every keystroke (text change)
+// onPick(dataset) — fires only when user explicitly picks from the list; dataset is {id, name, ...}
+function DatasetPicker({ value, onChange, onPick, disabled }) {
   const [q, setQ] = useState(value || "");
   const [open, setOpen] = useState(false);
   const [hi, setHi] = useState(0);
@@ -56,6 +58,7 @@ function DatasetPicker({ value, onChange, disabled }) {
 
   function pick(d) {
     onChange(d.name);
+    onPick?.(d);
     setQ(d.name);
     setOpen(false);
   }
@@ -108,8 +111,14 @@ function DatasetPicker({ value, onChange, disabled }) {
   );
 }
 
+// Helper: safely extract a display label from a bucket entry.
+// Bucket entries are now {id, label} objects; old localStorage history entries may be strings.
+function refToLabel(v) { return typeof v === 'string' ? v : v.label; }
+
 // ---------- Tag input with autocomplete ----------
-function TagInput({ value, onChange, placeholder, variant = "row", disabled }) {
+// metadata: dataset metadata object from DatasetStore, or null if not loaded yet.
+// value: Array<{id, label}> — the current bucket contents.
+function TagInput({ value, onChange, placeholder, variant = "row", disabled, metadata }) {
   const [draft, setDraft] = useState("");
   const [open, setOpen] = useState(false);
   const [hi, setHi] = useState(0);
@@ -118,13 +127,21 @@ function TagInput({ value, onChange, placeholder, variant = "row", disabled }) {
   const inputRef = useRef(null);
 
   const suggestions = useMemo(() => {
+    if (!metadata) return [];
     const needle = draft.trim().toLowerCase();
-    const taken = new Set(value.map(v => v.toLowerCase()));
-    return window.VARIABLES
-      .filter(v => !taken.has(v.v.toLowerCase()))
-      .filter(v => !needle || v.v.toLowerCase().includes(needle) || v.desc.toLowerCase().includes(needle))
-      .slice(0, 7);
-  }, [draft, value]);
+    const taken = new Set(value.map(v => refToLabel(v).toLowerCase()));
+    const out = [];
+    for (const grp of metadata.groups) {
+      for (const v of grp.variables) {
+        if (taken.has(v.label.toLowerCase())) continue;
+        if (needle && !v.label.toLowerCase().includes(needle) && !v.code.toLowerCase().includes(needle)) continue;
+        out.push({ id: v.id, label: v.label, code: v.code, group: grp.label });
+        if (out.length >= 50) break;
+      }
+      if (out.length >= 50) break;
+    }
+    return out;
+  }, [draft, value, metadata]);
 
   useEffect(() => {
     function onDoc(e) {
@@ -135,11 +152,11 @@ function TagInput({ value, onChange, placeholder, variant = "row", disabled }) {
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
-  function add(v) {
-    if (!v) return;
-    const existing = value.map(x => x.toLowerCase());
-    if (existing.includes(v.toLowerCase())) { setDraft(""); return; }
-    onChange([...value, v]);
+  function add(suggestion) {
+    if (!suggestion) return;
+    const exists = value.some(x => typeof x === 'object' && x.id === suggestion.id);
+    if (exists) { setDraft(""); return; }
+    onChange([...value, { id: suggestion.id, label: suggestion.label }]);
     setDraft("");
     setHi(0);
   }
@@ -151,8 +168,7 @@ function TagInput({ value, onChange, placeholder, variant = "row", disabled }) {
   function onKey(e) {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (suggestions[hi]) add(suggestions[hi].v);
-      else if (draft.trim()) add(draft.trim());
+      if (suggestions[hi]) add(suggestions[hi]);
     } else if (e.key === "Backspace" && !draft && value.length) {
       remove(value.length - 1);
     } else if (e.key === "ArrowDown") { e.preventDefault(); setHi(h => Math.min(h + 1, suggestions.length - 1)); }
@@ -170,8 +186,8 @@ function TagInput({ value, onChange, placeholder, variant = "row", disabled }) {
       >
         {value.map((v, i) => (
           <span key={i} className={tagCls}>
-            {v}
-            <button className="tag__x" type="button" onClick={e => { e.stopPropagation(); remove(i); }} aria-label={`Remove ${v}`}>×</button>
+            {refToLabel(v)}
+            <button className="tag__x" type="button" onClick={e => { e.stopPropagation(); remove(i); }} aria-label={`Remove ${refToLabel(v)}`}>×</button>
           </span>
         ))}
         <input
@@ -189,13 +205,13 @@ function TagInput({ value, onChange, placeholder, variant = "row", disabled }) {
         <div className="ac__menu">
           {suggestions.map((s, i) => (
             <div
-              key={s.v}
+              key={s.id}
               className={"ac__item" + (i === hi ? " active" : "")}
               onMouseEnter={() => setHi(i)}
-              onMouseDown={e => { e.preventDefault(); add(s.v); }}
+              onMouseDown={e => { e.preventDefault(); add(s); }}
             >
-              <span className="t">{s.v}</span>
-              <span className="s">{s.desc}</span>
+              <span className="t">{s.label}</span>
+              <span className="s">{s.code}<span className="ac__group"> · {s.group}</span></span>
             </div>
           ))}
         </div>

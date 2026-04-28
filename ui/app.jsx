@@ -111,14 +111,51 @@ function stamp() {
 // ================= Form Panel =================
 function FormPanel({ disabled, onRun, initial }) {
   const [dataset, setDataset] = useS(initial?.dataset || "");
-  const [rows, setRows] = useS(initial?.rows || []);
+  const [datasetId, setDatasetId] = useS(null);   // numeric id from /api/datasets, or null
+  const [rows, setRows] = useS(initial?.rows || []);    // Array<{id, label}>
   const [cols, setCols] = useS(initial?.cols || []);
   const [wafer, setWafer] = useS(initial?.wafer || []);
   const [output, setOutput] = useS(initial?.output || "");
+  const [metadata, setMetadata] = useS(null);
+  const [metaLoading, setMetaLoading] = useS(false);
+  const currentDatasetIdRef = useRef2(null);
+
+  // When a dataset is explicitly picked from the list, capture its id.
+  // When the user types freely (no pick), datasetId stays null — no metadata load.
+  function handleDatasetPick(d) {
+    setDatasetId(d.id);
+  }
+
+  // Load metadata when datasetId changes; race-safe via currentDatasetIdRef.
+  useE(() => {
+    if (!datasetId) { setMetadata(null); return; }
+    currentDatasetIdRef.current = datasetId;
+    setMetaLoading(true);
+    window.DatasetStore.loadMetadata(datasetId).then(m => {
+      if (currentDatasetIdRef.current !== datasetId) return; // stale
+      setMetadata(m);
+    }).catch(e => {
+      if (currentDatasetIdRef.current !== datasetId) return;
+      console.error('metadata load failed', e);
+      setMetadata(null);
+    }).finally(() => {
+      if (currentDatasetIdRef.current === datasetId) setMetaLoading(false);
+    });
+  }, [datasetId]);
+
+  // Clear buckets when the selected dataset changes so stale variable ids don't linger.
+  useE(() => { setRows([]); setCols([]); setWafer([]); }, [datasetId]);
 
   useE(() => {
     if (initial) {
       setDataset(initial.dataset || "");
+      // When reusing a history item, look up the id from the loaded datasets list.
+      if (initial.dataset) {
+        const found = window.DATASETS.find(d => d.name === initial.dataset);
+        setDatasetId(found ? found.id : null);
+      } else {
+        setDatasetId(null);
+      }
       setRows(initial.rows || []);
       setCols(initial.cols || []);
       setWafer(initial.wafer || []);
@@ -155,8 +192,10 @@ function FormPanel({ disabled, onRun, initial }) {
             <span className="lbl">Dataset</span>
             <span className="opt">Required · fuzzy-matched</span>
           </div>
-          <window.DatasetPicker value={dataset} onChange={setDataset} disabled={disabled} />
-          <div className="field__hint">Start typing — we'll match against the ABS catalog.</div>
+          <window.DatasetPicker value={dataset} onChange={setDataset} onPick={handleDatasetPick} disabled={disabled} />
+          <div className="field__hint">
+            {metaLoading ? "Loading variables…" : metadata ? `${metadata.groups.length} groups loaded` : "Start typing — we'll match against the ABS catalog."}
+          </div>
         </div>
 
         <div className="form-section">Dimensions</div>
@@ -166,7 +205,7 @@ function FormPanel({ disabled, onRun, initial }) {
             <span className="lbl">Row variables</span>
             <span className="opt">Required</span>
           </div>
-          <window.TagInput value={rows} onChange={setRows} placeholder="e.g. Sex, Age" disabled={disabled} variant="row" />
+          <window.TagInput value={rows} onChange={setRows} placeholder="e.g. Sex, Age" disabled={disabled} variant="row" metadata={metadata} />
         </div>
 
         <div className="field">
@@ -174,7 +213,7 @@ function FormPanel({ disabled, onRun, initial }) {
             <span className="lbl">Column variables</span>
             <span className="opt">Optional</span>
           </div>
-          <window.TagInput value={cols} onChange={setCols} placeholder="e.g. State" disabled={disabled} variant="col" />
+          <window.TagInput value={cols} onChange={setCols} placeholder="e.g. State" disabled={disabled} variant="col" metadata={metadata} />
         </div>
 
         <div className="field">
@@ -182,7 +221,7 @@ function FormPanel({ disabled, onRun, initial }) {
             <span className="lbl">Wafer / layer variables</span>
             <span className="opt">Optional</span>
           </div>
-          <window.TagInput value={wafer} onChange={setWafer} placeholder="e.g. Year of Arrival" disabled={disabled} variant="wafer" />
+          <window.TagInput value={wafer} onChange={setWafer} placeholder="e.g. Year of Arrival" disabled={disabled} variant="wafer" metadata={metadata} />
           <div className="field__hint">Wafers produce separate tables, one per category combination.</div>
         </div>
 
@@ -440,7 +479,7 @@ function HistoryPanel({ items, activeId, onSelect, onReuse }) {
                     <span>{dims}</span>
                   </div>
                   <div className="history__dims">
-                    {[...item.rows, ...item.cols].join(" × ") || "—"}
+                    {[...item.rows, ...item.cols].map(v => typeof v === 'string' ? v : v.label).join(" × ") || "—"}
                   </div>
                   <button
                     className="history__rerun"

@@ -58,10 +58,11 @@ function Terminal({ lines }) {
 }
 
 function RunMeta({ request, elapsed, status }) {
+  const toLabel = v => typeof v === 'string' ? v : v.label;
   const dims = [
-    { k: "rows", v: request.rows.join(", ") || "—" },
-    request.cols.length ? { k: "cols", v: request.cols.join(", ") } : null,
-    request.wafer.length ? { k: "wafer", v: request.wafer.join(", ") } : null,
+    { k: "rows", v: request.rows.map(toLabel).join(", ") || "—" },
+    request.cols.length ? { k: "cols", v: request.cols.map(toLabel).join(", ") } : null,
+    request.wafer.length ? { k: "wafer", v: request.wafer.map(toLabel).join(", ") } : null,
   ].filter(Boolean);
   return (
     <div className="runmeta">
