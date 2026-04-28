@@ -36,6 +36,7 @@ function useApiRunner(onComplete) {
           rows: request.rows,
           cols: request.cols,
           wafer: request.wafer,
+          geography: request.geography ?? null,
           output: request.output || '',
         }),
         signal: abortRef.current.signal,
@@ -115,6 +116,7 @@ function FormPanel({ disabled, onRun, initial }) {
   const [rows, setRows] = useS(initial?.rows || []);    // Array<{id, label}>
   const [cols, setCols] = useS(initial?.cols || []);
   const [wafer, setWafer] = useS(initial?.wafer || []);
+  const [geography, setGeography] = useS(initial?.geography ?? null);  // {id, label} | null
   const [output, setOutput] = useS(initial?.output || "");
   const [metadata, setMetadata] = useS(null);
   const [metaLoading, setMetaLoading] = useS(false);
@@ -143,8 +145,8 @@ function FormPanel({ disabled, onRun, initial }) {
     });
   }, [datasetId]);
 
-  // Clear buckets when the selected dataset changes so stale variable ids don't linger.
-  useE(() => { setRows([]); setCols([]); setWafer([]); }, [datasetId]);
+  // Clear buckets and geography when the selected dataset changes so stale ids don't linger.
+  useE(() => { setRows([]); setCols([]); setWafer([]); setGeography(null); }, [datasetId]);
 
   useE(() => {
     if (initial) {
@@ -159,6 +161,7 @@ function FormPanel({ disabled, onRun, initial }) {
       setRows(initial.rows || []);
       setCols(initial.cols || []);
       setWafer(initial.wafer || []);
+      setGeography(initial.geography ?? null);
       setOutput(initial.output || "");
     }
   }, [initial]);
@@ -171,7 +174,7 @@ function FormPanel({ disabled, onRun, initial }) {
     if (!valid) return;
     onRun({
       dataset: dataset.trim(),
-      rows, cols, wafer,
+      rows, cols, wafer, geography,
       output: output.trim() || defaultPath,
     });
   }
@@ -195,6 +198,32 @@ function FormPanel({ disabled, onRun, initial }) {
           <window.DatasetPicker value={dataset} onChange={setDataset} onPick={handleDatasetPick} disabled={disabled} />
           <div className="field__hint">
             {metaLoading ? "Loading variables…" : metadata ? `${metadata.groups.length} groups loaded` : "Start typing — we'll match against the ABS catalog."}
+          </div>
+        </div>
+
+        <div className="field">
+          <div className="field__label">
+            <span className="lbl">Geography</span>
+            <span className="opt">Optional</span>
+          </div>
+          <select
+            className="input"
+            value={geography?.id ?? ""}
+            disabled={!metadata || metaLoading}
+            onChange={e => {
+              const id = e.target.value;
+              if (!id) { setGeography(null); return; }
+              const g = metadata.geographies.find(x => x.id === Number(id));
+              setGeography(g ? { id: g.id, label: g.label } : null);
+            }}
+          >
+            <option value="">(no geography selected)</option>
+            {metadata?.geographies?.map(g => (
+              <option key={g.id} value={g.id}>{g.label}</option>
+            ))}
+          </select>
+          <div className="field__hint">
+            {!metadata || metaLoading ? "Available after dataset is selected." : metadata.geographies.length === 0 ? "No geographies available for this dataset." : `${metadata.geographies.length} geography option${metadata.geographies.length !== 1 ? 's' : ''}.`}
           </div>
         </div>
 
@@ -506,6 +535,7 @@ function App() {
     rows: [],
     cols: [],
     wafer: [],
+    geography: null,
     output: "",
   });
   const [selectedHistory, setSelectedHistory] = useS(null);
@@ -527,6 +557,7 @@ function App() {
         rows: final.request.rows,
         cols: final.request.cols,
         wafer: final.request.wafer,
+        geography: final.request.geography ?? null,
         duration: final.totalElapsed,
         file: final.result?.file ?? final.result?.csvPath ?? '',
         ts: "Just now",
@@ -540,6 +571,7 @@ function App() {
         rows: final.request.rows,
         cols: final.request.cols,
         wafer: final.request.wafer,
+        geography: final.request.geography ?? null,
         duration: final.totalElapsed,
         file: null,
         ts: "Just now",
@@ -554,6 +586,7 @@ function App() {
         rows: final.request.rows,
         cols: final.request.cols,
         wafer: final.request.wafer,
+        geography: final.request.geography ?? null,
         duration: final.totalElapsed,
         file: null,
         ts: "Just now",
@@ -591,6 +624,7 @@ function App() {
       rows: item.rows,
       cols: item.cols,
       wafer: item.wafer,
+      geography: item.geography ?? null,
       output: "",
     });
     setSelectedHistory(item.id);
