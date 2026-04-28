@@ -425,27 +425,43 @@ export async function selectGeography(
   reporter({ type: 'log', level: 'phase', message: '» phase geography — Selecting geography' });
   reporter({ type: 'log', level: 'info', message: `  selecting geography release: ${label}` });
 
-  // The search box may be #searchPattern or a similarly-named input — use the
-  // more permissive selector as a fallback. Must be on the tableView page.
-  const searchBox = page.locator('#searchPattern, input[id*="searchPattern"]').first();
-  if (!(await searchBox.isVisible().catch(() => false))) {
-    throw new Error(`selectGeography: search box not visible — geography selection requires tableView page`);
+  // Geography classification releases are nested under "Geographical Areas
+  // (Usual Residence)" group at depth 2. The group is collapsed by default,
+  // so the search-only path leaves the leaf hidden. Expand the parent first,
+  // then find the labelled leaf.
+  const expanded = await tryExpandGeographic(page);
+  if (!expanded) {
+    reporter({ type: 'log', level: 'warn', message: '  geographic group not found in tree (already expanded?)' });
   }
 
-  await searchBox.fill(label);
-  await page.waitForTimeout(800); // JSF AJAX debounce after typing
+  // Look for the leaf node by exact label match. Use page.evaluate to inspect
+  // labels directly — Playwright's `hasText` does substring matching, but
+  // labels like "Local Government Areas (2021 Boundaries) (UR)" can collide
+  // partially across releases ("(UR)" appears in many). Match exact text.
+  const nodeIndex = await page.evaluate((target) => {
+    const nodes = Array.from(document.querySelectorAll('.treeNodeElement'));
+    for (let i = 0; i < nodes.length; i++) {
+      const lbl = nodes[i].querySelector('.label')?.textContent?.trim();
+      if (lbl === target) return i;
+    }
+    return -1;
+  }, label);
 
-  // The geography release node should now be visible in the filtered tree.
-  const node = page.locator('.treeNodeContent, .treeNodeElement', { hasText: label }).first();
-  if (!(await node.isVisible({ timeout: 10_000 }).catch(() => false))) {
+  if (nodeIndex < 0) {
+    // Dump the visible label set into the log for debugging
+    const labels = await page.evaluate(() => Array.from(document.querySelectorAll('.treeNodeElement .label'))
+      .map(e => e.textContent?.trim() ?? '')
+      .filter(Boolean));
+    reporter({ type: 'log', level: 'warn', message: `  visible labels (${labels.length}): ${labels.slice(0, 30).join(' | ')}` });
     throw new Error(`selectGeography: no tree node found for "${label}"`);
   }
-  await node.click();
+
+  const treeNodes = await page.locator('.treeNodeElement').all();
+  await treeNodes[nodeIndex].locator('.label').first().click();
   // networkidle waits for JSF AJAX to settle after selection; ignore timeout (soft fail)
   await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => null);
-
-  // Clear the search so the variable tree is fully visible for subsequent steps
-  await searchBox.fill('');
+  // Belt-and-braces: small extra settle for JSF tree refresh after release click.
+  await new Promise(r => setTimeout(r, 2000));
 
   reporter({ type: 'log', level: 'ok', message: `  ✓ geography selected: ${label}` });
   reporter({ type: 'phase_complete', phaseId: 'geography', elapsed: (Date.now() - t0) / 1000 });
