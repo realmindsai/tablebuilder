@@ -21,10 +21,25 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ui1 = join(__dirname, '..', 'ui');
 const UI_DIR = existsSync(ui1) ? ui1 : join(__dirname, '..', '..', 'ui');
 const PORT = Number(process.env.PORT ?? 3000);
+const TEST_DB_OVERRIDE = process.env.TABLEBUILDER_TEST_DB_PATH;
 const dictDb1 = join(__dirname, '..', 'docs', 'explorer', 'data', 'dictionary.db');
 const dictDb2 = join(__dirname, '..', '..', 'docs', 'explorer', 'data', 'dictionary.db');
-const DICT_DB = existsSync(dictDb1) ? dictDb1 : existsSync(dictDb2) ? dictDb2 : null;
+const DICT_DB = TEST_DB_OVERRIDE
+  ? (existsSync(TEST_DB_OVERRIDE) ? TEST_DB_OVERRIDE : null)
+  : (existsSync(dictDb1) ? dictDb1 : existsSync(dictDb2) ? dictDb2 : null);
 const dictDb = DICT_DB ? new Database(DICT_DB, { readonly: true }) : null;
+
+function hasGeographiesTable(db: Database.Database | null): boolean {
+  if (!db) return false;
+  const row = db.prepare(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name='geographies'"
+  ).get();
+  return row != null;
+}
+const dictReady = hasGeographiesTable(dictDb);
+if (dictDb && !dictReady) {
+  console.warn('[server] dictionary.db is missing the geographies table — needs reassembly');
+}
 const COOKIE_SECRET = process.env.COOKIE_SECRET ?? '';
 
 if (!COOKIE_SECRET && process.env.NODE_ENV === 'production') {
@@ -191,6 +206,27 @@ export async function createServer(): Promise<express.Express> {
     if (!dictDb) { res.status(503).json({ error: 'Dataset dictionary unavailable' }); return; }
     const rows = dictDb.prepare('SELECT id, name FROM datasets ORDER BY name').all() as Array<{ id: number; name: string }>;
     res.json(rows.map(r => ({ id: r.id, name: r.name, code: null, tag: null, year: null })));
+  });
+
+  // Dataset metadata (no auth) — returns geographies, groups, and variables for a given dataset id
+  app.get('/api/datasets/:id/metadata', (req, res) => {
+    if (!dictDb) { res.status(503).json({ error: 'Dataset dictionary unavailable' }); return; }
+    if (!dictReady) { res.status(503).json({ error: 'Dictionary out of date — needs reassembly' }); return; }
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id)) { res.status(400).json({ error: 'id must be a number' }); return; }
+    const dataset = dictDb.prepare('SELECT id, name FROM datasets WHERE id = ?').get(id) as { id: number; name: string } | undefined;
+    if (!dataset) { res.status(404).json({ error: 'Unknown dataset' }); return; }
+    const geographies = dictDb.prepare('SELECT id, label FROM geographies WHERE dataset_id = ? ORDER BY id').all(id) as Array<{ id: number; label: string }>;
+    const groupRows = dictDb.prepare('SELECT id, label FROM groups WHERE dataset_id = ? ORDER BY id').all(id) as Array<{ id: number; label: string }>;
+    const variablesByGroup = dictDb.prepare(
+      'SELECT id, group_id, code, label FROM variables WHERE group_id IN (SELECT id FROM groups WHERE dataset_id = ?) ORDER BY label'
+    ).all(id) as Array<{ id: number; group_id: number; code: string; label: string }>;
+    const groups = groupRows.map(g => ({
+      id: g.id,
+      label: g.label,
+      variables: variablesByGroup.filter(v => v.group_id === g.id).map(v => ({ id: v.id, code: v.code, label: v.label })),
+    }));
+    res.json({ id: dataset.id, name: dataset.name, geographies, groups });
   });
 
   // SSE run endpoint

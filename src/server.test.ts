@@ -13,7 +13,10 @@ vi.mock('better-sqlite3', () => {
   ];
   const MockDb = vi.fn().mockImplementation(function () {
     return {
-      prepare: vi.fn().mockReturnValue({ all: vi.fn().mockReturnValue(MOCK_ROWS) }),
+      prepare: vi.fn().mockReturnValue({
+        all: vi.fn().mockReturnValue(MOCK_ROWS),
+        get: vi.fn().mockReturnValue({ name: 'geographies' }),
+      }),
     };
   });
   return { default: MockDb };
