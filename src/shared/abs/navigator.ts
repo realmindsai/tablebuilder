@@ -425,10 +425,20 @@ export async function selectGeography(
   reporter({ type: 'log', level: 'phase', message: '» phase geography — Selecting geography' });
   reporter({ type: 'log', level: 'info', message: `  selecting geography release: ${label}` });
 
+  // After selectDataset returns, tableView.xhtml is loaded but its variable
+  // tree is still being populated by JSF AJAX. Wait for the first tree node
+  // to appear, then a brief settle so the geographic group is in the DOM.
+  try {
+    await page.waitForSelector('.treeNodeElement', { timeout: 30_000 });
+  } catch {
+    throw new Error(`selectGeography: variable tree never appeared on tableView page`);
+  }
+  // Settle for AJAX to finish populating remaining nodes
+  await new Promise(r => setTimeout(r, 2000));
+
   // Geography classification releases are nested under "Geographical Areas
   // (Usual Residence)" group at depth 2. The group is collapsed by default,
-  // so the search-only path leaves the leaf hidden. Expand the parent first,
-  // then find the labelled leaf.
+  // so we expand it first to make the leaf locatable.
   const expanded = await tryExpandGeographic(page);
   if (!expanded) {
     reporter({ type: 'log', level: 'warn', message: '  geographic group not found in tree (already expanded?)' });
