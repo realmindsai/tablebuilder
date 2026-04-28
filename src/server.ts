@@ -11,7 +11,7 @@ import { encryptCreds, decryptCreds } from './auth.js';
 import { isRunActive, setRunActive, enqueue, dequeueNext, removeFromQueue, type QueueEntry } from './queue.js';
 import { logRun, pruneOldLogs, type AuditEntry } from './logger.js';
 import { CancelledError } from './shared/abs/reporter.js';
-import type { Credentials, Input } from './shared/abs/types.js';
+import type { Credentials, Input, VariableRef } from './shared/abs/types.js';
 import Database from 'better-sqlite3';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -59,21 +59,69 @@ interface AuthedRequest extends Request {
   creds: Credentials;
 }
 
-function validateBody(body: unknown): { ok: true; input: Input } | { ok: false; error: string } {
+function isVarRef(x: unknown): x is VariableRef {
+  return (
+    !!x &&
+    typeof x === 'object' &&
+    typeof (x as Record<string, unknown>).id === 'number' &&
+    typeof (x as Record<string, unknown>).label === 'string' &&
+    ((x as Record<string, unknown>).label as string).trim().length > 0
+  );
+}
+
+function extractRefs(arr: unknown[], field: string): { ok: true; refs: VariableRef[] } | { ok: false; error: string; field: string } {
+  for (const item of arr) {
+    if (!isVarRef(item)) {
+      return { ok: false, error: `${field} entries must be {id: number, label: string}`, field };
+    }
+  }
+  return { ok: true, refs: arr as VariableRef[] };
+}
+
+function validateBody(body: unknown): { ok: true; input: Input } | { ok: false; error: string; field?: string } {
   if (!body || typeof body !== 'object') return { ok: false, error: 'Request body must be JSON' };
   const b = body as Record<string, unknown>;
   if (typeof b.dataset !== 'string' || b.dataset.trim().length === 0) {
-    return { ok: false, error: 'dataset must be a non-empty string' };
+    return { ok: false, error: 'dataset must be a non-empty string', field: 'dataset' };
   }
-  if (!Array.isArray(b.rows) || b.rows.length === 0 || b.rows.some((r: unknown) => typeof r !== 'string' || (r as string).trim().length === 0)) {
-    return { ok: false, error: 'rows must be a non-empty array of non-empty strings' };
+
+  // rows: required, non-empty array of VariableRef
+  if (!Array.isArray(b.rows) || b.rows.length === 0) {
+    return { ok: false, error: 'rows must be a non-empty array of {id, label} objects', field: 'rows' };
   }
-  const cols = Array.isArray(b.cols) ? (b.cols as string[]) : [];
-  const wafer = Array.isArray(b.wafer) ? (b.wafer as string[]) : [];
+  const rowsResult = extractRefs(b.rows, 'rows');
+  if (!rowsResult.ok) return rowsResult;
+
+  // cols: optional, may be empty, all entries must be valid refs
+  const rawCols = Array.isArray(b.cols) ? b.cols : [];
+  const colsResult = extractRefs(rawCols, 'cols');
+  if (!colsResult.ok) return colsResult;
+
+  // wafer: optional, may be empty, all entries must be valid refs
+  const rawWafer = Array.isArray(b.wafer) ? b.wafer : [];
+  const waferResult = extractRefs(rawWafer, 'wafer');
+  if (!waferResult.ok) return waferResult;
+
+  // geography: null, missing, or a single VariableRef
+  let geography: VariableRef | null = null;
+  if (b.geography !== null && b.geography !== undefined) {
+    if (!isVarRef(b.geography)) {
+      return { ok: false, error: 'geography must be {id: number, label: string} or null', field: 'geography' };
+    }
+    geography = b.geography;
+  }
+
   const output = typeof b.output === 'string' ? b.output : '';
   return {
     ok: true,
-    input: { dataset: b.dataset.trim(), rows: b.rows as string[], columns: cols, wafers: wafer, outputPath: output.trim() || undefined },
+    input: {
+      dataset: b.dataset.trim(),
+      rows: rowsResult.refs,
+      columns: colsResult.refs,
+      wafers: waferResult.refs,
+      geography,
+      outputPath: output.trim() || undefined,
+    },
   };
 }
 
@@ -150,9 +198,9 @@ async function tryProcessNext(): Promise<void> {
       absUsername: entry.creds.userId,
       clientIP: entry.clientIP,
       dataset: entry.input.dataset,
-      rows: entry.input.rows,
-      cols: entry.input.columns ?? [],
-      wafers: entry.input.wafers ?? [],
+      rows: entry.input.rows.map(v => v.label),
+      cols: (entry.input.columns ?? []).map(v => v.label),
+      wafers: (entry.input.wafers ?? []).map(v => v.label),
       status: finalStatus,
       durationMs: Date.now() - startMs,
       rowCount,
@@ -233,8 +281,43 @@ export async function createServer(): Promise<express.Express> {
   app.post('/api/run', requireAuth, async (req, res) => {
     const validation = validateBody(req.body);
     if (!validation.ok) {
-      res.status(400).json({ error: validation.error });
+      res.status(400).json({ error: validation.error, ...(validation.field ? { field: validation.field } : {}) });
       return;
+    }
+
+    // DB-backed validation: check dataset name, variable ids, and geography id
+    if (dictDb && dictReady) {
+      const dsRow = dictDb.prepare('SELECT id FROM datasets WHERE name = ?').get(validation.input.dataset) as { id: number } | undefined;
+      if (!dsRow) {
+        res.status(400).json({ error: 'Unknown dataset', field: 'dataset' });
+        return;
+      }
+      const allVarIds = [
+        ...validation.input.rows,
+        ...validation.input.columns,
+        ...(validation.input.wafers ?? []),
+      ].map(v => v.id);
+      if (allVarIds.length > 0) {
+        const placeholders = allVarIds.map(() => '?').join(',');
+        const found = dictDb.prepare(
+          `SELECT v.id FROM variables v JOIN groups g ON g.id = v.group_id
+           WHERE g.dataset_id = ? AND v.id IN (${placeholders})`
+        ).all(dsRow.id, ...allVarIds) as Array<{ id: number }>;
+        const uniqueRequested = new Set(allVarIds).size;
+        if (found.length !== uniqueRequested) {
+          res.status(400).json({ error: 'Unknown variable id for this dataset', field: 'variables' });
+          return;
+        }
+      }
+      if (validation.input.geography) {
+        const g = dictDb.prepare(
+          'SELECT id FROM geographies WHERE id = ? AND dataset_id = ?'
+        ).get(validation.input.geography.id, dsRow.id);
+        if (!g) {
+          res.status(400).json({ error: 'Unknown geography for this dataset', field: 'geography' });
+          return;
+        }
+      }
     }
 
     res.setHeader('Content-Type', 'text/event-stream');

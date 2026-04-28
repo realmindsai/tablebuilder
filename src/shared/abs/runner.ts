@@ -20,10 +20,13 @@ export async function runTablebuilder(
     if (signal.aborted) throw new CancelledError();
 
     const resolvedDataset = await selectDataset(page, input.dataset, reporter, signal);
+
+    // TODO(Task 6): call selectGeography(page, input.geography.label, reporter) here when geography is non-null
+
     await selectVariables(page, {
-      rows: input.rows,
-      columns: input.columns,
-      wafers: input.wafers ?? [],
+      rows: input.rows.map(v => v.label),
+      columns: input.columns.map(v => v.label),
+      wafers: (input.wafers ?? []).map(v => v.label),
     }, reporter, signal);
 
     if (signal.aborted) throw new CancelledError();
