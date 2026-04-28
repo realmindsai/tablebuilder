@@ -1087,5 +1087,125 @@ body {
 /* Checkmark for completed phase dot */
 .phase.done .phase__dot svg { width: 10px; height: 10px; }
 
+/* ============================================================
+   BrowseModal
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: var(--rmai-white);
+  border: 1px solid var(--rmai-border);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.modal h3 {
+  margin: 0;
+  padding: 18px 20px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--rmai-border);
+  flex-shrink: 0;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 20px;
+}
+
+.browse-group {
+  margin-bottom: 4px;
+}
+
+.browse-group-header {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 6px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rmai-fg-1);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.browse-group-header:hover { background: var(--rmai-stone); }
+
+.browse-vars {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 20px;
+}
+
+.browse-vars li {
+  padding: 3px 0;
+}
+
+.browse-vars label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--rmai-fg-1);
+}
+
+.browse-vars input[type="checkbox"] {
+  flex-shrink: 0;
+  accent-color: var(--rmai-purple);
+}
+
+.browse-vars small {
+  font-family: var(--rmai-font-mono);
+  font-size: 11px;
+  color: var(--rmai-fg-mut);
+}
+
+.modal-actions {
+  padding: 12px 20px;
+  border-top: 1px solid var(--rmai-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Browse button next to TagInput */
+.btn-browse {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--rmai-border);
+  border-radius: 6px;
+  background: var(--rmai-white);
+  color: var(--rmai-fg-2);
+  cursor: pointer;
+  line-height: 1;
+}
+.btn-browse:hover:not(:disabled) {
+  border-color: var(--rmai-purple);
+  color: var(--rmai-purple);
+}
+.btn-browse:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Hide scrollbar on body (we scroll within panels) */
 body { overflow: hidden; }

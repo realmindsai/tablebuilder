@@ -120,6 +120,7 @@ function FormPanel({ disabled, onRun, initial }) {
   const [output, setOutput] = useS(initial?.output || "");
   const [metadata, setMetadata] = useS(null);
   const [metaLoading, setMetaLoading] = useS(false);
+  const [browseTarget, setBrowseTarget] = useS(null);  // 'rows' | 'cols' | 'wafer' | null
   const currentDatasetIdRef = useRef2(null);
 
   // When a dataset is explicitly picked from the list, capture its id.
@@ -234,7 +235,15 @@ function FormPanel({ disabled, onRun, initial }) {
             <span className="lbl">Row variables</span>
             <span className="opt">Required</span>
           </div>
-          <window.TagInput value={rows} onChange={setRows} placeholder="e.g. Sex, Age" disabled={disabled} variant="row" metadata={metadata} />
+          <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+            <window.TagInput value={rows} onChange={setRows} placeholder="e.g. Sex, Age" disabled={disabled} variant="row" metadata={metadata} />
+            <button
+              type="button"
+              className="btn-browse"
+              disabled={!metadata || disabled}
+              onClick={() => setBrowseTarget('rows')}
+            >Browse</button>
+          </div>
         </div>
 
         <div className="field">
@@ -242,7 +251,15 @@ function FormPanel({ disabled, onRun, initial }) {
             <span className="lbl">Column variables</span>
             <span className="opt">Optional</span>
           </div>
-          <window.TagInput value={cols} onChange={setCols} placeholder="e.g. State" disabled={disabled} variant="col" metadata={metadata} />
+          <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+            <window.TagInput value={cols} onChange={setCols} placeholder="e.g. State" disabled={disabled} variant="col" metadata={metadata} />
+            <button
+              type="button"
+              className="btn-browse"
+              disabled={!metadata || disabled}
+              onClick={() => setBrowseTarget('cols')}
+            >Browse</button>
+          </div>
         </div>
 
         <div className="field">
@@ -250,9 +267,33 @@ function FormPanel({ disabled, onRun, initial }) {
             <span className="lbl">Wafer / layer variables</span>
             <span className="opt">Optional</span>
           </div>
-          <window.TagInput value={wafer} onChange={setWafer} placeholder="e.g. Year of Arrival" disabled={disabled} variant="wafer" metadata={metadata} />
+          <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+            <window.TagInput value={wafer} onChange={setWafer} placeholder="e.g. Year of Arrival" disabled={disabled} variant="wafer" metadata={metadata} />
+            <button
+              type="button"
+              className="btn-browse"
+              disabled={!metadata || disabled}
+              onClick={() => setBrowseTarget('wafer')}
+            >Browse</button>
+          </div>
           <div className="field__hint">Wafers produce separate tables, one per category combination.</div>
         </div>
+
+        {browseTarget && metadata && (
+          <window.BrowseModal
+            metadata={metadata}
+            initialSelected={new Set(({ rows, cols, wafer }[browseTarget]).map(v => v.id))}
+            onApply={ids => {
+              const lookup = new Map();
+              for (const g of metadata.groups) for (const v of g.variables) lookup.set(v.id, v);
+              const refs = [...ids].map(id => ({ id, label: lookup.get(id).label }));
+              const setter = { rows: setRows, cols: setCols, wafer: setWafer }[browseTarget];
+              setter(refs);
+              setBrowseTarget(null);
+            }}
+            onCancel={() => setBrowseTarget(null)}
+          />
+        )}
 
         <div className="form-section">Output</div>
 
