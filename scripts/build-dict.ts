@@ -175,8 +175,44 @@ async function main(): Promise<void> {
       queue = namesFromErrors;
       console.log(`[build-dict] --retry-failed: ${queue.length} datasets to retry`);
     } else {
-      queue = await listDatasets(page);
-      console.log(`[build-dict] catalogue: ${queue.length} datasets`);
+      const firstListing = await listDatasets(page);
+      console.log(`[build-dict] catalogue listing 1: ${firstListing.length} datasets`);
+
+      // The first listDatasets call after a fresh navigation has been observed
+      // to under-report by ~30 datasets (168 vs 200). Subsequent calls return
+      // the full set. Re-navigate and list again, then take the union — cheap
+      // insurance against either listing missing entries.
+      //
+      // Fresh page.goto is REQUIRED here, not goBack. The under-counting is
+      // specifically a "very first listing on a freshly navigated catalogue"
+      // race, and we need a second pass through that same code path. The
+      // current navigateToCatalogue uses goBack only when leaving tableView;
+      // here URL is already the catalogue so it falls through to a fresh
+      // page.goto, which is exactly what we want — don't "optimise" this to
+      // skip the re-navigation.
+      let secondListing: string[] = [];
+      try {
+        await navigateToCatalogue(page);
+        secondListing = await listDatasets(page);
+        console.log(`[build-dict] catalogue listing 2: ${secondListing.length} datasets`);
+      } catch (e) {
+        // If the second pass fails entirely (network blip, session loss, etc.),
+        // don't throw away the work already invested in listing #1 — fall back
+        // to it. The user can always re-run with --clear-cache later if they
+        // suspect the queue is incomplete.
+        console.warn(
+          `[build-dict] catalogue listing 2 failed: ${(e as Error).message} — falling back to listing 1`,
+        );
+      }
+
+      queue = Array.from(new Set([...firstListing, ...secondListing]));
+      if (secondListing.length > 0 && firstListing.length !== secondListing.length) {
+        console.warn(
+          `[build-dict] catalogue counts differed (${firstListing.length} vs ${secondListing.length}); ` +
+          `using union of ${queue.length}`,
+        );
+      }
+      console.log(`[build-dict] catalogue: ${queue.length} datasets (queue size)`);
     }
 
     for (let i = 0; i < queue.length; i++) {
