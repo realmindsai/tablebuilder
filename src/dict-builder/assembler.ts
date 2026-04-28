@@ -10,8 +10,12 @@ const SCHEMA_SQL = `
 CREATE TABLE datasets (
   id INTEGER PRIMARY KEY,
   name TEXT UNIQUE NOT NULL,
-  geographies_json TEXT NOT NULL DEFAULT '[]',
   summary TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE geographies (
+  id INTEGER PRIMARY KEY,
+  dataset_id INTEGER NOT NULL REFERENCES datasets(id),
+  label TEXT NOT NULL
 );
 CREATE TABLE groups (
   id INTEGER PRIMARY KEY,
@@ -31,6 +35,7 @@ CREATE TABLE categories (
   variable_id INTEGER NOT NULL REFERENCES variables(id),
   label TEXT NOT NULL
 );
+CREATE INDEX idx_geographies_dataset ON geographies(dataset_id);
 CREATE INDEX idx_groups_dataset ON groups(dataset_id);
 CREATE INDEX idx_variables_group ON variables(group_id);
 CREATE INDEX idx_categories_variable ON categories(variable_id);
@@ -86,7 +91,10 @@ export async function build(cacheDir: string, dbPath: string): Promise<void> {
     db.exec(SCHEMA_SQL);
 
     const insertDataset = db.prepare(
-      'INSERT INTO datasets (name, geographies_json, summary) VALUES (?, ?, ?)',
+      'INSERT INTO datasets (name, summary) VALUES (?, ?)',
+    );
+    const insertGeography = db.prepare(
+      'INSERT INTO geographies (dataset_id, label) VALUES (?, ?)',
     );
     const insertGroup = db.prepare(
       'INSERT INTO groups (dataset_id, label, path) VALUES (?, ?, ?)',
@@ -102,9 +110,12 @@ export async function build(cacheDir: string, dbPath: string): Promise<void> {
       const tx = db.transaction(() => {
         const datasetId = insertDataset.run(
           d.dataset_name,
-          JSON.stringify(d.geographies),
           '',
         ).lastInsertRowid as number;
+
+        for (const geo of d.geographies) {
+          insertGeography.run(datasetId, geo);
+        }
 
         for (const g of d.groups) {
           const groupId = insertGroup.run(datasetId, g.label, g.path).lastInsertRowid as number;

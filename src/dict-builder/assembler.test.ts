@@ -65,15 +65,26 @@ describe('assembler.build', () => {
     db.close();
   });
 
-  it('stores geographies_json as a JSON array string', async () => {
+  it('writes geographies as rows in geographies table', async () => {
     await writeSuccess(cacheDir, ds({
       dataset_name: 'WithGeos',
       geographies: ['Australia', 'LGA (2021 Boundaries)', 'SA1 by Main ASGS'],
     }));
     await build(cacheDir, dbPath);
     const db = new Database(dbPath, { readonly: true });
-    const row = db.prepare('SELECT geographies_json FROM datasets WHERE name = ?').get('WithGeos') as { geographies_json: string };
-    expect(JSON.parse(row.geographies_json)).toEqual(['Australia', 'LGA (2021 Boundaries)', 'SA1 by Main ASGS']);
+    const rows = db.prepare(
+      'SELECT label FROM geographies WHERE dataset_id = (SELECT id FROM datasets WHERE name = ?)'
+    ).all('WithGeos') as { label: string }[];
+    expect(rows.map(r => r.label)).toEqual(['Australia', 'LGA (2021 Boundaries)', 'SA1 by Main ASGS']);
+    db.close();
+  });
+
+  it('does not have geographies_json column', async () => {
+    await writeSuccess(cacheDir, ds({ dataset_name: 'ColCheck' }));
+    await build(cacheDir, dbPath);
+    const db = new Database(dbPath, { readonly: true });
+    const cols = db.prepare('PRAGMA table_info(datasets)').all() as { name: string }[];
+    expect(cols.map(c => c.name)).not.toContain('geographies_json');
     db.close();
   });
 
