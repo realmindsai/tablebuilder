@@ -1,7 +1,7 @@
 // src/shared/abs/runner.ts
 import type { Page } from 'playwright-core';
 import { login } from './auth.js';
-import { selectDataset, selectVariables } from './navigator.js';
+import { selectDataset, selectGeography, selectVariables } from './navigator.js';
 import { retrieveTable } from './jsf.js';
 import { downloadCsv } from './downloader.js';
 import { noopReporter, NEVER_ABORT, CancelledError, type PhaseReporter } from './reporter.js';
@@ -21,7 +21,9 @@ export async function runTablebuilder(
 
     const resolvedDataset = await selectDataset(page, input.dataset, reporter, signal);
 
-    // TODO(Task 6): call selectGeography(page, input.geography.label, reporter) here when geography is non-null
+    if (input.geography) {
+      await selectGeography(page, input.geography.label, reporter);
+    }
 
     await selectVariables(page, {
       rows: input.rows.map(v => v.label),

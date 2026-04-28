@@ -411,6 +411,46 @@ export async function expandVariableGroups(
   }
 }
 
+// ---------------------------------------------------------------------------
+// Geography selection
+// ---------------------------------------------------------------------------
+
+export async function selectGeography(
+  page: Page,
+  label: string,
+  reporter: PhaseReporter = noopReporter,
+): Promise<void> {
+  const t0 = Date.now();
+  reporter({ type: 'phase_start', phaseId: 'geography', phaseLabel: 'Selecting geography', phaseSub: 'navigating classification release' });
+  reporter({ type: 'log', level: 'phase', message: '» phase geography — Selecting geography' });
+  reporter({ type: 'log', level: 'info', message: `  selecting geography release: ${label}` });
+
+  // The search box may be #searchPattern or a similarly-named input — use the
+  // more permissive selector as a fallback. Must be on the tableView page.
+  const searchBox = page.locator('#searchPattern, input[id*="searchPattern"]').first();
+  if (!(await searchBox.isVisible().catch(() => false))) {
+    throw new Error(`selectGeography: search box not visible — geography selection requires tableView page`);
+  }
+
+  await searchBox.fill(label);
+  await page.waitForTimeout(800); // JSF AJAX debounce after typing
+
+  // The geography release node should now be visible in the filtered tree.
+  const node = page.locator('.treeNodeContent, .treeNodeElement', { hasText: label }).first();
+  if (!(await node.isVisible({ timeout: 10_000 }).catch(() => false))) {
+    throw new Error(`selectGeography: no tree node found for "${label}"`);
+  }
+  await node.click();
+  // networkidle waits for JSF AJAX to settle after selection; ignore timeout (soft fail)
+  await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => null);
+
+  // Clear the search so the variable tree is fully visible for subsequent steps
+  await searchBox.fill('');
+
+  reporter({ type: 'log', level: 'ok', message: `  ✓ geography selected: ${label}` });
+  reporter({ type: 'phase_complete', phaseId: 'geography', elapsed: (Date.now() - t0) / 1000 });
+}
+
 export async function selectVariables(
   page: Page,
   vars: { rows: string[]; columns: string[]; wafers?: string[] },
