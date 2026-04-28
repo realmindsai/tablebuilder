@@ -19,9 +19,11 @@
 | `src/dict-builder/assembler.ts` | Drop `geographies_json` column, add `geographies` table + insert step |
 | `src/dict-builder/assembler.test.ts` | Add geography round-trip tests |
 | `src/server.ts` | Add boot guard, `/api/datasets/:id/metadata` endpoint, extended validator |
-| `src/server.test.ts` (or new `metadata.test.ts`) | Tests for endpoint + validator |
+| `src/server.test.ts` + new `src/server.metadata.test.ts` | Tests for endpoint + validator + boot guard |
 | `src/shared/abs/navigator.ts` | Add `selectGeography(page, label)` |
-| `src/runner.ts` | Pass geography through, call `selectGeography` when set |
+| `src/shared/abs/runner.ts` | Pass geography through, call `selectGeography` when set (this is the real runner, NOT `src/runner.ts` which doesn't exist) |
+| `src/workflows/abs-tablebuilder.ts` | Update `Input` type if it lives here (verify before edit) |
+| `ui/applyEvent.js` | Update `PHASE_INDEX` map to include `geography` |
 | `ui/dataset-store.js` | NEW — `window.DatasetStore.loadMetadata(id)` |
 | `ui/dataset-store.test.js` | NEW — vitest unit tests via JSDOM |
 | `ui/data.js` | Delete `VARIABLES`; add `geography` to `PHASES` |
@@ -193,7 +195,7 @@ Replaces datasets.geographies_json blob with a geographies table
 mirroring the groups/variables/categories pattern. Cache layer is
 unchanged — only assembly inserts as rows now.
 
-Co-Authored-By: <author>
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
 EOF
 )"
 ```
@@ -236,31 +238,64 @@ Expected: ≥1000 total geographies, ≥150 datasets with at least one geography
 
 **Files:**
 - Modify: `src/server.ts`
-- Modify: `src/server.test.ts` (or create `src/metadata.test.ts`)
+- Create: `src/server.metadata.test.ts`
 
-**Context:** Server should detect if the DB is missing the `geographies` table at startup and serve 503 from the metadata endpoint with a clear message. The existing pattern at `server.ts:27` opens `dictDb`; we add a flag right after.
+**Context:** Server should detect if the DB is missing the `geographies` table at startup and serve 503 from the metadata endpoint with a clear message. The existing pattern at `server.ts:27` opens `dictDb` at module level; tests can't inject directly. Existing `src/server.test.ts` shows the testing pattern: mock `existsSync` + `vi.resetModules()` + write a fixture DB to a temp path that the module then opens. **Don't refactor `createServer()` to take injected deps** — match the existing pattern.
 
-- [ ] **Step 1: Write failing test**
+- [ ] **Step 1: Write failing test in new `src/server.metadata.test.ts`**
 
 ```ts
-it('reports schema-out-of-date when geographies table is missing', async () => {
-  // Build a fixture DB with the OLD schema (geographies_json column)
-  const oldDb = new Database(':memory:');
-  oldDb.exec(`CREATE TABLE datasets (id INTEGER PRIMARY KEY, name TEXT, geographies_json TEXT)`);
-  // ... insert one dataset
-  // App startup with this DB
-  const app = createApp({ dictDb: oldDb });  // assuming injectable
-  const r = await request(app).get('/api/datasets/1/metadata');
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { promises as fs } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
+import Database from 'better-sqlite3';
+import http from 'http';
+import request from 'supertest';
+
+let tmpDbPath: string;
+
+beforeAll(async () => {
+  // Build an OLD-schema fixture DB (no geographies table) at a temp path,
+  // then mock existsSync so server.ts opens it as if it were the production DB.
+  tmpDbPath = join(tmpdir(), `tb-test-old-${Date.now()}.db`);
+  const db = new Database(tmpDbPath);
+  db.exec(`CREATE TABLE datasets (id INTEGER PRIMARY KEY, name TEXT, geographies_json TEXT);
+           INSERT INTO datasets (name, geographies_json) VALUES ('Test Dataset', '[]');`);
+  db.close();
+  vi.doMock('fs', async (orig) => {
+    const real = await orig() as typeof import('fs');
+    return {
+      ...real,
+      existsSync: (p: string) => p.endsWith('dictionary.db') ? true : real.existsSync(p),
+    };
+  });
+  // Patch the path resolution: monkey-patch by setting an env var read by server.ts,
+  // OR (simpler) mock `better-sqlite3` to open the tmp file when given the prod path.
+  // Use the env-var approach — see Task 3 Step 2.
+});
+
+afterAll(async () => {
+  await fs.rm(tmpDbPath, { force: true });
+});
+
+it('returns 503 when geographies table is missing', async () => {
+  vi.resetModules();
+  const { createServer } = await import('./server.js');
+  const app = await createServer();
+  const server = http.createServer(app);
+  const r = await request(server).get('/api/datasets/1/metadata');
   expect(r.status).toBe(503);
   expect(r.body.error).toMatch(/out of date|reassembly/i);
+  server.close();
 });
 ```
 
-If the server isn't currently structured for injection, refactor `createApp(deps)` minimally — only what's needed to inject `dictDb`. Don't refactor more.
+If the env-var approach isn't available, fall back to running the test against a real fresh DB built without the geographies table (use the assembler with a code branch flag, or hand-build the SQLite file in test setup). The point is to exercise the runtime boot-guard path; the mocking mechanism is not load-bearing.
 
 - [ ] **Step 2: Implement the guard**
 
-In `src/server.ts` after line 27:
+In `src/server.ts` after line 27 (where `dictDb` is opened) and BEFORE the validators/routes:
 
 ```ts
 function hasGeographiesTable(db: Database.Database | null): boolean {
@@ -274,7 +309,12 @@ const dictReady = hasGeographiesTable(dictDb);
 if (dictDb && !dictReady) {
   console.warn('[server] dictionary.db is missing the geographies table — needs reassembly');
 }
+
+// Optional env var to override DB path (used by tests):
+const TEST_DB_PATH = process.env.TABLEBUILDER_TEST_DB_PATH;
 ```
+
+If you opt to use the env-var test pattern, also gate `dictDb` open on `TEST_DB_PATH ?? DICT_DB`. Otherwise the test must use module-mock interception; pick one and stick with it.
 
 Then in the metadata endpoint (added in Task 4), check `dictReady` first.
 
@@ -295,15 +335,18 @@ git commit -m "feat(server): add boot guard for geographies table"
 
 **Files:**
 - Modify: `src/server.ts`
-- Modify: server tests
+- Modify: `src/server.metadata.test.ts` (extend the file from Task 3)
 
-**Context:** Endpoint sits between `/api/datasets` (line 190) and `/api/run` (line 197). No auth, mirrors `/api/datasets`.
+**Context:** Endpoint sits between `/api/datasets` (line 190) and `/api/run` (line 197). No auth, mirrors `/api/datasets`. Tests use the existing `createServer()` pattern with a fresh-schema fixture DB.
 
 - [ ] **Step 1: Write failing tests**
 
+Add to `src/server.metadata.test.ts`:
+
 ```ts
 it('returns metadata for a known dataset', async () => {
-  const r = await request(app).get('/api/datasets/1/metadata');
+  // Setup: fixture DB with new schema (geographies table) — point TEST_DB_PATH at it
+  const r = await request(server).get('/api/datasets/1/metadata');
   expect(r.status).toBe(200);
   expect(r.body).toMatchObject({
     id: 1,
@@ -324,15 +367,14 @@ it('returns metadata for a known dataset', async () => {
 });
 
 it('returns 404 for unknown dataset id', async () => {
-  const r = await request(app).get('/api/datasets/999999/metadata');
+  const r = await request(server).get('/api/datasets/999999/metadata');
   expect(r.status).toBe(404);
   expect(r.body.error).toBe('Unknown dataset');
 });
 
 it('returns 503 when dictDb is null', async () => {
-  const app = createApp({ dictDb: null });
-  const r = await request(app).get('/api/datasets/1/metadata');
-  expect(r.status).toBe(503);
+  // Pattern from existing src/server.test.ts:66-78 — mock existsSync to return false
+  // then vi.resetModules() and re-import createServer
 });
 ```
 
@@ -387,10 +429,24 @@ git commit -m "feat(server): add GET /api/datasets/:id/metadata"
 ### Task 5: Extend `/api/run` validator for geography + variable ids
 
 **Files:**
-- Modify: `src/server.ts` (`validateBody` at line 47)
+- Modify: `src/server.ts` (`validateBody` at line 47, `Input` type, queue entry)
+- Modify: `src/shared/abs/runner.ts` (input shape passthrough — see Step 4)
 - Modify: server tests
 
-**Context:** Today validator handles `dataset`, `rows`, `cols`, `wafer` as string arrays. We change all three buckets to `Array<{id: number; label: string}>` and add `geography: {id, label} | null`. Validator additionally checks each id resolves in the DB for the given dataset.
+**Wire contract (pinned, do not deviate):**
+
+| Field | Type |
+|---|---|
+| `dataset` | `string` (the catalogue name) |
+| `rows` | `Array<{id: number, label: string}>` (renamed from string[]) |
+| `cols` | `Array<{id: number, label: string}>` |
+| `wafer` | `Array<{id: number, label: string}>` |
+| `geography` | `{id: number, label: string} \| null` (treated identically to absent) |
+| `output` | `string` (unchanged) |
+
+The wire field names stay `rows/cols/wafer` (matching today). The internal `Input` interface keeps its current names `rows/columns/wafers` — the validator maps wire→internal as before.
+
+**Context:** Today validator handles `dataset`, `rows`, `cols`, `wafer` as string arrays. We change all three buckets to `Array<{id: number; label: string}>` and add `geography`. Validator additionally checks each id resolves in the DB for the given dataset.
 
 - [ ] **Step 1: Write failing tests**
 
@@ -465,6 +521,20 @@ if (dictDb && dictReady) {
 
 - [ ] **Step 3: Run tests, type-check, commit**
 
+- [ ] **Step 4: Verify queue/runner passthrough**
+
+`src/server.ts` enqueues a `QueueEntry` with `input: validation.input`. The runner consumes `entry.input.rows/columns/wafers/geography`. Trace the call chain:
+
+```bash
+grep -n "input\.\|QueueEntry\|Input" src/server.ts src/shared/abs/runner.ts src/workflows/abs-tablebuilder.ts | head
+```
+
+Update every site that reads `input.rows/cols/wafer` as strings to read `.label` from the object:
+- Runner's variable-selection step: `input.rows.map(v => v.label)` (or however the existing code consumes them).
+- Type definition for `Input` (locate via grep — likely in `src/workflows/abs-tablebuilder.ts` or `src/types.ts`).
+
+This step has no new tests; the passthrough is exercised by Task 14 manual E2E.
+
 ---
 
 ## Chunk 3: Runner
@@ -473,8 +543,9 @@ if (dictDb && dictReady) {
 
 **Files:**
 - Modify: `src/shared/abs/navigator.ts`
-- Modify: `src/runner.ts`
-- Modify: existing runner test (if applicable; otherwise gate on E2E)
+- Modify: `src/shared/abs/runner.ts` (NOT `src/runner.ts` — that doesn't exist)
+
+**⚠ JSF risk acknowledged:** This task ships with **no automated test**. The `selectGeography` implementation below is a starting point based on memory of the JSF DOM (`#searchPattern`, `.treeNodeContent`, etc.) — exact selectors and timings will likely need adjustment when run against real ABS. Verification is **Task 14 Step 4 (manual runner E2E)**. Expect to iterate.
 
 **Context:** `selectDataset` already exists in `navigator.ts`. Geography selection follows: open the JSF tree, locate the geography release node by label, click it. Re-uses `expandAllCollapsed` patterns.
 
@@ -507,7 +578,7 @@ export async function selectGeography(page: Page, label: string, reporter?: Phas
 
 - [ ] **Step 2: Wire into runner**
 
-In `src/runner.ts`, after `selectDataset` and before category selection:
+In `src/shared/abs/runner.ts`, after `selectDataset(...)` and before category selection:
 
 ```ts
 if (input.geography) {
@@ -519,11 +590,11 @@ if (input.geography) {
 
 ```bash
 npx tsc --noEmit
-git add src/shared/abs/navigator.ts src/runner.ts
+git add src/shared/abs/navigator.ts src/shared/abs/runner.ts
 git commit -m "feat(runner): selectGeography step navigates JSF to chosen release"
 ```
 
-(Real verification deferred to runner E2E in Chunk 6.)
+(Real verification deferred to runner E2E in Task 14 Step 4. Locator/timing adjustments are expected on first real run.)
 
 ---
 
@@ -712,11 +783,22 @@ function add(suggestion) {
 
 Remove lines 9-30. Keep `PHASES`, `SEED_HISTORY`, formatters.
 
-- [ ] **Step 6: Update display anywhere that reads `.length` of bucket** — string vs object access. Search for `rows.length`, `cols.length`, `wafer.length` — these still work. Search for code that joins/maps bucket items as strings (e.g. `app.jsx:443 [...item.rows, ...item.cols].join(...)`):
+- [ ] **Step 6: Update display anywhere that reads bucket items as strings**
 
-```jsx
-[...item.rows, ...item.cols].map(v => v.label).join(" × ")
+Run these greps and update each call site:
+
+```bash
+grep -rn "\.rows\b\|\.cols\b\|\.wafer\b" ui/
+grep -rn "rows\\.\|cols\\.\|wafer\\." ui/ src/
+grep -rn "rows\.map\|cols\.map\|wafer\.map\|rows\.join\|cols\.join\|wafer\.join" ui/ src/
 ```
+
+For each call site:
+- `.length` calls — still work (Array.length unchanged).
+- `.map(v => v)` or string interpolation — now needs `.map(v => v.label)`.
+- `.join(...)` — now needs `.map(v => v.label).join(...)`.
+- Known sites: `app.jsx:443` (`[...item.rows, ...item.cols].join(" × ")` → `.map(v => v.label).join(...)`); SSE event consumers; history rendering. Find them all via grep, don't trust this list alone.
+- Validation note: history entries from before the redeploy are stored as strings; either filter them out or guard with `typeof v === 'string' ? v : v.label` for one release.
 
 - [ ] **Step 7: Update history/payload references**
 
@@ -807,8 +889,46 @@ fetch('/api/run', {
 
 **Files:**
 - Create: `ui/browse-modal.jsx`
+- Create: `ui/browse-modal.test.jsx` (vitest + JSDOM + react testing library)
 - Modify: `ui/index.html` (add script tag)
 - Modify: `ui/form.jsx` (add Browse button per bucket)
+
+- [ ] **Step 0: Write failing test for apply/cancel logic**
+
+```jsx
+// ui/browse-modal.test.jsx (or .js if no JSX support in test runner)
+import { render, fireEvent } from '@testing-library/react';
+import React from 'react';
+
+const metadata = {
+  groups: [
+    { id: 1, label: 'A', variables: [{ id: 10, code: 'X', label: 'X' }, { id: 11, code: 'Y', label: 'Y' }] },
+  ],
+};
+
+it('apply returns the checked id set', () => {
+  const onApply = vi.fn();
+  const { getByText, getByLabelText } = render(
+    <window.BrowseModal metadata={metadata} initialSelected={new Set([10])} onApply={onApply} onCancel={() => {}} />
+  );
+  fireEvent.click(getByLabelText(/Y/));   // check the second
+  fireEvent.click(getByText('Apply'));
+  expect(onApply).toHaveBeenCalledWith(new Set([10, 11]));
+});
+
+it('cancel does not call onApply', () => {
+  const onApply = vi.fn();
+  const onCancel = vi.fn();
+  const { getByText } = render(
+    <window.BrowseModal metadata={metadata} initialSelected={new Set()} onApply={onApply} onCancel={onCancel} />
+  );
+  fireEvent.click(getByText('Cancel'));
+  expect(onApply).not.toHaveBeenCalled();
+  expect(onCancel).toHaveBeenCalled();
+});
+```
+
+If the test infrastructure doesn't support JSX in unit tests today, gate this on Task 13 E2E only — but try first; the rest of the plan assumes JSDOM is available.
 
 - [ ] **Step 1: Create `ui/browse-modal.jsx`**
 
@@ -861,8 +981,16 @@ Manual: open modal, expand "Cultural Diversity" group, check 2 variables, click 
 
 **Files:**
 - Modify: `ui/data.js`
+- Modify: `ui/applyEvent.js` (PHASE_INDEX map)
+- Modify: `src/applyEvent.test.ts` if phase indices are exercised
 
-- [ ] **Step 1: Insert `geography` between `dataset` and `tree`**
+**Context:** `ui/applyEvent.js` line 12 has a hardcoded `PHASE_INDEX` lookup:
+```
+{ login: 0, dataset: 1, tree: 2, check: 3, submit: 4, retrieve: 5, download: 6 }
+```
+Inserting `geography` at index 2 shifts every later phase. Skipping `geography` (when null) leaves `phaseIndex` at 1 — the UI tracker stays on "Selecting dataset" until the runner emits the next phase event. That matches the existing skip behavior; verify by reading `applyEvent.js` reducer.
+
+- [ ] **Step 1: Insert `geography` between `dataset` and `tree` in `ui/data.js`**
 
 ```js
 const PHASES = [
@@ -874,9 +1002,21 @@ const PHASES = [
 ];
 ```
 
-The runner emits the `geography` event only when a geography is selected; the UI's phase tracker should treat "skipped" the same as "completed" if no event arrives (existing pattern, no change).
+- [ ] **Step 2: Update PHASE_INDEX in `ui/applyEvent.js`**
 
-- [ ] **Step 2: Commit**
+```js
+const PHASE_INDEX = {
+  login: 0, dataset: 1, geography: 2, tree: 3, check: 4, submit: 5, retrieve: 6, download: 7,
+};
+```
+
+- [ ] **Step 3: Run tests, type-check, commit**
+
+```bash
+npm test
+git add ui/data.js ui/applyEvent.js
+git commit -m "feat(ui): add geography phase between dataset and tree"
+```
 
 ---
 
