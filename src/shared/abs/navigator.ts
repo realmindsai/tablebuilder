@@ -470,7 +470,66 @@ export async function selectGeography(
   await treeNodes[nodeIndex].locator('.label').first().click();
   // networkidle waits for JSF AJAX to settle after selection; ignore timeout (soft fail)
   await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => null);
-  // Belt-and-braces: small extra settle for JSF tree refresh after release click.
+  // Settle for JSF tree refresh after release click — state nodes load here.
+  await new Promise(r => setTimeout(r, 2000));
+
+  // Mirror the legacy Python flow: after the release loads its state/region
+  // nodes, expand the non-leaf nodes to expose leaf checkboxes, then check
+  // every leaf and submit to ROW axis. Without this submit, the runner would
+  // continue with the tree scoped inside the LGA subtree — and selectVariables
+  // would fail to find non-geographic variables like Sex.
+  reporter({ type: 'log', level: 'info', message: '  expanding state/region nodes…' });
+  const expanderNodes = await page.locator('.treeNodeElement').all();
+  for (const node of expanderNodes) {
+    const exp = node.locator('.treeNodeExpander').first();
+    const cls = (await exp.getAttribute('class').catch(() => '')) ?? '';
+    // Skip leaves (already terminal) and already-expanded nodes
+    if (cls.includes('leaf') || !cls.includes('collapsed')) continue;
+    try {
+      await exp.click();
+      await new Promise(r => setTimeout(r, 600));
+    } catch { /* stale handle — skip */ }
+  }
+  // Final settle so JSF AJAX finishes populating leaves under each state.
+  await new Promise(r => setTimeout(r, 2000));
+
+  // Check every leaf checkbox in the geography subtree.
+  const leafCheckboxes = await page.evaluate(() => {
+    const nodes = Array.from(document.querySelectorAll('.treeNodeElement'));
+    const indices: number[] = [];
+    nodes.forEach((node, i) => {
+      const exp = node.querySelector('.treeNodeExpander');
+      const cb = node.querySelector('input[type="checkbox"]') as HTMLInputElement | null;
+      if (!exp || !cb) return;
+      if (!exp.className.includes('leaf')) return;
+      if (!cb.checked) indices.push(i);
+    });
+    return indices;
+  });
+  reporter({ type: 'log', level: 'info', message: `  checking ${leafCheckboxes.length} geography categories…` });
+
+  const allNodes = await page.locator('.treeNodeElement').all();
+  let checkedCount = 0;
+  for (const idx of leafCheckboxes) {
+    if (idx >= allNodes.length) continue;
+    const cb = allNodes[idx].locator('input[type="checkbox"]').first();
+    try {
+      await cb.click();
+      checkedCount++;
+      // Tiny delay every 50 checks to give PrimeFaces time to absorb events
+      if (checkedCount % 50 === 0) await new Promise(r => setTimeout(r, 200));
+    } catch { /* stale — skip */ }
+  }
+
+  if (checkedCount === 0) {
+    throw new Error(`selectGeography: no geography categories were checkable for "${label}"`);
+  }
+
+  // Submit to the ROW axis. This reloads the page; the tree returns to the
+  // top-level dataset variables, which is what subsequent selectVariables
+  // calls need.
+  reporter({ type: 'log', level: 'info', message: `  submitting ${checkedCount} geography categories to ROW axis…` });
+  await submitJsfForm(page, 'row');
   await new Promise(r => setTimeout(r, 2000));
 
   reporter({ type: 'log', level: 'ok', message: `  ✓ geography selected: ${label}` });
