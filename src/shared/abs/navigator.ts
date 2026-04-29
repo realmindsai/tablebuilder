@@ -177,16 +177,22 @@ export async function selectDataset(
   // The legacy full-tree enumeration (listDatasets + expandAllCollapsed) takes
   // 5–15 min on the runtime path because it walks every node in the catalogue.
   // Search-driven filtering brings it to ~10–30 s in the common case.
-  const fastMatch = await trySearchDatasetMatch(page, dataset, signal);
+  const fastStart = Date.now();
+  const fastMatch = await trySearchDatasetMatch(page, dataset, reporter, signal);
   let matched: string;
   if (fastMatch) {
     matched = fastMatch;
-    console.log(`selectDataset: fast-path matched='${matched}' in ${Date.now() - t0}ms`);
+    const elapsed = Date.now() - fastStart;
+    console.log(`selectDataset: fast-path matched='${matched}' in ${elapsed}ms`);
+    reporter({ type: 'log', level: 'ok', message: `  fast-path matched in ${(elapsed / 1000).toFixed(1)}s` });
   } else {
+    reporter({ type: 'log', level: 'warn', message: `  fast-path miss after ${((Date.now() - fastStart) / 1000).toFixed(1)}s — falling back to full enumeration` });
     // Fallback: clear search and walk the full catalogue. Slow but handles
     // fuzzy queries that don't survive the JSF search filter.
     await clearDatasetSearch(page).catch(() => null);
+    const slowStart = Date.now();
     const available = await listDatasets(page, signal);
+    reporter({ type: 'log', level: 'info', message: `  slow-path enumerated ${available.length} datasets in ${((Date.now() - slowStart) / 1000).toFixed(1)}s` });
     if (available.length === 0) {
       throw new Error('Dataset catalogue returned 0 datasets — session may have expired.');
     }
@@ -224,14 +230,17 @@ export async function selectDataset(
 async function trySearchDatasetMatch(
   page: Page,
   dataset: string,
+  reporter: PhaseReporter,
   signal: AbortSignal,
 ): Promise<string | null> {
   let boxCount = 0;
   try {
     boxCount = await page.locator('#searchPattern').count();
   } catch {
+    reporter({ type: 'log', level: 'warn', message: `  fast-path: #searchPattern locator threw — bail` });
     return null;
   }
+  reporter({ type: 'log', level: 'info', message: `  fast-path: #searchPattern count=${boxCount}` });
   if (boxCount === 0) return null;
   if (signal.aborted) throw new CancelledError();
 
@@ -247,13 +256,15 @@ async function trySearchDatasetMatch(
       }
     } catch { /* fall through to Enter */ }
     if (!clicked) await page.keyboard.press('Enter');
-  } catch {
+  } catch (e) {
+    reporter({ type: 'log', level: 'warn', message: `  fast-path: search submit failed (${(e as Error).message}) — bail` });
     return null;
   }
 
   // Wait for the JSF AJAX-driven tree to settle (two consecutive same node
   // counts), bounded at 10 s. The filtered tree should be tiny.
-  const deadline = Date.now() + 10_000;
+  const settleStart = Date.now();
+  const deadline = settleStart + 10_000;
   let prevCount = -1;
   let stableFor = 0;
   while (Date.now() < deadline) {
@@ -269,6 +280,7 @@ async function trySearchDatasetMatch(
       prevCount = count;
     }
   }
+  reporter({ type: 'log', level: 'info', message: `  fast-path: filtered tree settled at ${prevCount} nodes in ${((Date.now() - settleStart) / 1000).toFixed(1)}s` });
 
   // Filtered tree may still hide datasets behind a collapsed parent group
   // (e.g. "Census 2021"). Expand with a tight budget — the filtered set is
@@ -286,6 +298,7 @@ async function trySearchDatasetMatch(
     return null;
   }
   console.log(`selectDataset: search returned ${labels.length} labels:`, labels.slice(0, 20));
+  reporter({ type: 'log', level: 'info', message: `  fast-path: ${labels.length} labels visible after expand` });
 
   if (labels.includes(dataset)) return dataset;
   try {

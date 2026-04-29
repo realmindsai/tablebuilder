@@ -148,6 +148,12 @@ function requireAuth(req: Request, res: Response, next: NextFunction): void {
 // they ever reach the variable-selection phase.
 const RUN_TIMEOUT_MS = Number(process.env.RUN_TIMEOUT_MS) || 25 * 60 * 1000;
 
+// When RECORD_VIDEO=1, the runner uses browser.newContext({ recordVideo })
+// instead of browser.newPage() so the full session is captured to webm.
+// Off by default — videos are 5–15 min long and tens of MB.
+const RECORD_VIDEO = process.env.RECORD_VIDEO === '1';
+const VIDEO_DIR = process.env.VIDEO_DIR || join(__dirname, '..', 'data', 'videos');
+
 async function tryProcessNext(): Promise<void> {
   console.log(`[queue] tryProcessNext — runActive=${isRunActive()} queueLen=${isRunActive() ? '?' : 'checking'}`);
   if (isRunActive()) { console.log('[queue] skipping — run already active'); return; }
@@ -158,6 +164,8 @@ async function tryProcessNext(): Promise<void> {
   setRunActive(true);
   const startMs = Date.now();
   let browser: import('playwright').Browser | undefined;
+  let context: import('playwright').BrowserContext | undefined;
+  let page: import('playwright').Page | undefined;
   let finalStatus: AuditEntry['status'] = 'error';
   let rowCount: number | null = null;
   let errorMsg: string | undefined;
@@ -168,15 +176,26 @@ async function tryProcessNext(): Promise<void> {
     entry.ac.abort();
   }, RUN_TIMEOUT_MS);
 
+  const sendEvent = (event: unknown) => {
+    if (!entry.res.writableEnded) entry.res.write(`data: ${JSON.stringify(event)}\n\n`);
+  };
+
   try {
     console.log(`[run:${entry.runId}] launching Chromium…`);
     browser = await chromium.launch({ headless: true });
     console.log(`[run:${entry.runId}] Chromium launched — opening page`);
-    const page = await browser.newPage();
+    if (RECORD_VIDEO) {
+      context = await browser.newContext({
+        recordVideo: { dir: VIDEO_DIR, size: { width: 1280, height: 800 } },
+      });
+      page = await context.newPage();
+      console.log(`[run:${entry.runId}] video recording enabled — dir=${VIDEO_DIR}`);
+      sendEvent({ type: 'log', level: 'info', message: `  video recording enabled (dir=${VIDEO_DIR})` });
+    } else {
+      page = await browser.newPage();
+    }
     console.log(`[run:${entry.runId}] page opened — calling runTablebuilder`);
-    const result = await runTablebuilder(page, entry.creds, entry.input,
-      (event) => { if (!entry.res.writableEnded) entry.res.write(`data: ${JSON.stringify(event)}\n\n`); },
-      entry.ac.signal);
+    const result = await runTablebuilder(page, entry.creds, entry.input, sendEvent, entry.ac.signal);
     finalStatus = 'success';
     rowCount = result.rowCount;
     console.log(`[run:${entry.runId}] SUCCESS — ${rowCount} rows`);
@@ -196,7 +215,18 @@ async function tryProcessNext(): Promise<void> {
     clearTimeout(timeoutId);
     console.log(`[run:${entry.runId}] finally — resetting runActive, closing browser`);
     setRunActive(false);
+    // Closing the context (not just the browser) flushes the video file to
+    // disk. We then read page.video()?.path() and emit it to the SSE stream
+    // so the user can scp it back.
+    let videoPath: string | undefined;
+    try {
+      if (page && RECORD_VIDEO) videoPath = await page.video()?.path();
+    } catch { /* best-effort */ }
+    if (context) await context.close().catch(() => null);
     if (browser) await browser.close().catch(() => null);
+    if (videoPath) {
+      sendEvent({ type: 'log', level: 'info', message: `  video saved: ${videoPath}` });
+    }
     entry.res.end();
     await logRun({
       ts: new Date().toISOString(),
