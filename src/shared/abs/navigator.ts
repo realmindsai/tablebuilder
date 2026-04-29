@@ -604,6 +604,13 @@ export async function selectVariables(
     const { name, axis } = assignments[i];
     if (signal.aborted) throw new CancelledError();
 
+    // Use the JSF search box to filter the tree to the requested variable
+    // before walking it. Without this, the tree state is whatever was left by
+    // previous actions (e.g. the LGA subtree after selectGeography), and
+    // checkVariableCategories cannot find variables that aren't visible.
+    // Legacy Python's add_variable does the same thing.
+    await searchVariable(page, name);
+
     const checked = await checkVariableCategories(page, name);
     if (checked === 0) throw new Error(`No categories found for variable '${name}'.`);
     reporter({ type: 'log', level: 'info', message: `  selected ${checked} categories for ${name}` });
