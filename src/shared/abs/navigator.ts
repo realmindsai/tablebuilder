@@ -384,6 +384,12 @@ async function tryExpandGeographic(page: Page): Promise<boolean> {
   return false;
 }
 
+// Variable headers in the ABS tree look like "CODE Name" — uppercase code of
+// 3+ chars followed by a space and a human-readable name. The full tableView
+// also suffixes "(N)" with the category count, but the search-filtered tree
+// omits the count, so we only match the code-prefix part.
+const CODE_PREFIX_RE = /^[A-Z][A-Z0-9]{2,}\s/;
+
 async function checkVariableCategories(page: Page, varName: string): Promise<number> {
   // Use Playwright's native click for expander and checkboxes — required to trigger
   // PrimeFaces AJAX event handlers. JavaScript el.click() bypasses these handlers.
@@ -394,9 +400,16 @@ async function checkVariableCategories(page: Page, varName: string): Promise<num
   // geographic group (for variables like State/Territory) and retry once.
   let allNodes = await page.locator('.treeNodeElement').all();
   let targetIdx = -1;
+  let targetWasCollapsed = false;
 
   for (let attempt = 0; attempt < 2; attempt++) {
-    targetIdx = -1;
+    // Prefer a code-prefixed match ("AGEP Age") over a plain group match
+    // ("Age and Sex"). Without this, query="Age" lands on the "Age and Sex"
+    // group whose forward-walk finds zero leaves, since the actual Age
+    // variable headers (AGEP, AGE5P, AGE10P) are sibling non-leaves rather
+    // than children of "Age and Sex" in the search-filtered tree.
+    let codeMatchIdx = -1;
+    let groupMatchIdx = -1;
     for (let i = 0; i < allNodes.length; i++) {
       const text = (await allNodes[i].locator('.label').first().textContent().catch(() => ''))?.trim() ?? '';
       const cls = await allNodes[i].locator('.treeNodeExpander').first().getAttribute('class').catch(() => '') ?? '';
@@ -404,18 +417,30 @@ async function checkVariableCategories(page: Page, varName: string): Promise<num
       const tl = text.toLowerCase();
       const si = text.indexOf(' ');
       const ac = si > 0 ? text.slice(si + 1).toLowerCase() : '';
-      if (tl === vl || ac === vl || ac.startsWith(vl + ' ') || ac.startsWith(vl + '(') || text.toUpperCase().startsWith(vu + ' ')) {
-        targetIdx = i;
-        if (cls.includes('collapsed')) {
-          console.log(`checkVariableCategories: expanding '${varName}' via Playwright click`);
-          await allNodes[i].locator('.treeNodeExpander').first().click();
-          await new Promise(r => setTimeout(r, 2000));
-        }
-        break;
+      const matches = (
+        tl === vl || ac === vl ||
+        ac.startsWith(vl + ' ') || ac.startsWith(vl + '(') ||
+        text.toUpperCase().startsWith(vu + ' ')
+      );
+      if (!matches) continue;
+      if (CODE_PREFIX_RE.test(text)) {
+        codeMatchIdx = i;
+        break; // best possible — variable header
+      } else if (groupMatchIdx === -1) {
+        groupMatchIdx = i; // tentative fallback
       }
     }
-
-    if (targetIdx >= 0) break;
+    targetIdx = codeMatchIdx >= 0 ? codeMatchIdx : groupMatchIdx;
+    if (targetIdx >= 0) {
+      const cls = await allNodes[targetIdx].locator('.treeNodeExpander').first().getAttribute('class').catch(() => '') ?? '';
+      if (cls.includes('collapsed')) {
+        console.log(`checkVariableCategories: expanding '${varName}' via Playwright click`);
+        await allNodes[targetIdx].locator('.treeNodeExpander').first().click();
+        await new Promise(r => setTimeout(r, 2000));
+        targetWasCollapsed = true;
+      }
+      break;
+    }
 
     if (attempt === 0) {
       // Variable not visible — try exposing geographic variables (State, SA2, LGA…)
@@ -438,7 +463,11 @@ async function checkVariableCategories(page: Page, varName: string): Promise<num
   // Re-query nodes after potential expansion
   const updatedNodes = await page.locator('.treeNodeElement').all();
 
-  // Walk from targetIdx+1 clicking unchecked leaf checkboxes, stop at next variable
+  // Walk from targetIdx+1 clicking unchecked leaf checkboxes; stop at the
+  // next variable header. Variable headers in the search-filtered tree are
+  // non-leaf nodes whose label has a code prefix — the legacy regex required
+  // a trailing "(N)" count which the search results never include, so the
+  // walk used to run off the end of the tree without ever stopping.
   let checked = 0;
   for (let i = targetIdx + 1; i < updatedNodes.length; i++) {
     const cls = await updatedNodes[i].locator('.treeNodeExpander').first().getAttribute('class').catch(() => '') ?? '';
@@ -453,11 +482,11 @@ async function checkVariableCategories(page: Page, varName: string): Promise<num
       }
     } else {
       const text = (await updatedNodes[i].locator('.label').first().textContent().catch(() => ''))?.trim() ?? '';
-      if (/^[A-Z][A-Z0-9]{2,}\s.+\(\d+\)\s*$/.test(text)) break;
+      if (CODE_PREFIX_RE.test(text)) break;
     }
   }
 
-  console.log(`checkVariableCategories: '${varName}' checked ${checked} categories`);
+  console.log(`checkVariableCategories: '${varName}' checked ${checked} categories (targetIdx=${targetIdx} expanded=${targetWasCollapsed})`);
   return checked;
 }
 
