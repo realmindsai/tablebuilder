@@ -340,10 +340,18 @@ export async function createServer(): Promise<express.Express> {
       runId, creds, input: validation.input, res, ac, addedAt: Date.now(), clientIP,
     };
 
+    // SSE keepalive: Cloudflare drops idle proxied streams at ~100 s. A comment
+    // line (`:` prefix) is ignored by EventSource clients but keeps the TCP/HTTP
+    // connection alive through the proxy during quiet phases.
+    const keepalive = setInterval(() => {
+      if (!res.writableEnded) res.write(': keepalive\n\n');
+    }, 20_000);
+
     // Use res.on('close') not req.on('close') — in Express 5, the request body
     // being fully parsed triggers req 'close' immediately for POST requests.
     // res 'close' fires when the SSE client actually disconnects.
     res.on('close', () => {
+      clearInterval(keepalive);
       console.log(`[run:${runId}] res closed by client`);
       const wasQueued = removeFromQueue(runId);
       if (!wasQueued) ac.abort();

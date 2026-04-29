@@ -63,8 +63,17 @@ describe('selectDataset — reporter events', () => {
       locator: vi.fn().mockImplementation((sel: string) => {
         if (sel === '.treeNodeElement .label') return { all: vi.fn().mockResolvedValue([mockTargetLabel]) };
         if (sel === '.treeNodeExpander.collapsed') return { all: vi.fn().mockResolvedValue([]) };
-        if (sel === '.treeNodeElement') return { all: vi.fn().mockResolvedValue([mockLeafNode]) };
-        return { all: vi.fn().mockResolvedValue([]) };
+        if (sel === '.treeNodeElement') return {
+          all: vi.fn().mockResolvedValue([mockLeafNode]),
+          count: vi.fn().mockResolvedValue(1),
+        };
+        // Force selectDataset's search path to bail out (count=0) so the test
+        // exercises the slow-path fallback the rest of this mock is wired for.
+        if (sel === '#searchPattern' || sel === '#searchButton') return {
+          count: vi.fn().mockResolvedValue(0),
+          first: () => ({ count: vi.fn().mockResolvedValue(0), click: vi.fn().mockResolvedValue(undefined) }),
+        };
+        return { all: vi.fn().mockResolvedValue([]), count: vi.fn().mockResolvedValue(0) };
       }),
     } as unknown as Page;
 

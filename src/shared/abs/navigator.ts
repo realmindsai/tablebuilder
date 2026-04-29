@@ -170,14 +170,30 @@ export async function selectDataset(
   reporter({ type: 'log', level: 'info', message: `  resolving dataset: ${dataset}` });
 
   if (signal.aborted) throw new CancelledError();
+  await page.waitForSelector('.treeNodeElement', { timeout: 45000 });
 
-  const available = await listDatasets(page, signal);
-  if (available.length === 0) {
-    throw new Error('Dataset catalogue returned 0 datasets — session may have expired.');
+  // Fast path: type the dataset name into the catalogue's #searchPattern box
+  // so JSF filters the tree to a small candidate set, then match against that.
+  // The legacy full-tree enumeration (listDatasets + expandAllCollapsed) takes
+  // 5–15 min on the runtime path because it walks every node in the catalogue.
+  // Search-driven filtering brings it to ~10–30 s in the common case.
+  const fastMatch = await trySearchDatasetMatch(page, dataset, signal);
+  let matched: string;
+  if (fastMatch) {
+    matched = fastMatch;
+    console.log(`selectDataset: fast-path matched='${matched}' in ${Date.now() - t0}ms`);
+  } else {
+    // Fallback: clear search and walk the full catalogue. Slow but handles
+    // fuzzy queries that don't survive the JSF search filter.
+    await clearDatasetSearch(page).catch(() => null);
+    const available = await listDatasets(page, signal);
+    if (available.length === 0) {
+      throw new Error('Dataset catalogue returned 0 datasets — session may have expired.');
+    }
+    console.log(`selectDataset: slow-path ${available.length} available:`, available.slice(0, 20));
+    matched = fuzzyMatchDataset(dataset, available);
+    console.log(`selectDataset: slow-path matched='${matched}'`);
   }
-  console.log(`selectDataset: ${available.length} available:`, available.slice(0, 20));
-  const matched = fuzzyMatchDataset(dataset, available);
-  console.log(`selectDataset: matched='${matched}'`);
   reporter({ type: 'log', level: 'info', message: `  ✓ resolved dataset: ${matched}` });
 
   if (signal.aborted) throw new CancelledError();
@@ -200,6 +216,96 @@ export async function selectDataset(
 
   reporter({ type: 'phase_complete', phaseId: 'dataset', elapsed: (Date.now() - t0) / 1000 });
   return matched;
+}
+
+// Returns the resolved dataset label if the JSF catalogue search surfaced a
+// match, or null if the search box is unavailable or no match could be made
+// in the filtered tree (caller should fall back to slow enumeration).
+async function trySearchDatasetMatch(
+  page: Page,
+  dataset: string,
+  signal: AbortSignal,
+): Promise<string | null> {
+  let boxCount = 0;
+  try {
+    boxCount = await page.locator('#searchPattern').count();
+  } catch {
+    return null;
+  }
+  if (boxCount === 0) return null;
+  if (signal.aborted) throw new CancelledError();
+
+  try {
+    await page.fill('#searchPattern', '');
+    await page.fill('#searchPattern', dataset);
+    let clicked = false;
+    try {
+      const btnCount = await page.locator('#searchButton').count();
+      if (btnCount > 0) {
+        await page.locator('#searchButton').first().click();
+        clicked = true;
+      }
+    } catch { /* fall through to Enter */ }
+    if (!clicked) await page.keyboard.press('Enter');
+  } catch {
+    return null;
+  }
+
+  // Wait for the JSF AJAX-driven tree to settle (two consecutive same node
+  // counts), bounded at 10 s. The filtered tree should be tiny.
+  const deadline = Date.now() + 10_000;
+  let prevCount = -1;
+  let stableFor = 0;
+  while (Date.now() < deadline) {
+    if (signal.aborted) throw new CancelledError();
+    await new Promise(r => setTimeout(r, 400));
+    let count = 0;
+    try { count = await page.locator('.treeNodeElement').count(); } catch { return null; }
+    if (count === prevCount) {
+      stableFor++;
+      if (stableFor >= 2) break;
+    } else {
+      stableFor = 0;
+      prevCount = count;
+    }
+  }
+
+  // Filtered tree may still hide datasets behind a collapsed parent group
+  // (e.g. "Census 2021"). Expand with a tight budget — the filtered set is
+  // small so this is cheap.
+  await expandAllCollapsed(page, 15_000, signal);
+
+  let labels: string[] = [];
+  try {
+    labels = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('.treeNodeElement .label'))
+        .map(e => e.textContent?.trim() ?? '')
+        .filter(Boolean),
+    );
+  } catch {
+    return null;
+  }
+  console.log(`selectDataset: search returned ${labels.length} labels:`, labels.slice(0, 20));
+
+  if (labels.includes(dataset)) return dataset;
+  try {
+    return fuzzyMatchDataset(dataset, labels);
+  } catch {
+    return null;
+  }
+}
+
+async function clearDatasetSearch(page: Page): Promise<void> {
+  const boxCount = await page.locator('#searchPattern').count();
+  if (boxCount === 0) return;
+  await page.fill('#searchPattern', '');
+  const btnCount = await page.locator('#searchButton').count();
+  if (btnCount > 0) {
+    await page.locator('#searchButton').first().click();
+  } else {
+    await page.keyboard.press('Enter');
+  }
+  await new Promise(r => setTimeout(r, 1500));
 }
 
 // ---------------------------------------------------------------------------
