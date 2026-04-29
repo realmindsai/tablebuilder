@@ -91,6 +91,45 @@
   --rmai-dur-fast:    120ms;
   --rmai-dur-base:    180ms;
   --rmai-dur-slow:    240ms;
+
+  /* -------- App-specific neutrals (overridden in dark mode) -------- */
+  --tb-tag-col-bg:    #E8F6EC;
+  --tb-tag-col-fg:    #157A3A;
+  --tb-btn-primary-hover: #33343E;
+  --tb-btn-mini-hover-bg: #DCDAD6;
+  --tb-scrollbar-thumb:   #D9D7D3;
+  --tb-scrollbar-thumb-hover: #BFBCB6;
+}
+
+/* ============================================================
+   Dark mode — overrides for the neutrals only.
+   Brand colours (purple/orange/green) keep their hex values; they
+   read fine on either background.
+   ============================================================ */
+[data-theme="dark"] {
+  --rmai-bg:          #14151B;   /* page bg — near-black with a hint of brand */
+  --rmai-white:       #1E1F27;   /* "card" colour in dark mode */
+  --rmai-stone:       #25262F;   /* callouts / chips */
+  --rmai-lavender:    #2A2335;   /* soft purple wash */
+
+  --rmai-fg-1:        #ECEBEF;
+  --rmai-fg-2:        #B5B5BC;
+  --rmai-fg-mut:      #8B8B92;
+
+  --rmai-border:      #2D2E38;
+
+  --rmai-shadow-1:    0 1px 2px rgba(0, 0, 0, 0.4);
+  --rmai-shadow-2:    0 1px 8px rgba(0, 0, 0, 0.5);
+  --rmai-shadow-3:    0 2px 16px rgba(0, 0, 0, 0.6);
+
+  --tb-tag-col-bg:    #1B3A26;
+  --tb-tag-col-fg:    #7EE29F;
+  --tb-btn-primary-hover: #4A4B58;
+  --tb-btn-mini-hover-bg: #2D2E38;
+  --tb-scrollbar-thumb:   #3A3B45;
+  --tb-scrollbar-thumb-hover: #4A4B58;
+
+  color-scheme: dark;
 }
 
 /* ============================================================

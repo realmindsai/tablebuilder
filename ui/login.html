@@ -4,12 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sign in · Tablebuilder · RMAI</title>
-  <meta name="color-scheme" content="light">
-  <meta name="darkreader-lock">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('tb-theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) { /* fall through */ }
+    })();
+  </script>
   <link rel="stylesheet" href="assets/rmai.css">
   <style>
     * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; height: 100%; background: #FAFAFA; }
+    html, body { margin: 0; padding: 0; height: 100%; background: var(--rmai-bg); color: var(--rmai-fg-1); }
     body { font-family: var(--rmai-font-sans); -webkit-font-smoothing: antialiased; }
 
     .shell {
@@ -22,7 +30,7 @@
     }
 
     .card {
-      background: #fff;
+      background: var(--rmai-white);
       border: 1px solid var(--rmai-border);
       border-radius: 12px;
       padding: 40px 36px;
@@ -52,7 +60,7 @@
       font-size: 14px;
       color: var(--rmai-fg-1);
       padding: 10px 12px;
-      background: #fff;
+      background: var(--rmai-white);
       border: 1px solid var(--rmai-border);
       border-radius: 6px;
       outline: none;
