@@ -67,9 +67,10 @@ describe('selectDataset — reporter events', () => {
           all: vi.fn().mockResolvedValue([mockLeafNode]),
           count: vi.fn().mockResolvedValue(1),
         };
-        // Force selectDataset's search path to bail out (count=0) so the test
-        // exercises the slow-path fallback the rest of this mock is wired for.
-        if (sel === '#searchPattern' || sel === '#searchButton') return {
+        // Force selectDataset's header-search fast path to bail out at the
+        // first check (count=0) so the test exercises the slow-path fallback
+        // the rest of this mock is wired for.
+        if (sel.includes('headerSearchForm') || sel.includes('searchResultTable')) return {
           count: vi.fn().mockResolvedValue(0),
           first: () => ({ count: vi.fn().mockResolvedValue(0), click: vi.fn().mockResolvedValue(undefined) }),
         };

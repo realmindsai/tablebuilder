@@ -158,6 +158,8 @@ export async function listDatasets(page: Page, signal: AbortSignal = NEVER_ABORT
 // Dataset selection
 // ---------------------------------------------------------------------------
 
+const CATALOGUE_URL = 'https://tablebuilder.abs.gov.au/webapi/jsf/dataCatalogueExplorer.xhtml';
+
 export async function selectDataset(
   page: Page,
   dataset: string,
@@ -170,36 +172,44 @@ export async function selectDataset(
   reporter({ type: 'log', level: 'info', message: `  resolving dataset: ${dataset}` });
 
   if (signal.aborted) throw new CancelledError();
-  await page.waitForSelector('.treeNodeElement', { timeout: 45000 });
 
-  // Fast path: type the dataset name into the catalogue's #searchPattern box
-  // so JSF filters the tree to a small candidate set, then match against that.
-  // The legacy full-tree enumeration (listDatasets + expandAllCollapsed) takes
-  // 5–15 min on the runtime path because it walks every node in the catalogue.
-  // Search-driven filtering brings it to ~10–30 s in the common case.
+  // Fast path: submit the catalogue's global header search, then click the
+  // matching anchor in the search-results table. This skips full-tree
+  // enumeration entirely — the slow path was 600 s on the runtime path because
+  // expandAllCollapsed clicks every collapsed node in the catalogue. The
+  // header search returns a results page with direct anchors, so the whole
+  // thing takes ~10 s end-to-end (verified via probe-fast-path.ts).
   const fastStart = Date.now();
-  const fastMatch = await trySearchDatasetMatch(page, dataset, reporter, signal);
-  let matched: string;
-  if (fastMatch) {
-    matched = fastMatch;
-    const elapsed = Date.now() - fastStart;
-    console.log(`selectDataset: fast-path matched='${matched}' in ${elapsed}ms`);
-    reporter({ type: 'log', level: 'ok', message: `  fast-path matched in ${(elapsed / 1000).toFixed(1)}s` });
-  } else {
-    reporter({ type: 'log', level: 'warn', message: `  fast-path miss after ${((Date.now() - fastStart) / 1000).toFixed(1)}s — falling back to full enumeration` });
-    // Fallback: clear search and walk the full catalogue. Slow but handles
-    // fuzzy queries that don't survive the JSF search filter.
-    await clearDatasetSearch(page).catch(() => null);
-    const slowStart = Date.now();
-    const available = await listDatasets(page, signal);
-    reporter({ type: 'log', level: 'info', message: `  slow-path enumerated ${available.length} datasets in ${((Date.now() - slowStart) / 1000).toFixed(1)}s` });
-    if (available.length === 0) {
-      throw new Error('Dataset catalogue returned 0 datasets — session may have expired.');
-    }
-    console.log(`selectDataset: slow-path ${available.length} available:`, available.slice(0, 20));
-    matched = fuzzyMatchDataset(dataset, available);
-    console.log(`selectDataset: slow-path matched='${matched}'`);
+  const fastResult = await trySelectViaHeaderSearch(page, dataset, reporter, signal);
+  if (fastResult) {
+    reporter({ type: 'log', level: 'ok', message: `  fast-path resolved '${fastResult}' in ${((Date.now() - fastStart) / 1000).toFixed(1)}s` });
+    reporter({ type: 'log', level: 'info', message: `  ✓ resolved dataset: ${fastResult}` });
+    reporter({ type: 'phase_complete', phaseId: 'dataset', elapsed: (Date.now() - t0) / 1000 });
+    return fastResult;
   }
+
+  reporter({ type: 'log', level: 'warn', message: `  fast-path miss after ${((Date.now() - fastStart) / 1000).toFixed(1)}s — falling back to full enumeration` });
+
+  // Slow path: if the fast path navigated us to dataCatalogueSearch.xhtml,
+  // come back to the catalogue. Other URLs are left alone — the caller may
+  // be running against a non-ABS host (e.g. the real-browser mock test) and
+  // we shouldn't yank them off.
+  if (page.url().includes('dataCatalogueSearch.xhtml')) {
+    try {
+      await page.goto(CATALOGUE_URL, { waitUntil: 'load', timeout: 60_000 });
+    } catch { /* falls through to waitForSelector below */ }
+  }
+  await page.waitForSelector('.treeNodeElement', { timeout: 45_000 });
+
+  const slowStart = Date.now();
+  const available = await listDatasets(page, signal);
+  reporter({ type: 'log', level: 'info', message: `  slow-path enumerated ${available.length} datasets in ${((Date.now() - slowStart) / 1000).toFixed(1)}s` });
+  if (available.length === 0) {
+    throw new Error('Dataset catalogue returned 0 datasets — session may have expired.');
+  }
+  console.log(`selectDataset: slow-path ${available.length} available:`, available.slice(0, 20));
+  const matched = fuzzyMatchDataset(dataset, available);
+  console.log(`selectDataset: slow-path matched='${matched}'`);
   reporter({ type: 'log', level: 'info', message: `  ✓ resolved dataset: ${matched}` });
 
   if (signal.aborted) throw new CancelledError();
@@ -217,108 +227,95 @@ export async function selectDataset(
   }
 
   await target.dblclick();
-  await page.waitForURL('**/tableView.xhtml*', { timeout: 15000 });
+  await page.waitForURL('**/tableView.xhtml*', { timeout: 15_000 });
   console.log(`selectDataset: navigated to ${page.url()}`);
 
   reporter({ type: 'phase_complete', phaseId: 'dataset', elapsed: (Date.now() - t0) / 1000 });
   return matched;
 }
 
-// Returns the resolved dataset label if the JSF catalogue search surfaced a
-// match, or null if the search box is unavailable or no match could be made
-// in the filtered tree (caller should fall back to slow enumeration).
-async function trySearchDatasetMatch(
+// Submits the catalogue's global header search, finds the matching result
+// anchor, clicks it, and waits for tableView to load. Returns the matched
+// label on success, null if the search box isn't available, no result row
+// matches, or the click doesn't navigate to tableView in time. Never throws
+// for these conditions — caller falls back to slow enumeration.
+async function trySelectViaHeaderSearch(
   page: Page,
   dataset: string,
   reporter: PhaseReporter,
   signal: AbortSignal,
 ): Promise<string | null> {
+  const SEARCH_INPUT = 'input[name="headerSearchForm:searchText"]';
+  const SEARCH_BUTTON = 'input[name="headerSearchForm:searchButton"]';
+
   let boxCount = 0;
   try {
-    boxCount = await page.locator('#searchPattern').count();
+    boxCount = await page.locator(SEARCH_INPUT).count();
   } catch {
-    reporter({ type: 'log', level: 'warn', message: `  fast-path: #searchPattern locator threw — bail` });
+    reporter({ type: 'log', level: 'warn', message: '  fast-path: header search locator threw — bail' });
     return null;
   }
-  reporter({ type: 'log', level: 'info', message: `  fast-path: #searchPattern count=${boxCount}` });
+  reporter({ type: 'log', level: 'info', message: `  fast-path: header search box count=${boxCount}` });
   if (boxCount === 0) return null;
   if (signal.aborted) throw new CancelledError();
 
+  // Submit the search. Header search posts and 302s to dataCatalogueSearch.xhtml.
   try {
-    await page.fill('#searchPattern', '');
-    await page.fill('#searchPattern', dataset);
-    let clicked = false;
-    try {
-      const btnCount = await page.locator('#searchButton').count();
-      if (btnCount > 0) {
-        await page.locator('#searchButton').first().click();
-        clicked = true;
-      }
-    } catch { /* fall through to Enter */ }
-    if (!clicked) await page.keyboard.press('Enter');
+    await page.fill(SEARCH_INPUT, dataset);
+    await page.locator(SEARCH_BUTTON).click();
+    await page.waitForURL('**/dataCatalogueSearch.xhtml*', { timeout: 30_000 });
   } catch (e) {
     reporter({ type: 'log', level: 'warn', message: `  fast-path: search submit failed (${(e as Error).message}) — bail` });
     return null;
   }
 
-  // Wait for the JSF AJAX-driven tree to settle (two consecutive same node
-  // counts), bounded at 10 s. The filtered tree should be tiny.
-  const settleStart = Date.now();
-  const deadline = settleStart + 10_000;
-  let prevCount = -1;
-  let stableFor = 0;
-  while (Date.now() < deadline) {
-    if (signal.aborted) throw new CancelledError();
-    await new Promise(r => setTimeout(r, 400));
-    let count = 0;
-    try { count = await page.locator('.treeNodeElement').count(); } catch { return null; }
-    if (count === prevCount) {
-      stableFor++;
-      if (stableFor >= 2) break;
-    } else {
-      stableFor = 0;
-      prevCount = count;
-    }
-  }
-  reporter({ type: 'log', level: 'info', message: `  fast-path: filtered tree settled at ${prevCount} nodes in ${((Date.now() - settleStart) / 1000).toFixed(1)}s` });
+  if (signal.aborted) throw new CancelledError();
 
-  // Filtered tree may still hide datasets behind a collapsed parent group
-  // (e.g. "Census 2021"). Expand with a tight budget — the filtered set is
-  // small so this is cheap.
-  await expandAllCollapsed(page, 15_000, signal);
-
-  let labels: string[] = [];
+  // Result table renders via JSF after navigation; wait for at least one
+  // anchor whose id includes 'searchResultTable' to appear.
   try {
-    labels = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('.treeNodeElement .label'))
-        .map(e => e.textContent?.trim() ?? '')
-        .filter(Boolean),
-    );
+    await page.waitForSelector('a[id*="searchResultTable"]', { timeout: 15_000 });
+    await new Promise(r => setTimeout(r, 500)); // tail-end JSF AJAX
   } catch {
+    reporter({ type: 'log', level: 'warn', message: '  fast-path: search results never rendered — bail' });
     return null;
   }
-  console.log(`selectDataset: search returned ${labels.length} labels:`, labels.slice(0, 20));
-  reporter({ type: 'log', level: 'info', message: `  fast-path: ${labels.length} labels visible after expand` });
 
-  if (labels.includes(dataset)) return dataset;
+  // Find the anchor whose text matches the requested dataset. Search results
+  // are anchors with ids like "searchResultForm:searchResultTable:N:j_id_*".
+  const match = await page.evaluate((target: string) => {
+    const anchors = Array.from(document.querySelectorAll('a'))
+      .filter(a => /searchResultTable/.test(a.id))
+      .map(a => ({ id: a.id, text: (a.textContent ?? '').trim() }));
+    const exact = anchors.find(c => c.text === target);
+    if (exact) return { id: exact.id, text: exact.text, total: anchors.length };
+    // Whole-word fuzzy: every space-token of the query appears in result text
+    const tokens = target.toLowerCase().split(/\s+/).filter(Boolean);
+    const fuzzy = anchors.find(c => {
+      const t = c.text.toLowerCase();
+      return tokens.every(tok => t.includes(tok));
+    });
+    return fuzzy
+      ? { id: fuzzy.id, text: fuzzy.text, total: anchors.length }
+      : { id: null, text: null, total: anchors.length };
+  }, dataset);
+
+  reporter({ type: 'log', level: 'info', message: `  fast-path: ${match.total} search results, exact/fuzzy match=${match.text ?? 'none'}` });
+
+  if (!match.id || !match.text) return null;
+  if (signal.aborted) throw new CancelledError();
+
+  // Click the match. The anchor's onclick fires openResult() + RichFaces.ajax;
+  // the chain navigates the page to tableView.xhtml. Use attribute selector
+  // because the JSF id contains colons.
   try {
-    return fuzzyMatchDataset(dataset, labels);
-  } catch {
+    await page.locator(`a[id="${match.id}"]`).click();
+    await page.waitForURL('**/tableView.xhtml*', { timeout: 30_000 });
+  } catch (e) {
+    reporter({ type: 'log', level: 'warn', message: `  fast-path: result click did not reach tableView (${(e as Error).message}) — bail` });
     return null;
   }
-}
-
-async function clearDatasetSearch(page: Page): Promise<void> {
-  const boxCount = await page.locator('#searchPattern').count();
-  if (boxCount === 0) return;
-  await page.fill('#searchPattern', '');
-  const btnCount = await page.locator('#searchButton').count();
-  if (btnCount > 0) {
-    await page.locator('#searchButton').first().click();
-  } else {
-    await page.keyboard.press('Enter');
-  }
-  await new Promise(r => setTimeout(r, 1500));
+  return match.text;
 }
 
 // ---------------------------------------------------------------------------
