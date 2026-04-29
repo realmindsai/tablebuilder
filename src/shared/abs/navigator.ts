@@ -610,6 +610,11 @@ export async function selectVariables(
     // checkVariableCategories cannot find variables that aren't visible.
     // Legacy Python's add_variable does the same thing.
     await searchVariable(page, name);
+    // Search filters the tree to matching parent groups (e.g. searching "Sex"
+    // surfaces "Age and Sex" group as collapsed). Expand them so the named
+    // variable's leaf node is reachable. Use a short deadline — at this stage
+    // the filtered tree is tiny.
+    await expandAllCollapsed(page, 30_000, signal);
 
     const checked = await checkVariableCategories(page, name);
     if (checked === 0) throw new Error(`No categories found for variable '${name}'.`);
