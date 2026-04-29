@@ -65,6 +65,10 @@ function useApiRunner(onComplete) {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
+        // Bail if the user cancelled — buffered events that arrived before the
+        // abort would otherwise flip status back via applyEvent (phase_start →
+        // 'running', complete → 'success', etc.) and clobber the cancelled UI.
+        if (abortRef.current?.signal.aborted) break;
         buffer += decoder.decode(value, { stream: true });
         const chunks = buffer.split('\n\n');
         buffer = chunks.pop() ?? '';
@@ -91,7 +95,27 @@ function useApiRunner(onComplete) {
     onComplete?.(state);
   }, [onComplete]);
 
-  function cancel() { abortRef.current?.abort(); }
+  function cancel() {
+    abortRef.current?.abort();
+    // Optimistic UI: flip immediately so the user gets feedback. The fetch
+    // unwind will eventually catch AbortError and run the same code path; the
+    // guard inside the while loop prevents buffered SSE events from clobbering
+    // this state before the loop tears down.
+    stopTick();
+    setRunState(s => {
+      if (s.status !== 'running' && s.status !== 'queued') return s;
+      const phase = s.phaseIndex >= 0 ? window.PHASES[s.phaseIndex] : null;
+      return {
+        ...s,
+        status: 'cancelled',
+        result: {
+          phaseId: phase?.id ?? '',
+          phaseLabel: phase?.label ?? '',
+          duration: (Date.now() - startMs.current) / 1000,
+        },
+      };
+    });
+  }
 
   function reset() {
     stopTick();
