@@ -11,8 +11,12 @@ node_modules
 .libretto/profiles/
 output/
 
-# Runtime probe output
-data/probe/
+# Claude Code runtime state
+.claude/
+
+# Local data dumps (covers earlier data/probe/)
+data/
+
 # SQLite WAL/shared-memory sidecars
 *.db-shm
 *.db-wal
