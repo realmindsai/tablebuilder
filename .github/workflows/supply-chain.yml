@@ -1,0 +1,52 @@
+# Supply-chain scanning CI — covers both npm and PyPI from one workflow.
+# Drop into .github/workflows/ in any repo. Two complementary scanners:
+#
+#   osv-scanner : known-vulnerable AND known-malicious (OSV "MAL-" records),
+#                 cross-ecosystem, scans your committed lockfiles. Free.
+#   guarddog    : behavioural/static heuristics (Semgrep + YARA) that catch
+#                 NEW malware with no CVE — install scripts, obfuscation,
+#                 typosquats. Strongest single open-source detector (~93% F1).
+#
+# CVE databases alone miss an estimated 90-95% of malicious packages, so the
+# heuristic scanner is not optional — it's where novel attacks get caught.
+
+name: supply-chain
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  schedule:
+    - cron: '0 7 * * 1'   # weekly re-scan: new MAL records appear after merge
+
+permissions:
+  contents: read
+
+jobs:
+  osv-scanner:
+    # Flags known-vulnerable and known-malicious packages from your lockfiles.
+    # Uses the reusable action so PRs only report *newly introduced* findings.
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2
+    with:
+      # Scan the whole tree; it auto-detects package-lock.json, pnpm-lock.yaml,
+      # uv.lock, requirements.txt, etc.
+      scan-args: |-
+        -r
+        ./
+
+  guarddog:
+    # Behavioural scan of declared dependencies for both ecosystems.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install GuardDog
+        run: pipx install guarddog
+      - name: Scan npm dependencies
+        # `verify` scans every package in the lockfile/manifest present.
+        if: hashFiles('package.json') != ''
+        run: guarddog npm verify package.json
+      - name: Scan PyPI dependencies
+        if: hashFiles('requirements.txt') != ''
+        run: guarddog pypi verify requirements.txt
