@@ -25,6 +25,10 @@ jobs:
   osv-scanner:
     # Flags known-vulnerable and known-malicious packages from your lockfiles.
     # Uses the reusable action so PRs only report *newly introduced* findings.
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2
     with:
       # Scan the whole tree; it auto-detects package-lock.json, pnpm-lock.yaml,
