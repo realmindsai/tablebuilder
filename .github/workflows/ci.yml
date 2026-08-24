@@ -1,0 +1,53 @@
+# Runs the build and the test suite.
+#
+# Before this workflow the only checks on this repo were the two supply-chain
+# scanners. They read the committed lockfile and never execute anything, so a
+# green tick meant "no known CVEs" — not "this builds" and not "the tests
+# pass".
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # .npmrc sets ignore-scripts=true, which is the right default: it stops
+      # arbitrary install scripts in the dependency tree from executing. But
+      # better-sqlite3 is a native addon whose binding is fetched/built by
+      # exactly such a script, so under that setting it is never produced and
+      # every test touching a database dies with "Could not locate the bindings
+      # file" — on any platform, including a fresh clone locally.
+      #
+      # Rebuilding just this one package keeps the blanket ban in place while
+      # allowing the single dependency that genuinely needs it.
+      # --ignore-scripts=false is required: the .npmrc setting suppresses
+      # rebuild scripts too, so a plain `npm rebuild` reports "rebuilt
+      # dependencies successfully" while producing no binding at all.
+      - name: Build native addon (better-sqlite3)
+        run: npm rebuild better-sqlite3 --ignore-scripts=false
+
+      # Same ignore-scripts consequence as better-sqlite3: Playwright's browser
+      # download never runs at install time, so the one test file that drives a
+      # real browser fails with "Executable doesn't exist". Only chromium is
+      # needed, so this fetches just that rather than the full set.
+      - name: Install Playwright browser (chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
