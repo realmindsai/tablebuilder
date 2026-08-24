@@ -1,0 +1,35 @@
+# Runs the build and the test suite.
+#
+# Before this workflow the only checks on this repo were the two supply-chain
+# scanners. They read the committed lockfile and never execute anything, so a
+# green tick meant "no known CVEs" — not "this builds" and not "the tests
+# pass".
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # better-sqlite3 is a native addon. npm ci fetches a prebuild for
+      # linux/x64 + this Node ABI; if that ever stops being published the
+      # install fails loudly here rather than surfacing later as a confusing
+      # "Could not locate the bindings file" at test time.
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
