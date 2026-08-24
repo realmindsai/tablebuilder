@@ -22,11 +22,22 @@ jobs:
           node-version: '22'
           cache: npm
 
-      # better-sqlite3 is a native addon. npm ci fetches a prebuild for
-      # linux/x64 + this Node ABI; if that ever stops being published the
-      # install fails loudly here rather than surfacing later as a confusing
-      # "Could not locate the bindings file" at test time.
       - run: npm ci
+
+      # .npmrc sets ignore-scripts=true, which is the right default: it stops
+      # arbitrary install scripts in the dependency tree from executing. But
+      # better-sqlite3 is a native addon whose binding is fetched/built by
+      # exactly such a script, so under that setting it is never produced and
+      # every test touching a database dies with "Could not locate the bindings
+      # file" — on any platform, including a fresh clone locally.
+      #
+      # Rebuilding just this one package keeps the blanket ban in place while
+      # allowing the single dependency that genuinely needs it.
+      # --ignore-scripts=false is required: the .npmrc setting suppresses
+      # rebuild scripts too, so a plain `npm rebuild` reports "rebuilt
+      # dependencies successfully" while producing no binding at all.
+      - name: Build native addon (better-sqlite3)
+        run: npm rebuild better-sqlite3 --ignore-scripts=false
 
       - name: Build
         run: npm run build
