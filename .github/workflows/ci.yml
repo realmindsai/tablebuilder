@@ -39,6 +39,13 @@ jobs:
       - name: Build native addon (better-sqlite3)
         run: npm rebuild better-sqlite3 --ignore-scripts=false
 
+      # Same ignore-scripts consequence as better-sqlite3: Playwright's browser
+      # download never runs at install time, so the one test file that drives a
+      # real browser fails with "Executable doesn't exist". Only chromium is
+      # needed, so this fetches just that rather than the full set.
+      - name: Install Playwright browser (chromium)
+        run: npx playwright install --with-deps chromium
+
       - name: Build
         run: npm run build
 
