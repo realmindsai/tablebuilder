@@ -15,8 +15,10 @@ on:
   pull_request:
   push:
     branches: [main, master]
-  schedule:
-    - cron: '0 7 * * 1'   # weekly re-scan: new MAL records appear after merge
+  # No weekly cron here: this is a frozen demo whose dependencies nobody
+  # updates. push and pull_request still gate every dependency change, which
+  # is where new findings actually come from; the Monday re-scan only restated
+  # what was already known.
 
 permissions:
   contents: read
