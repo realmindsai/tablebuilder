@@ -1,0 +1,10 @@
+# Vendored payload from the rmai supply-chain hardening kit (../security).
+# It is linted in that repo and drift-checked here byte-for-byte, so the host
+# repo's ruff must not judge it: a CI step running `ruff check .` would apply
+# the host's rule set to code it does not own (security-4dv). ruff resolves the
+# nearest config per file, so this one switches every rule off below here.
+[lint]
+select = []
+
+[format]
+exclude = ["*"]
