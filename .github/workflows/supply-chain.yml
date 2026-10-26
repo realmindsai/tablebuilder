@@ -9,50 +9,430 @@
 #
 # CVE databases alone miss an estimated 90-95% of malicious packages, so the
 # heuristic scanner is not optional — it's where novel attacks get caught.
+#
+# GuardDog gates on a pinned version and a measured rule ALLOWLIST rather than
+# its whole catalogue: unfiltered it fails on 43 of 139 mainstream packages, and
+# a control that is always red is a control nobody reads. See the long comment
+# on the `guarddog` job. Its cost is wheel downloads, so it runs on a PR only
+# when a dependency manifest changed, and always on push and the weekly cron.
+#
+# A third job watches the `ignoreUntil` dates in osv-scanner.toml. osv-scanner
+# reddens only once a date has ALREADY passed; nothing gives notice beforehand,
+# and an acceptance with no end date is never revisited at all.
 
 name: supply-chain
 on:
   pull_request:
   push:
     branches: [main, master]
-  # No weekly cron here: this is a frozen demo whose dependencies nobody
-  # updates. push and pull_request still gate every dependency change, which
-  # is where new findings actually come from; the Monday re-scan only restated
-  # what was already known.
+  schedule:
+    - cron: '0 7 * * 1'   # weekly re-scan: new MAL records appear after merge
 
 permissions:
   contents: read
 
+# A second push to an open PR used to leave its predecessor running to
+# completion, billing every job of it. Cancel only pull_request runs: a push or
+# the weekly cron has no successor to supersede it, and cancelling the cron
+# would lose the re-scan that is its whole purpose.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Two osv-scanner jobs, dispatched on event, because the upstream reusable
+# workflows are NOT interchangeable:
+#
+#   osv-scanner-reusable.yml     scans once, and calls the reporter with
+#                                `--new=results.json` and NO `--old=`.
+#   osv-scanner-reusable-pr.yml  scans the base branch AND the head, then
+#                                calls the reporter with both `--old=` and `--new=`.
+#
+# `--new` is the input FILENAME, not a filter. In cmd/osv-reporter, an unset
+# `--old` leaves the baseline empty and the diff against empty returns
+# everything. So calling the single-scan workflow on a pull_request reports every
+# pre-existing finding in the tree as "new" and fails the PR on arrival — which
+# it did, 12 times running, for one unfixed lockfile CVE nobody's PR introduced.
+# Only reusable-pr.yml has a base-branch baseline. Split accordingly.
+#
+# `fail-on-vuln` stays hard (the default) on BOTH. With dispatch correct, a PR
+# fails only on findings it actually introduced, so softening the PR job would
+# discard the one signal worth keeping.
 jobs:
-  osv-scanner:
-    # Flags known-vulnerable and known-malicious packages from your lockfiles.
-    # Uses the reusable action so PRs only report *newly introduced* findings.
+
+  osv-scan-pr:
+    # PRs: diff head against base, report only what this PR introduces.
+    if: github.event_name == 'pull_request'
+    # NOTE: the action publishes no moving @v2 major tag — only specific tags
+    # (v2.0.0 .. v2.3.8). Pin to the release commit SHA (the `# vX.Y.Z` comment
+    # is what Dependabot bumps); a bare @v2 fails ref resolution → "No jobs run".
+    # Both reusable workflows live in this repo, so one SHA pins both.
     permissions:
+      # The reusable workflow REQUIRES these; the top-level contents:read ceiling
+      # above would otherwise cap the token and fail validation before any job runs.
       actions: read
       contents: read
       security-events: write
-    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
     with:
       # Scan the whole tree; it auto-detects package-lock.json, pnpm-lock.yaml,
       # uv.lock, requirements.txt, etc.
       scan-args: |-
         -r
         ./
+      # SARIF upload to the Security tab needs GitHub Advanced Security on
+      # PRIVATE repos (paid); without it the upload step fails the job even with
+      # zero vulns. Default off so the scan works on any repo — it still runs and
+      # `fail-on-vuln` still gates CI; findings appear in the Actions log.
+      # On a PUBLIC repo, flip this to true to get the free Security-tab dashboard.
+      upload-sarif: false
+
+  osv-scan-full:
+    # push + schedule: whole-tree scan with no baseline. This is where a
+    # pre-existing finding SHOULD be loud — it's a repo-level problem, and the
+    # weekly cron is what catches a MAL record published after merge.
+    if: github.event_name != 'pull_request'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+    with:
+      scan-args: |-
+        -r
+        ./
+      upload-sarif: false
+
+  preflight:
+    # Three checks that read nothing but this repo's own files: the dependency
+    # manifest diff, the osv-scanner ignore dates, and the uv publish-age gate.
+    # They were three jobs until 2026-09-07 and they take about six seconds each.
+    #
+    # Every JOB carries a one-minute billing floor. Measured across 15 runs that
+    # day: 72 billed job-minutes for 853 seconds of real work, 5.1x overhead --
+    # which spent 2,919 of the org's 3,000 included minutes in seven days, during
+    # the sweep that was hardening these very repos. The two osv-scanner jobs
+    # cannot be merged (a `uses:` reusable-workflow call must be its own job), so
+    # the cheap local checks sharing one job is the only lever there is.
+    #
+    # Each check after the first carries `!cancelled()`. As separate jobs they
+    # failed independently; plain step ordering would stop at the first failure
+    # and hide a lapsed osv ignore behind a cooldown violation. The `${{ }}` is
+    # not optional -- a bare leading `!` is a YAML tag indicator.
+    #
+    # tests/test_supply_chain_ci.py pins all of this, including the two-billed-job
+    # count for a PR that touches no manifest.
+    # Does this event need the behavioural scan at all?
+    #
+    # GuardDog's 20m36s for 139 packages (measured in realmindsai/speaker-id#62)
+    # is almost entirely wheel downloads, so a smaller rule set does not make it
+    # cheaper -- the only lever is running it less often. A malicious package can
+    # enter the tree only through a dependency manifest, so a PR that touches
+    # none of them has nothing new to scan and should not pay for one.
+    #
+    # push and schedule always scan. The weekly cron is the whole point: it is
+    # what catches a package that turned malicious AFTER it was merged. Neither
+    # event has a base branch to diff against, so neither may be gated here.
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # `git diff <base> <head>` cannot resolve the base commit in a shallow
+          # clone. A diff that fails must never be read as "nothing changed" --
+          # that is a silently unscanned dependency bump.
+          fetch-depth: 0
+      - name: Detect dependency manifest changes
+        id: detect
+        env:
+          # Through the environment, never `${{ }}` interpolated into the script
+          # body: that is the standard Actions script-injection hole, and this
+          # template is stamped onto ~35 repositories.
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENT_NAME" != "pull_request" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Every file either scanner reads to decide what gets installed. One
+          # missing from this list is a package that can enter with no
+          # behavioural scan at all.
+          if git diff --name-only "$BASE_SHA" "$HEAD_SHA" \
+             | grep -Eq '(^|/)(uv\.lock|requirements\.txt|pyproject\.toml|package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock)$'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Watches the `ignoreUntil` dates in every osv-scanner.toml.
+      #
+      # osv-scanner already goes red once a date has passed -- it simply stops
+      # honouring the ignore. What has no signal at all is the run-up to that, and
+      # an acceptance carrying no end date, which nothing ever revisits. Both leave
+      # a `reason` string standing long after the constraint it describes is gone:
+      # realmindsai/speaker-id#53 found 18 of 21 entries matching nothing, several
+      # justified by pins that had since been bumped away.
+      #
+      # Findings are emitted as workflow commands, so they annotate osv-scanner.toml
+      # on the PR. Burying them in a log would reproduce the failure they target.
+      #
+      # Deliberately ungated: an ignore lapses with the calendar, not with a commit,
+      # so gating this on a manifest diff would hide it exactly when it matters. It
+      # is stdlib-only and offline, so running it every time costs seconds.
+      # (realmindsai/security#6)
+      # No setup-python and no uv: the checker imports nothing but the standard
+      # library, which is the reason it can run straight from the stamped
+      # payload. It needs tomllib, so python3 >= 3.11 -- every current runner
+      # image ships 3.12, and an older one fails loudly on the import.
+      - name: Warn before an osv-scanner ignore lapses
+        if: ${{ !cancelled() }}
+        # No setup-python and no uv: the checker imports nothing but the standard
+        # library, which is the reason it can run straight from the stamped
+        # payload. It needs tomllib, so python3 >= 3.11 -- every current runner
+        # image ships 3.12, and an older one fails loudly on the import.
+        run: python3 .github/actions/supply-chain/supply_chain/osv_ignores.py
+
+      # The CLI exits 2 on HIGH findings, so a missing, invalid or sub-policy
+      # publish-age gate blocks the PR instead of becoming an operator memory test.
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        if: ${{ !cancelled() && hashFiles('uv.lock') != '' }}
+      - name: Enforce uv publish-age cooldown
+        if: ${{ !cancelled() && hashFiles('uv.lock') != '' }}
+        uses: ./.github/actions/supply-chain
 
   guarddog:
     # Behavioural scan of declared dependencies for both ecosystems.
+    #
+    # Only when a dependency manifest actually changed -- see
+    # the preflight job above for why, and for why push/schedule
+    # always report changed=true.
+    needs: preflight
+    if: ${{ !cancelled() && needs.preflight.outputs.changed == 'true' }}
     runs-on: ubuntu-latest
+    env:
+      # --- The rule allowlist (realmindsai/security#7) ---------------------------
+      #
+      # This job used to gate on GuardDog's entire rule catalogue. Measured against
+      # a real dependency set for the first time in realmindsai/speaker-id#62, that
+      # failed on 43 of 139 packages -- numpy, pandas, pyyaml, setuptools,
+      # sqlalchemy, torch, scoring up to 9.4/10. The rules that fired are the ones
+      # describing what a library legitimately does: python-dotenv reads a
+      # credentials file, asyncpg handles Postgres passwords, setuptools executes
+      # build code, the nvidia-cuda wheels ship binaries. A gate that is red on
+      # every realistic Python project trains people to stop reading it -- the
+      # same disease as a green tick that always meant "nothing ran", one turn on.
+      #
+      # This is an ALLOWLIST, not an exclude list, and that is the point. An
+      # exclude list is open-ended: a future GuardDog release adding a noisy rule
+      # reddens ~35 repositories with no commit anywhere. An allowlist is closed --
+      # a new rule has to be admitted deliberately. That is only sound while the
+      # version is pinned, which is why the pin below is its precondition.
+      #
+      # Membership was measured, not guessed. Every rule here scored ZERO findings
+      # across 134 mainstream packages (speaker-id's full uv.lock, GuardDog 3.2.0);
+      # every rule left out fired on at least one of them. Verified end to end: the
+      # scan that reported 43/139 reports 0/134 and exits 0 under this list.
+      #
+      # What is kept is the malware-shaped detection -- typosquatting and the three
+      # maintainer-account rules, the obfuscation and packer rules, install-hook
+      # network calls and import aliasing, reverse shells, keyloggers, cryptominers,
+      # DNS and messenger exfiltration, memory scraping, DLL injection,
+      # self-propagation, npm preinstall and dependency-confusion. What is dropped
+      # is every `capability-*` rule (they report that a package CAN read a file,
+      # not that it is malicious), `bundled_binary` and
+      # `repository_integrity_mismatch`, and the twelve `threat-*` rules that in
+      # practice match docstring URLs, `pbcopy`, pyyaml's own `__import__` and
+      # matplotlib's test suite.
+      #
+      # Re-derive this set against the new version when the pin moves; do not
+      # hand-edit it. tests/test_supply_chain_ci.py pins the exact membership.
+      # The scans below run WITHOUT --exit-non-zero-on-finding on purpose, so a
+      # non-zero exit from GuardDog itself means a real failure rather than a
+      # finding. The gate is guarddog_allow.py: it fails the job on any finding
+      # not named in guarddog-allow.toml, and reports acceptances that have
+      # lapsed, carry no date, or have stopped matching anything.
+      GD_ALLOW: .github/actions/supply-chain/supply_chain/guarddog_allow.py
+      GD_ALLOWLIST: .github/actions/supply-chain/guarddog-allow.toml
+      GUARDDOG_RULES_PYPI: |
+        deceptive_author
+        metadata_mismatch
+        potentially_compromised_email_domain
+        threat-filesystem-destruction
+        threat-network-dns-exfil
+        threat-network-exfil-messenger
+        threat-network-exfil-sysinfo
+        threat-network-reverse-shell
+        threat-npm-dependency-confusion
+        threat-npm-http-dependency
+        threat-npm-preinstall-script
+        threat-process-cryptomining
+        threat-process-hooks
+        threat-process-injection-dll
+        threat-process-powershell-encoded
+        threat-process-sysinfo
+        threat-runtime-enumeration
+        threat-runtime-keylogging
+        threat-runtime-obfuscation-api
+        threat-runtime-obfuscation-base64exec
+        threat-runtime-obfuscation-chr
+        threat-runtime-obfuscation-dynamic-eval
+        threat-runtime-obfuscation-general
+        threat-runtime-obfuscation-hidden-code
+        threat-runtime-obfuscation-import-exec
+        threat-runtime-obfuscation-js-mangling
+        threat-runtime-obfuscation-log-suppress
+        threat-runtime-obfuscation-pyarmor
+        threat-runtime-screencapture
+        threat-runtime-self-propagation
+        threat-setup-import-aliasing
+        threat-setup-network-in-install
+        threat-setup-suspicious-imports
+        typosquatting
+        unclaimed_maintainer_email_domain
+      # --- The npm allowlist ------------------------------------------------------
+      #
+      # Separate on purpose. Calibrating on PyPI alone was not enough and the fleet
+      # canary proved it: speaker-id has no package.json, so this path was never
+      # measured, and the first repo merged went red. `metadata_mismatch` does not
+      # merely misfire on npm (next, pg, react-dom) — it hard-errors on some archive
+      # layouts, failing the job with no finding behind it.
+      #
+      # The catalogues genuinely differ, which settles the design: npm carries
+      # direct_url_dependency, provenance_regression and risky_new_dependency, and
+      # has no repository_integrity_mismatch. One list forced to satisfy both
+      # ecosystems is strictly weaker than two measured ones.
+      #
+      # Same standard: every rule below scored zero across 20 real npm packages in
+      # six repos; everything left out fired or errored on at least one.
+      # provenance_regression fired (pino) and is out.
+      #
+      # KNOWN LIMIT: `guarddog npm verify` cannot read a lockfile — pointed at
+      # package-lock.json it processes one entry — so this scans DECLARED DIRECT
+      # dependencies only. For totoro-dashboard that is 11 of 212 resolved packages.
+      # A malicious transitive npm dependency is not covered here; osv-scanner does
+      # read the lockfile and still covers the whole tree for known-bad packages.
+      GUARDDOG_RULES_NPM: |
+        deceptive_author
+        direct_url_dependency
+        potentially_compromised_email_domain
+        provenance_regression
+        risky_new_dependency
+        threat-filesystem-autostart
+        threat-filesystem-destruction
+        threat-filesystem-read
+        threat-network-dns-exfil
+        threat-network-exfil-messenger
+        threat-network-exfil-sysinfo
+        threat-network-exfiltration
+        threat-network-outbound-shady-links
+        threat-network-reverse-shell
+        threat-npm-dependency-confusion
+        threat-npm-http-dependency
+        threat-npm-preinstall-script
+        threat-process-cryptomining
+        threat-process-download-exec
+        threat-process-hooks
+        threat-process-injection-dll
+        threat-process-memory
+        threat-process-powershell-encoded
+        threat-process-spawn-silent
+        threat-process-sysinfo
+        threat-runtime-dynamic-loader
+        threat-runtime-enumeration
+        threat-runtime-keylogging
+        threat-runtime-obfuscation
+        threat-runtime-obfuscation-api
+        threat-runtime-obfuscation-base64exec
+        threat-runtime-obfuscation-chr
+        threat-runtime-obfuscation-dynamic-eval
+        threat-runtime-obfuscation-general
+        threat-runtime-obfuscation-hidden-code
+        threat-runtime-obfuscation-import-exec
+        threat-runtime-obfuscation-js-mangling
+        threat-runtime-obfuscation-log-suppress
+        threat-runtime-obfuscation-pyarmor
+        threat-runtime-obfuscation-steganography
+        threat-runtime-obfuscation-unicode
+        threat-runtime-screencapture
+        threat-runtime-self-propagation
+        threat-runtime-system-info
+        threat-setup-import-aliasing
+        threat-setup-network-in-install
+        threat-setup-suspicious-imports
+        typosquatting
+        unclaimed_maintainer_email_domain
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        id: python
         with:
           python-version: '3.12'
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        if: hashFiles('uv.lock') != ''
+      # Pinned. GuardDog's exit code IS this job's exit code, so an unpinned
+      # install lets fleet CI behaviour change with no commit -- the one moving
+      # part in a workflow that otherwise pins every action to a 40-char SHA. It
+      # also makes findings reproducible: what a scan reports today is what it
+      # reports on a re-run of the same tree. And rule filtering is only safe
+      # while the rule catalogue is fixed. Treat a bump as a reviewed change:
+      # re-derive the allowlist above against the new version.
+      #
+      # --python is load-bearing. pipx runs on the runner image's own Python, not
+      # on setup-python's, so the venv followed whatever ubuntu-latest shipped.
+      # On ubuntu-26.04 that is 3.14, where guarddog 3.2.0's pygit2<1.19 has no
+      # wheel and the sdist build has no libgit2 -- every guarddog job in the
+      # fleet failed at this step from 2026-10-26 (security-4dv).
       - name: Install GuardDog
-        run: pipx install guarddog
+        run: pipx install guarddog==3.2.0 --python "${{ steps.python.outputs.python-path }}"
+      - name: Build the GuardDog rule allowlist
+        # Expanded once per ecosystem into the environment, so the scans below
+        # cannot drift from the lists above. The result is a flat `-r a -r b ...`
+        # string, expanded UNQUOTED at each call site on purpose: it is a fixed
+        # literal from this file, never input.
+        run: |
+          build() {
+            local args=""
+            while read -r rule; do
+              [ -n "$rule" ] || continue
+              args="$args -r $rule"
+            done
+            echo "$args"
+          }
+          echo "GUARDDOG_ARGS_PYPI=$(build <<< "$GUARDDOG_RULES_PYPI")" >> "$GITHUB_ENV"
+          echo "GUARDDOG_ARGS_NPM=$(build <<< "$GUARDDOG_RULES_NPM")" >> "$GITHUB_ENV"
       - name: Scan npm dependencies
         # `verify` scans every package in the lockfile/manifest present.
+        # Without this flag GuardDog reports detections but still exits zero.
         if: hashFiles('package.json') != ''
-        run: guarddog npm verify package.json
-      - name: Scan PyPI dependencies
+        run: |
+          guarddog npm verify $GUARDDOG_ARGS_NPM --output-format json package.json > "$RUNNER_TEMP/npm.json"
+          python3 "$GD_ALLOW" "$RUNNER_TEMP/npm.json" --allowlist "$GD_ALLOWLIST"
+      - name: Scan PyPI dependencies (uv)
+        if: hashFiles('uv.lock') != ''
+        run: |
+          # --frozen: export straight from uv.lock, never re-resolve. Without it,
+          # uv generates metadata for every entry, including local siblings
+          # (`editable+../rmai-audit`) that do not exist in a single-repo CI
+          # checkout — which fails the whole step with exit 2. Three repos went
+          # red on main this way (jot-v2, kb-mcp, ms365-mcp).
+          # --no-emit-local: drop those siblings from the output entirely. They
+          # come from the filesystem, not an index, so GuardDog cannot scan them
+          # and osv-scanner already covers the tree they live in.
+          uv export --no-hashes --no-emit-project --frozen --no-emit-local --format requirements-txt > "$RUNNER_TEMP/requirements.txt"
+          guarddog pypi verify $GUARDDOG_ARGS_PYPI --output-format json "$RUNNER_TEMP/requirements.txt" > "$RUNNER_TEMP/uv.json"
+          python3 "$GD_ALLOW" "$RUNNER_TEMP/uv.json" --allowlist "$GD_ALLOWLIST"
+      - name: Scan PyPI dependencies (requirements.txt)
         if: hashFiles('requirements.txt') != ''
-        run: guarddog pypi verify requirements.txt
+        run: |
+          guarddog pypi verify $GUARDDOG_ARGS_PYPI --output-format json requirements.txt > "$RUNNER_TEMP/req.json"
+          python3 "$GD_ALLOW" "$RUNNER_TEMP/req.json" --allowlist "$GD_ALLOWLIST"
+      - name: Require a PyPI dependency input
+        # Reached on every push and on any PR that touches a manifest, which is
+        # the moment a Python repo could acquire dependencies with nothing able
+        # to scan them.
+        if: hashFiles('pyproject.toml') != '' && hashFiles('uv.lock') == '' && hashFiles('requirements.txt') == ''
+        run: |
+          echo "::error::Python project has neither uv.lock nor requirements.txt; GuardDog cannot prove it scanned the declared dependencies."
+          exit 1

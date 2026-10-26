@@ -1,0 +1,101 @@
+# GuardDog findings accepted for NAMED PACKAGES — not rules disarmed fleet-wide.
+#
+# The policy, so nobody has to re-derive it from scratch:
+#
+#   A rule that fires on 3+ distinct packages is describing normal library
+#   behaviour, so it is dropped from the rule allowlist. A rule that fires on one
+#   or two is pointing at those packages, so the RULE stays live and the PACKAGE
+#   is named here.
+#
+# That threshold is not arbitrary — it was measured. Across 331 unique PyPI
+# packages and 20 npm packages in the estate (GuardDog 3.2.0):
+#
+#   drop nothing but capability/shape rules -> 48 rules, 63 packages to accept (19%)
+#   drop rules firing on 3+ packages        -> 35 rules, 11 packages to accept (3%)
+#
+# A 63-entry list is just a restatement of the dependency graph and would rot;
+# a 10-entry list is reviewable. The npm side gains most from this: its noise was
+# almost entirely `next`, so naming one package buys back 17 rules.
+#
+# Acceptance is per package AND rule. psutil-style blanket exemptions are not
+# possible here by design: a package excused for one rule stays gated on the rest.
+#
+# Every entry expires. An acceptance nobody revisits is indistinguishable from a
+# suppressed finding — realmindsai/speaker-id#53 found 18 of 21 osv ignores
+# matching nothing. supply_chain/guarddog_allow.py errors on a lapsed or undated
+# entry and warns on one that has stopped matching.
+#
+# To re-derive after a GuardDog version bump: scan the estate's dependency union
+# with the full catalogue and --output-format json, count distinct packages per
+# rule, and apply the threshold above. Do not hand-edit.
+#
+# Findings are VERSION-SENSITIVE: psutil trips threat-runtime-enumeration on
+# 7.1.3 but not on the version the estate union happened to sample. Derive
+# from every scan available, not one, and expect to add an entry when a
+# dependency is bumped rather than treating that as a regression.
+
+[[AcceptedFindings]]
+package = "litellm"
+rules = ["threat-filesystem-destruction", "threat-process-sysinfo", "threat-runtime-enumeration", "threat-runtime-keylogging", "threat-runtime-obfuscation-log-suppress"]
+reason = "a multi-provider LLM gateway: it shells out, reads process state and vendors provider SDKs, so it trips several behavioural rules at once"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "next"
+rules = ["threat-filesystem-autostart", "threat-filesystem-destruction", "threat-filesystem-read", "threat-process-download-exec", "threat-process-memory", "threat-process-spawn-silent", "threat-runtime-obfuscation", "threat-runtime-obfuscation-base64exec", "threat-runtime-obfuscation-steganography"]
+reason = "a full framework: vendors minified runtimes and SWC binaries"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "pino"
+rules = ["provenance_regression", "threat-network-exfil-sysinfo", "threat-runtime-system-info"]
+reason = "a logger that reports host and process details, and publishes with differing provenance"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "playwright"
+rules = ["threat-runtime-enumeration", "threat-runtime-obfuscation-base64exec"]
+reason = "ships browser driver bundles, which read as packed code"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "psutil"
+rules = ["threat-runtime-enumeration"]
+reason = "reading process and system state is psutil's entire purpose"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "pywin32"
+rules = ["threat-process-hooks"]
+reason = "Windows API bindings legitimately install process hooks"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "pywin32-ctypes"
+rules = ["unclaimed_maintainer_email_domain"]
+reason = "maintainer email domain is unclaimed upstream; widely used, pinned, and outside our control"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "soundfile"
+rules = ["threat-runtime-obfuscation-general"]
+reason = "the cffi-generated binding is a hex byte table, which reads as obfuscation"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "tensorboard"
+rules = ["threat-runtime-obfuscation-base64exec"]
+reason = "vendors minified web assets that decode and evaluate"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "transformers"
+rules = ["threat-network-exfil-sysinfo"]
+reason = "downloads models and reports host/GPU details for telemetry"
+ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "wandb"
+rules = ["threat-network-exfil-sysinfo"]
+reason = "an experiment tracker reports host and system info by design"
+ignoreUntil = 2027-03-07
