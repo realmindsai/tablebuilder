@@ -99,3 +99,21 @@ package = "wandb"
 rules = ["threat-network-exfil-sysinfo"]
 reason = "an experiment tracker reports host and system info by design"
 ignoreUntil = 2027-03-07
+
+[[AcceptedFindings]]
+package = "libretto"
+rules = ["threat-process-spawn-silent"]
+reason = "Playwright automation CLI: runs the user's workflow via tsx and its browser launcher as detached children (read 0.6.7 and 0.6.45, security-3n1). The npm name passed from crcn (2013) to saffron-health/cashew-labs, so re-check provenance before renewing"
+ignoreUntil = 2027-04-27
+
+[[AcceptedFindings]]
+package = "better-sqlite3"
+rules = ["threat-process-hooks"]
+reason = "native addon: its install script is prebuild-install || node-gyp rebuild"
+ignoreUntil = 2027-04-27
+
+[[AcceptedFindings]]
+package = "pandas"
+rules = ["metadata_mismatch"]
+reason = "GuardDog 3.2.0 bug: metadata_mismatch counts extra-gated Requires-Dist lines but reads only [project].dependencies, so pandas' optional extras look undeclared (security-3n1). Drop this entry once the GuardDog pin moves past the fix"
+ignoreUntil = 2027-04-27

@@ -307,6 +307,10 @@ jobs:
       # Same standard: every rule below scored zero across 20 real npm packages in
       # six repos; everything left out fired or errored on at least one.
       # provenance_regression fired (pino) and is out.
+      # threat-filesystem-read went out later on the same evidence: once the gate
+      # ran again after security-4dv it fired on next, dotenv and libretto, each
+      # reading a .env or config file by design -- three packages crosses the
+      # drop threshold in guarddog-allow.toml (security-3n1).
       #
       # KNOWN LIMIT: `guarddog npm verify` cannot read a lockfile — pointed at
       # package-lock.json it processes one entry — so this scans DECLARED DIRECT
@@ -321,7 +325,6 @@ jobs:
         risky_new_dependency
         threat-filesystem-autostart
         threat-filesystem-destruction
-        threat-filesystem-read
         threat-network-dns-exfil
         threat-network-exfil-messenger
         threat-network-exfil-sysinfo
