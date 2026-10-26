@@ -6,7 +6,11 @@ runs:
   steps:
     - name: Run cooldown gate
       shell: bash
+      # --python pins the runner's own python3. This directory sits inside the
+      # host repo, so a bare `uv run` inherits that repo's .python-version and
+      # python-preference; on ubuntu-26.04 a "3.12" + "only-system" repo found no
+      # interpreter at all (security-4dv).
       run: |
         cd "$GITHUB_ACTION_PATH"
-        uv run --no-project --with click==8.4.2 --exclude-newer "3 days" \
+        uv run --no-project --python "$(command -v python3)" --with click==8.4.2 --exclude-newer "3 days" \
           python -m supply_chain.cli cooldown --root "$GITHUB_WORKSPACE"
