@@ -1,0 +1,12 @@
+name: Enforce uv cooldown
+description: Run the RMAI supply-chain cooldown gate against the checked-out repository.
+
+runs:
+  using: composite
+  steps:
+    - name: Run cooldown gate
+      shell: bash
+      run: |
+        cd "$GITHUB_ACTION_PATH"
+        uv run --no-project --with click==8.4.2 --exclude-newer "3 days" \
+          python -m supply_chain.cli cooldown --root "$GITHUB_WORKSPACE"
