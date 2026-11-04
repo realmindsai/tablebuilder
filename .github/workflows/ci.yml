@@ -13,7 +13,10 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04 on 2026-10-19 and Playwright 1.59
+    # refuses it ("does not support chromium on ubuntu26.04-x64"). Return to
+    # ubuntu-latest once the installed Playwright lists 26.04. security-w7p.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
